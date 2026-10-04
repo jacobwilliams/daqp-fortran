@@ -15,3 +15,10 @@ lcov = ">=2.5,<3"
 
 [pypi-dependencies]
 fortitude-lint = ">=0.9.2, <0.10"
+
+[tasks]
+test = "fpm test"
+test-all-kinds = "fpm test --flag -DREAL32 && fpm test --flag -DREAL64 && fpm test --flag -DREAL128"
+compare = "tools/run_compare.sh"
+compare-quick = "tools/run_compare.sh quick"
+docs = "ford ford.md"

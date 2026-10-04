@@ -1,0 +1,26 @@
+# Comparison of the Fortran port with the upstream C library.
+#
+# Not part of the package: build the C library first, then run from this
+# directory:
+#
+#   ../tools/build_upstream.sh
+#   fpm run --profile release --link-flag "-L../build/upstream -ldaqp"
+#
+name = "daqp-compare"
+version = "0.1.0"
+
+[build]
+auto-executables = true
+auto-tests = false
+auto-examples = false
+
+[library]
+source-dir = "src"
+include-dir = ["../upstream/daqp/include"]
+
+[dependencies]
+daqp-fortran = { path = ".." }
+
+[fortran]
+implicit-typing = false
+implicit-external = false

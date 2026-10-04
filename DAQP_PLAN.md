@@ -67,32 +67,62 @@ recursive LDLᵀ updates*, IEEE Transactions on Automatic Control 67(8),
 
 ## 2. Upstream C interface (to port first)
 
-As I recall it (verify against the pinned commit):
+Verified against the pinned commit (v0.10.3,
+`29a8987d8b9a596c1ab6acf84c17d38b068b73bc`, stage 0). Upstream has grown
+since the first draft of this plan: the differences are marked **(changed)**.
 
 | C entity | What it is |
 |---|---|
-| `DAQPProblem` | `n`, `m` (rows including the simple bounds), `ms` (number of simple bounds, the first rows), `H` (\(n \times n\)), `f`, `A` (\((m-m_s) \times n\), **row-major**: check), `bupper`, `blower`, `sense` (an integer flag per row) |
-| `DAQPSettings` | `primal_tol`, `dual_tol`, `zero_tol`, `pivot_tol`, `progress_tol`, `cycle_tol`, `iter_limit`, `fval_bound`, `eps_prox`, `eta_prox`, `rho_soft`, `rel_subopt`, `abs_subopt`, and others; `daqp_default_settings(&settings)` fills the defaults |
+| `DAQPProblem` | `n`, `m` (rows including the simple bounds), `ms` (simple bounds, the first rows), `H` (\(n \times n\), **row-major**, read as \(\tfrac12(H+H^T)\) by the factorization), `f`, `A` (\((m-m_s) \times n\), **row-major**: confirmed), `bupper`, `blower`, `sense` (an `int` per row), plus `break_points`, `nh` (hierarchical QPs) and `problem_type` (1 = AVI, 2 = prefactorized `H`) **(changed)** |
+| `DAQPSettings` | `primal_tol` (1e-6), `dual_tol` (1e-12), `zero_tol` (1e-11), `pivot_tol` (1e-8), `progress_tol` (1e-14), `cycle_tol` (10), `iter_limit` (10000), `fval_bound` (1e30), `eps_prox` (**-1e-6**: negative = automatic, only when `H` is singular), `eta_prox` (**-1**: automatic), `rho_soft` (1e-6), `rel_subopt`, `abs_subopt` (0, BnB), `sing_tol` (3.7e-11), `refactor_tol` (1e-9), `time_limit` (0), `w_soft` (0), `eq_reduction` (AUTO) **(changed)**; `daqp_default_settings(&settings)` fills the defaults |
 | `DAQPResult` | `x`, `lam`, `fval`, `soft_slack`, `exitflag`, `iter`, `nodes`, `solve_time`, `setup_time` |
-| `daqp_quadprog(result, problem, settings)` | the one-call interface: setup, solve, free |
-| `setup_daqp(problem, work, &setup_time)`, `daqp_solve(result, work)`, `free_daqp_workspace(work)` | the split interface, for repeated solves |
-| `update_ldp(mask, work)` | after changing \(H\), \(f\), \(A\), or the bounds in place: recompute only what the mask says (`UPDATE_Rinv`, `UPDATE_M`, `UPDATE_v`, `UPDATE_d`, ...) |
-| sense flags | `ACTIVE`, `LOWER` (which bound is active), `IMMUTABLE`, `SOFT`, `BINARY`, and equality (check how equality is flagged) |
-| exit flags | optimal (1), soft-optimal (2), infeasible (\(-1\)), cycling (\(-2\)), unbounded (\(-3\)), iteration limit (\(-4\)), nonconvex (\(-5\)), overdetermined initial working set (\(-6\)): check the numbers |
+| `daqp_quadprog(result, problem, settings)` | the one-call interface: setup (with the unconstrained-optimum shortcut and, with `eq_reduction` AUTO, the equality elimination), solve, free |
+| `setup_daqp(problem, work, &setup_time)`, `daqp_solve(result, work)`, `free_daqp_workspace(work)` + `free_daqp_ldp(work)` | the split interface; the workspace keeps a pointer to the problem |
+| `daqp_update_ldp(mask, work, problem)` **(changed name)** | recompute what the mask says: `DAQP_UPDATE_Rinv` 1, `_M` 2, `_v` 4, `_d` 8, `_sense` 16, `_hierarchy` 32, `_unconstrained` 64, `_eliminate` 128 |
+| sense flags | `ACTIVE` 1, `LOWER` 2, `IMMUTABLE` 4, `SOFT` 8, `BINARY` 16, `SLACK_FIXED` 32, `SET_ASIDE` 64, `AUTO_EQUALITY` 128; an equality is `ACTIVE+IMMUTABLE` (5), or equal bounds (detected at setup) |
+| exit flags | optimal 1, soft-optimal 2, **optimal-inexact 4** (after the noise floor), infeasible -1, cycling -2, unbounded -3, iteration limit -4, nonconvex -5, overdetermined initial working set -6, **time limit -7, unsupported -8** |
 
-Source files (as I recall): `daqp.c` (the active-set loop), `factorization.c`
-(the LDLᵀ updates), `auxiliary.c` (step computation, add/remove a
-constraint), `utils.c` (the LDP transformation, `update_ldp`), `api.c`
-(`daqp_quadprog`, setup and free), `daqp_prox.c` (the proximal outer loop),
-`bnb.c` (branch and bound), plus headers with the types and the
-`c_float`/`c_int` typedefs. Upstream has its own tests (random QPs checked
-against KKT conditions) and interfaces to Python, Julia, and MATLAB.
+Source files: `daqp.c` (the LDP loop `daqp_ldp`), `factorization.c` (the
+LDLᵀ updates), `auxiliary.c` (CSP, add/remove, blocking, refinement, soft
+constraints, noise floor), `utils.c` (LDP transformation, the factorization of
+`H` with deferred inverse and automatic regularization, the unconstrained
+check), `api.c` (setup, solve, result), `daqp_prox.c` (proximal and
+semi-proximal outer loop, with accelerated steps), and, not ported: `bnb.c`,
+`hierarchical.c`, `avi.c`, `eq_elim.c` (1272 lines: elimination of
+equalities), `codegen/`. Upstream's own tests are in the interfaces (Julia
+`core_tests.jl`, Python, MATLAB, C++/Eigen); there are no plain C tests, and
+the build is CMake (not installed here: `tools/build_upstream.sh` compiles the
+C files directly).
 
-**Inputs the C code assumes:** \(H\) dense and symmetric (which triangle it
-reads: check), positive definite unless `eps_prox > 0`; \(A\) dense in its
-storage order; infinite bounds as large values (check the threshold);
-`sense` set to zero for a cold start, or with `ACTIVE` (and `LOWER`) flags
-for a warm start.
+**Inputs the C code assumes:** `H` dense, row-major, symmetrized by the
+factorization (the proximal steps read the raw rows); `A` row-major;
+infinite bounds as \(\pm 10^{30}\) (`DAQP_INF`); `sense` zero for a cold
+start, or with `ACTIVE` (and `LOWER`) flags for a warm start.
+
+**Multiplier sign:** \(Hx + f + A_{all}^T\lambda = 0\), \(\lambda > 0\) at an
+upper bound, \(< 0\) at a lower bound. **Soft penalty:** `w_soft*s +
+s^2/(2*rho_soft)` per violated side (normalized rows): quadratic by default.
+
+### Status of the port (2026-10-04)
+
+* Stages 0–4 are done, stage 5 except the release tag: `src/daqp_core.f90`
+  (the port), `src/daqp_module.f90` (`daqp_type`), six test programs (all
+  passing in REAL32, REAL64, REAL128), two examples, the comparison harness
+  (`compare/`, `tools/run_compare.sh`) and `compare/RESULTS.md`.
+* With `-ffp-contract=off` in both builds, the port is **bit-for-bit
+  identical** to the C code on all 756 comparison problems (same exit flags,
+  iterations, working sets, and values); with the optimized builds (-O3), the
+  same flags, iterations, and working sets, and values equal to round-off.
+* Speed (Apple M5, gfortran 15 `-O3 -funroll-loops`, clang 21 `-O3`): median
+  ratio port/C 1.06 (setup), 0.98 (cold solve), 0.97 (warm solve); at most
+  1.12 for n ≥ 20.
+* Choices: `daqp_inf` = 1e30 as upstream; dependent rows of a warm-start
+  working set are dropped (as upstream's activation does); the default
+  tolerances are floored at multiples of `epsilon` (only changes single
+  precision); `fval` with neither `f` nor a proximal term is `0.5*||u||^2`
+  (upstream leaves it unset); the core setup also accepts `A` transposed.
+* Not done: set 5 (QPs captured from sqpopt) and set 6 (Maros–Mészáros), which
+  need sqpopt's capture option; the `v0.1.0` tag.
 
 ---
 

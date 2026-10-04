@@ -1,0 +1,60 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+
+  test:
+    name: tests (${{ matrix.kind }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [REAL32, REAL64, REAL128]
+    steps:
+      - uses: actions/checkout@v4   # (the submodule is not needed)
+      - uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: 13
+      - uses: fortran-lang/setup-fpm@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tests (debug)
+        run: fpm test --flag "-D${{ matrix.kind }} -g -fcheck=all -Wall -Wno-compare-reals -ffpe-trap=invalid,zero"
+      - name: Tests (release)
+        run: fpm test --profile release --flag "-D${{ matrix.kind }}"
+      - name: Examples
+        run: fpm run --example --all --flag "-D${{ matrix.kind }}"
+
+  compare:
+    name: comparison with upstream (C)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: 13
+      - uses: fortran-lang/setup-fpm@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build upstream and compare
+        run: CC=gcc tools/run_compare.sh quick
+
+  docs:
+    name: documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install
+        run: |
+          sudo apt-get install -y graphviz gfortran
+          pip install ford
+      - name: Build
+        run: ford ford.md

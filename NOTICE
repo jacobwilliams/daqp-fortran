@@ -1,0 +1,18 @@
+daqp-fortran is a modern Fortran port of DAQP, a dual active-set solver for
+dense convex quadratic programs, by Daniel Arnström:
+
+    https://github.com/darnstrom/daqp (MIT licence)
+
+The port follows DAQP v0.10.3 (commit 29a8987d8b9a596c1ab6acf84c17d38b068b73bc).
+The files src/daqp_core.f90 and src/daqp_module.f90 are translations of, and
+changes to, DAQP's C sources (src/*.c and include/*.h of that repository).
+
+The method is described in:
+
+    D. Arnström, A. Bemporad, D. Axehill, "A dual active-set solver for
+    embedded quadratic programming using recursive LDL^T updates", IEEE
+    Transactions on Automatic Control 67(8), 4362-4369, 2022.
+
+The directory upstream/daqp is a git submodule holding DAQP's own repository,
+under its own licence. It is not part of this package's sources: fpm does not
+build it. It is only used to compare the port with the original (compare/).

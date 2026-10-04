@@ -1,0 +1,26 @@
+name = "daqp-fortran"
+version = "0.1.0"
+license = "MIT"
+author = "Jacob Williams"
+maintainer = "jacobwilliams@users.noreply.github.com"
+copyright = "Copyright (c) 2026, Jacob Williams; Copyright (c) 2022, Daniel Arnström (DAQP)"
+description = "Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs"
+categories = ["optimization"]
+keywords = ["quadratic programming", "QP", "active set", "optimization"]
+homepage = "https://github.com/jacobwilliams/daqp-fortran"
+
+[build]
+auto-executables = false
+auto-examples = true
+auto-tests = true
+
+[library]
+source-dir = "src"
+
+[install]
+library = true
+
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"

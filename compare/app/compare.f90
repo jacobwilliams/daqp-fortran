@@ -1,0 +1,928 @@
+!*****************************************************************************************
+!>
+!  Compare the Fortran port of DAQP with the upstream C library, for accuracy
+!  and speed. Writes a Markdown report to standard output (see
+!  `tools/run_compare.sh`, which adds the environment and writes
+!  `compare/RESULTS.md`).
+!
+!  Usage: `compare [quick]` (`quick`: a small subset, for CI).
+
+    program compare
+
+    use iso_c_binding
+    use iso_fortran_env, only: int64, real128, output_unit
+    use daqp_kinds, only: wp => daqp_wp, ip => daqp_ip
+    use daqp_core
+    use daqp_c_binding
+    use daqp_test_utils, only: rng_seed, urand, randn, generate_qp, generate_lp, rand_int
+
+    implicit none
+
+    type :: qp_problem
+        !! A QP in the Fortran layout, plus its upstream (row-major) copy.
+        character(len=:), allocatable :: name
+        integer :: n = 0, m = 0, ms = 0
+        logical :: has_H = .true.
+        real(wp) :: kappa = 1.0_wp
+        real(wp), allocatable :: H(:,:), f(:), A(:,:), bu(:), bl(:)
+        real(wp), allocatable :: At(:,:)  !! transpose of A (the internal layout of the port)
+        integer(ip), allocatable :: sense(:)
+        ! row-major copies for C (kept alive while a C workspace points to them)
+        real(c_double), allocatable :: Hc(:), Ac(:), fc(:), buc(:), blc(:)
+        integer(c_int), allocatable :: sensec(:)
+    end type qp_problem
+
+    type :: set_stats
+        !! Accumulated results of a problem set.
+        character(len=:), allocatable :: name
+        integer :: n_problems = 0
+        integer :: n_flag_equal = 0
+        integer :: n_iter_equal = 0
+        integer :: n_ws_equal = 0
+        integer :: n_x_pass = 0
+        integer :: n_lam_pass = 0
+        integer :: n_f_pass = 0
+        integer :: n_kkt_pass = 0
+        integer :: n_solved = 0
+        real(wp) :: max_dx = 0.0_wp, max_dlam = 0.0_wp, max_df = 0.0_wp
+        real(wp) :: max_kkt_ratio = 0.0_wp
+        character(len=:), allocatable :: mismatches
+    end type set_stats
+
+    type(daqp_c_settings), target :: csettings
+    type(daqp_settings) :: fsettings
+    type(set_stats) :: st
+    logical :: quick, accuracy_only
+    character(len=32) :: arg
+    real(wp), parameter :: c_tol = 10.0_wp  !! the constant `c` of the accuracy criteria
+
+    quick = .false.
+    accuracy_only = .false.
+    if (command_argument_count() > 0) then
+        call get_command_argument(1, arg)
+        quick = trim(arg) == 'quick'
+        accuracy_only = trim(arg) == 'accuracy'
+    end if
+
+    ! the same settings for both: the C defaults, copied field by field
+    call daqp_default_settings(csettings)
+    csettings%eq_reduction = daqp_c_eq_reduction_off  ! not ported
+    fsettings%primal_tol   = csettings%primal_tol
+    fsettings%dual_tol     = csettings%dual_tol
+    fsettings%zero_tol     = csettings%zero_tol
+    fsettings%pivot_tol    = csettings%pivot_tol
+    fsettings%progress_tol = csettings%progress_tol
+    fsettings%cycle_tol    = csettings%cycle_tol
+    fsettings%iter_limit   = csettings%iter_limit
+    fsettings%fval_bound   = csettings%fval_bound
+    fsettings%eps_prox     = csettings%eps_prox
+    fsettings%eta_prox     = csettings%eta_prox
+    fsettings%rho_soft     = csettings%rho_soft
+    fsettings%rel_subopt   = csettings%rel_subopt
+    fsettings%abs_subopt   = csettings%abs_subopt
+    fsettings%sing_tol     = csettings%sing_tol
+    fsettings%refactor_tol = csettings%refactor_tol
+    fsettings%w_soft       = csettings%w_soft
+
+    write(output_unit,'(A)') '## Accuracy'
+    write(output_unit,'(A)') ''
+    write(output_unit,'(A)') 'Each problem is solved by both solvers through the split interface'// &
+        ' (`setup_daqp` + `daqp_solve`, and `daqp_setup` + `daqp_solve`), with the same settings'// &
+        ' (upstream''s defaults, without the equality elimination, which is not ported).'
+    write(output_unit,'(A,ES8.1,A)') 'Pass criteria: `|x_F - x_C|_inf <= c n eps kappa (1 + |x_C|_inf)` (kappa: the larger of cond(H) and the condition number of the final working set''s Gram matrix, estimated by 1/min pivot of its LDL'' factors),'// &
+        ' the same for the multipliers and `|f_F - f_C| <= c n eps kappa (1 + |f_C|)`, with c = ', c_tol, &
+        '; the KKT residuals of the port (computed in quadruple precision) at most c times those'// &
+        ' of the C code (or below the solver''s primal tolerance).'
+    write(output_unit,'(A)') ''
+    write(output_unit,'(A)') '| Set | Problems | Solved | Same exit flag | Same iterations | Same working set |'// &
+        ' x pass | lam pass | f pass | KKT pass | max dx | max dlam | max df |'
+    write(output_unit,'(A)') '|---|---|---|---|---|---|---|---|---|---|---|---|---|'
+
+    call set_upstream(); call print_set(st)
+    call set_random(); call print_set(st)
+    call set_degenerate(); call print_set(st)
+    call set_special(); call print_set(st)
+    call set_warm(); call print_set(st)
+
+    if (.not. accuracy_only) call speed()
+
+    contains
+!*****************************************************************************************
+
+    subroutine new_set(name)
+        character(len=*), intent(in) :: name
+        st = set_stats()
+        st%name = name
+        st%mismatches = ''
+    end subroutine new_set
+
+    subroutine print_set(s)
+        type(set_stats), intent(in) :: s
+        character(len=1024) :: line
+        write(line,'("| ",A," | ",I0," | ",I0," | ",I0," | ",I0," | ",I0," | ",I0," | ",I0," | ",I0,'// &
+                   '" | ",I0," | ",ES8.1," | ",ES8.1," | ",ES8.1," |")') &
+            s%name, s%n_problems, s%n_solved, s%n_flag_equal, s%n_iter_equal, s%n_ws_equal, &
+            s%n_x_pass, s%n_lam_pass, s%n_f_pass, s%n_kkt_pass, s%max_dx, s%max_dlam, s%max_df
+        write(output_unit,'(A)') trim(line)
+        if (len(s%mismatches) > 0) then
+            write(output_unit,'(A)') ''
+            write(output_unit,'(A)') '<details><summary>'//s%name//': differences</summary>'
+            write(output_unit,'(A)') ''
+            write(output_unit,'(A)') s%mismatches
+            write(output_unit,'(A)') '</details>'
+            write(output_unit,'(A)') ''
+            write(output_unit,'(A)') '| Set | Problems | Solved | Same exit flag | Same iterations |'// &
+                ' Same working set | x pass | lam pass | f pass | KKT pass | max dx | max dlam | max df |'
+            write(output_unit,'(A)') '|---|---|---|---|---|---|---|---|---|---|---|---|---|'
+        end if
+    end subroutine print_set
+
+!*****************************************************************************************
+!>
+!  Make the row-major copies of a problem for C.
+
+    subroutine finalize_problem(p)
+        type(qp_problem), intent(inout) :: p
+        integer :: i
+        if (.not. allocated(p%f)) p%f = [(0.0_wp, i=1,p%n)]
+        if (.not. allocated(p%A)) allocate(p%A(0,p%n))
+        if (.not. allocated(p%sense)) p%sense = [(0_ip, i=1,p%m)]
+        if (p%has_H) then
+            p%Hc = reshape(transpose(p%H), [p%n*p%n])
+        else
+            allocate(p%Hc(1))
+        end if
+        p%At = transpose(p%A)
+        p%Ac = reshape(p%At, [max(1,size(p%A))], pad=[0.0_wp])
+        p%fc = p%f
+        p%buc = p%bu
+        p%blc = p%bl
+        p%sensec = int(p%sense, c_int)
+    end subroutine finalize_problem
+
+    subroutine c_problem(p, cqp)
+        type(qp_problem), intent(inout), target :: p
+        type(daqp_c_problem), intent(out) :: cqp
+        cqp%n = p%n
+        cqp%m = p%m
+        cqp%ms = p%ms
+        if (p%has_H) then
+            cqp%H = c_loc(p%Hc)
+        else
+            cqp%H = c_null_ptr
+        end if
+        cqp%f = c_loc(p%fc)
+        cqp%A = c_loc(p%Ac)
+        cqp%bupper = c_loc(p%buc)
+        cqp%blower = c_loc(p%blc)
+        cqp%sense = c_loc(p%sensec)
+    end subroutine c_problem
+
+!*****************************************************************************************
+!>
+!  Set up a problem in both solvers.
+
+    subroutine setup_both(p, work, cqp, cwork, fflag, cflag)
+        type(qp_problem), intent(inout), target :: p
+        type(daqp_workspace), intent(inout) :: work
+        type(daqp_c_problem), intent(inout), target :: cqp
+        type(c_ptr), intent(out) :: cwork
+        integer(ip), intent(out) :: fflag, cflag
+        work%settings = fsettings
+        if (p%has_H) then
+            fflag = daqp_setup(work, p%n, p%m, p%ms, p%bu, p%bl, H=p%H, f=p%f, A=p%A, sense=p%sense)
+        else
+            fflag = daqp_setup(work, p%n, p%m, p%ms, p%bu, p%bl, f=p%f, A=p%A, sense=p%sense)
+        end if
+        call c_problem(p, cqp)
+        cwork = cmp_ws_new(csettings)
+        cflag = setup_daqp(cqp, cwork, c_null_ptr)
+    end subroutine setup_both
+
+!*****************************************************************************************
+!>
+!  Solve the problem (already set up) with both solvers, and compare.
+
+    subroutine solve_and_compare(p, work, cwork, label)
+        type(qp_problem), intent(inout) :: p
+        type(daqp_workspace), intent(inout) :: work
+        type(c_ptr), intent(in) :: cwork
+        character(len=*), intent(in) :: label
+
+        real(wp), allocatable :: xf(:), lamf(:)
+        real(c_double), allocatable, target :: xc(:), lamc(:)
+        integer(c_int), allocatable :: wsc(:), lowc(:)
+        integer(ip), allocatable :: wsf(:)
+        logical, allocatable :: lowf(:)
+        type(daqp_result) :: res
+        type(daqp_c_result) :: cres
+        integer :: na_c, i
+        real(wp) :: dx, dlam, df, tolx, kkt_f(4), kkt_c(4), eps, kgram
+        logical :: same_ws, kkt_ok
+        character(len=512) :: msg
+
+        allocate(xf(p%n), lamf(p%m), xc(p%n), lamc(p%m))
+        call daqp_solve(work, xf, res, lamf)
+        cres%x = c_loc(xc)
+        cres%lam = c_loc(lamc)
+        call daqp_c_solve(cres, cwork)
+
+        st%n_problems = st%n_problems + 1
+        if (cres%exitflag > 0) st%n_solved = st%n_solved + 1
+        eps = epsilon(1.0_wp)
+
+        ! working sets (as sets of (index, lower))
+        na_c = cmp_ws_n_active(cwork)
+        allocate(wsc(max(1,na_c)), lowc(max(1,na_c)))
+        if (na_c > 0) call cmp_ws_working_set(cwork, wsc, lowc)
+        wsf = work%WS(1:work%n_active)
+        lowf = [(iand(work%sense(wsf(i)), daqp_lower) /= 0, i=1,work%n_active)]
+        same_ws = na_c == work%n_active
+        if (same_ws) then
+            do i = 1, na_c
+                if (.not. any(wsf == wsc(i)+1)) then
+                    same_ws = .false.
+                else if (any(wsf == wsc(i)+1 .and. (lowf .neqv. (lowc(i) /= 0)))) then
+                    same_ws = .false.
+                end if
+            end do
+        end if
+
+        msg = ''
+        if (res%exitflag == cres%exitflag) then
+            st%n_flag_equal = st%n_flag_equal + 1
+        else
+            write(msg,'(A,": exit flag ",I0," (Fortran) vs ",I0," (C)")') label, res%exitflag, cres%exitflag
+            call add_mismatch(msg)
+        end if
+        if (res%iter == cres%iter) then
+            st%n_iter_equal = st%n_iter_equal + 1
+        else
+            write(msg,'(A,": iterations ",I0," (Fortran) vs ",I0," (C)")') label, res%iter, cres%iter
+            call add_mismatch(msg)
+        end if
+        if (same_ws) then
+            st%n_ws_equal = st%n_ws_equal + 1
+        else
+            write(msg,'(A,": working sets differ (",I0," vs ",I0," active)")') label, work%n_active, na_c
+            call add_mismatch(msg)
+        end if
+
+        if (cres%exitflag > 0 .and. res%exitflag > 0) then
+            ! the condition number of H, or of the working set's Gram matrix
+            ! (1/min pivot of its LDL' factors, rows normalized)
+            kgram = 1.0_wp
+            if (work%n_active > 0) kgram = 1.0_wp/max(epsilon(1.0_wp), minval(work%D(1:work%n_active)))
+            tolx = c_tol*real(p%n,wp)*eps*max(1.0_wp, p%kappa, kgram)
+            dx = maxval(abs(xf-xc), mask=.true.) / (1.0_wp + maxval(abs(xc)))
+            dlam = 0.0_wp
+            if (p%m > 0) dlam = maxval(abs(lamf-lamc)) / (1.0_wp + maxval(abs(lamc)))
+            df = abs(res%fval-cres%fval) / (1.0_wp + abs(cres%fval))
+            st%max_dx = max(st%max_dx, dx)
+            st%max_dlam = max(st%max_dlam, dlam)
+            st%max_df = max(st%max_df, df)
+            if (dx <= tolx) st%n_x_pass = st%n_x_pass + 1
+            if (dlam <= tolx) st%n_lam_pass = st%n_lam_pass + 1
+            if (df <= tolx) st%n_f_pass = st%n_f_pass + 1
+            if (dx > tolx .or. dlam > tolx .or. df > tolx) then
+                write(msg,'(A,": dx = ",ES9.2,", dlam = ",ES9.2,", df = ",ES9.2," (tol ",ES9.2,")")') &
+                    label, dx, dlam, df, tolx
+                call add_mismatch(msg)
+            end if
+            call kkt_quad(p, xf, lamf, kkt_f)
+            call kkt_quad(p, real(xc,wp), real(lamc,wp), kkt_c)
+            kkt_ok = .true.
+            do i = 1, 4
+                if (kkt_f(i) > c_tol*kkt_c(i) .and. kkt_f(i) > fsettings%primal_tol) kkt_ok = .false.
+            end do
+            if (kkt_ok) then
+                st%n_kkt_pass = st%n_kkt_pass + 1
+            else
+                write(msg,'(A,": KKT (stat, prim, dual, comp) ",4ES9.2," (Fortran) vs ",4ES9.2," (C)")') &
+                    label, kkt_f, kkt_c
+                call add_mismatch(msg)
+            end if
+        else if (res%exitflag == cres%exitflag) then ! not solved by either: nothing to compare
+            st%n_x_pass = st%n_x_pass + 1
+            st%n_lam_pass = st%n_lam_pass + 1
+            st%n_f_pass = st%n_f_pass + 1
+            st%n_kkt_pass = st%n_kkt_pass + 1
+        end if
+    end subroutine solve_and_compare
+
+    subroutine add_mismatch(msg)
+        character(len=*), intent(in) :: msg
+        if (len(st%mismatches) < 20000) st%mismatches = st%mismatches//'- '//trim(msg)//new_line('a')
+    end subroutine add_mismatch
+
+!*****************************************************************************************
+!>
+!  KKT residuals in quadruple precision: stationarity, primal infeasibility,
+!  wrong-signed multipliers, complementarity (infinity norms, relative to the
+!  size of the data).
+
+    subroutine kkt_quad(p, x, lam, r)
+        type(qp_problem), intent(in) :: p
+        real(wp), intent(in) :: x(:), lam(:)
+        real(wp), intent(out) :: r(4)
+        real(real128), allocatable :: g(:), ax(:), xq(:), lq(:)
+        real(real128) :: big, scale
+        integer :: i, j
+        big = 1.0e29_real128
+        xq = real(x, real128)
+        lq = real(lam, real128)
+        allocate(g(p%n), ax(p%m))
+        g = real(p%f, real128)
+        if (p%has_H) then
+            do j = 1, p%n
+                do i = 1, p%n
+                    g(i) = g(i) + real(p%H(i,j),real128)*xq(j)
+                end do
+            end do
+        end if
+        do i = 1, p%ms
+            g(i) = g(i) + lq(i)
+            ax(i) = xq(i)
+        end do
+        do i = p%ms+1, p%m
+            ax(i) = 0
+            do j = 1, p%n
+                ax(i) = ax(i) + real(p%A(i-p%ms,j),real128)*xq(j)
+                g(j) = g(j) + real(p%A(i-p%ms,j),real128)*lq(i)
+            end do
+        end do
+        scale = 1.0_real128 + maxval(abs(xq)) + maxval(abs(real(p%f,real128)))
+        if (p%m > 0) scale = scale + maxval(abs(lq))
+        r(1) = real(maxval(abs(g))/scale, wp)
+        r(2:4) = 0.0_wp
+        do i = 1, p%m
+            if (iand(p%sense(i), daqp_soft) /= 0) cycle
+            if (p%bu(i) < big) r(2) = max(r(2), real(ax(i)-p%bu(i), wp))
+            if (p%bl(i) > -big) r(2) = max(r(2), real(p%bl(i)-ax(i), wp))
+            if (iand(p%sense(i), daqp_immutable) /= 0) cycle
+            if (lq(i) > 0) then
+                if (p%bu(i) >= big) then
+                    r(3) = max(r(3), real(lq(i),wp))
+                else
+                    r(4) = max(r(4), real(lq(i)*abs(p%bu(i)-ax(i))/scale, wp))
+                end if
+            else if (lq(i) < 0) then
+                if (p%bl(i) <= -big) then
+                    r(3) = max(r(3), real(-lq(i),wp))
+                else
+                    r(4) = max(r(4), real(-lq(i)*abs(ax(i)-p%bl(i))/scale, wp))
+                end if
+            end if
+        end do
+    end subroutine kkt_quad
+
+!*****************************************************************************************
+!>
+!  Set up, solve, and compare one problem.
+
+    subroutine run_problem(p, label)
+        type(qp_problem), intent(inout), target :: p
+        character(len=*), intent(in) :: label
+        type(daqp_workspace) :: work
+        type(daqp_c_problem), target :: cqp
+        type(c_ptr) :: cwork
+        integer(ip) :: fflag, cflag
+        character(len=256) :: msg
+        call finalize_problem(p)
+        call setup_both(p, work, cqp, cwork, fflag, cflag)
+        if (fflag < 0 .or. cflag < 0) then
+            st%n_problems = st%n_problems + 1
+            if (fflag == cflag) then
+                st%n_flag_equal = st%n_flag_equal + 1
+                st%n_iter_equal = st%n_iter_equal + 1
+                st%n_ws_equal = st%n_ws_equal + 1
+                st%n_x_pass = st%n_x_pass + 1
+                st%n_lam_pass = st%n_lam_pass + 1
+                st%n_f_pass = st%n_f_pass + 1
+                st%n_kkt_pass = st%n_kkt_pass + 1
+            else
+                write(msg,'(A,": setup flag ",I0," (Fortran) vs ",I0," (C)")') label, fflag, cflag
+                call add_mismatch(msg)
+            end if
+        else
+            call solve_and_compare(p, work, cwork, label)
+        end if
+        call cmp_ws_free(cwork)
+        call daqp_destroy(work)
+    end subroutine run_problem
+
+    subroutine random_problem(p, n, m, ms, nact, kappa, name)
+        type(qp_problem), intent(out) :: p
+        integer, intent(in) :: n, m, ms, nact
+        real(wp), intent(in) :: kappa
+        character(len=*), intent(in) :: name
+        real(wp), allocatable :: xref(:)
+        call generate_qp(n, m, ms, nact, kappa, xref, p%H, p%f, p%A, p%bu, p%bl)
+        p%n = n; p%m = m; p%ms = ms; p%kappa = kappa; p%name = name
+    end subroutine random_problem
+
+!*****************************************************************************************
+!>
+!  Set 1: upstream's test problems.
+
+    subroutine set_upstream()
+        type(qp_problem) :: p
+        real(wp), allocatable :: xref(:)
+        integer :: k, nqp
+        character(len=64) :: label
+        call new_set('1. upstream tests')
+        call rng_seed(1234)
+        nqp = 100
+        if (quick) nqp = 10
+        do k = 1, nqp
+            write(label,'("QP ",I0)') k
+            call random_problem(p, 100, 500, 50, 80, 1.0e2_wp, trim(label))
+            call run_problem(p, trim(label))
+        end do
+        do k = 1, nqp/2
+            write(label,'("LP ",I0)') k
+            p = qp_problem()
+            p%n = 100; p%m = 500; p%ms = 50; p%has_H = .false.; p%kappa = 1.0e4_wp
+            call generate_lp(p%n, p%m, p%ms, xref, p%f, p%A, p%bu, p%bl)
+            call run_problem(p, trim(label))
+        end do
+        do k = 1, nqp/5 ! (n=20, m=100, ms=0, 16 active), as upstream's Julia tests
+            write(label,'("QP small ",I0)') k
+            call random_problem(p, 20, 100, 0, 16, 1.0e2_wp, trim(label))
+            call run_problem(p, trim(label))
+        end do
+    end subroutine set_upstream
+
+!*****************************************************************************************
+!>
+!  Set 2: random QPs of various sizes and conditioning.
+
+    subroutine set_random()
+        type(qp_problem) :: p
+        integer :: in, im, ik, ia, n, m, ms, nact
+        integer, parameter :: ns(8) = [2, 5, 10, 20, 50, 100, 200, 500]
+        real(wp), parameter :: kappas(4) = [1.0_wp, 1.0e2_wp, 1.0e5_wp, 1.0e10_wp]
+        character(len=64) :: label
+        call new_set('2. random QPs')
+        call rng_seed(2026)
+        do in = 1, size(ns)
+            n = ns(in)
+            if (quick .and. n > 50) exit
+            do im = 0, 3
+                m = (im*n)  ! m = 0, n, 2n, 3n
+                if (im == 0) m = n/2
+                do ik = 1, size(kappas)
+                    do ia = 1, 2
+                        ms = min(m, n)/2
+                        nact = min(m, n)
+                        if (ia == 1) nact = nact/2
+                        write(label,'("n=",I0,", m=",I0,", ms=",I0,", nact=",I0,", kappa=",ES7.0)') &
+                            n, m, ms, nact, kappas(ik)
+                        call random_problem(p, n, m, ms, nact, kappas(ik), trim(label))
+                        call run_problem(p, trim(label))
+                    end do
+                end do
+            end do
+        end do
+    end subroutine set_random
+
+!*****************************************************************************************
+!>
+!  Set 3: degenerate QPs: duplicated rows, dependent active rows, more active
+!  rows than variables, weakly active constraints.
+
+    subroutine set_degenerate()
+        type(qp_problem) :: p
+        integer :: k, n, m, ms, nact, nd, i, j, nrep
+        real(wp), allocatable :: xs(:), a(:), lam(:)
+        integer, allocatable :: dup(:)
+        character(len=64) :: label
+        call new_set('3. degenerate QPs')
+        call rng_seed(77)
+        nrep = 20
+        if (quick) nrep = 4
+        ! duplicated rows (active and inactive)
+        do k = 1, nrep
+            n = 20; m = 60; ms = 10; nact = 15
+            call random_problem(p, n, m, ms, nact, 1.0e3_wp, '')
+            nd = 10
+            dup = [(rand_int(1, m-ms), i=1,nd)]
+            p%A = reshape([transpose(p%A), transpose(p%A(dup,:))], [n, m-ms+nd])
+            p%A = transpose(p%A)
+            p%bu = [p%bu, p%bu(ms+dup)]
+            p%bl = [p%bl, p%bl(ms+dup)]
+            p%m = m + nd
+            write(label,'("duplicated rows ",I0)') k
+            call run_problem(p, trim(label))
+        end do
+        ! a vertex with more active rows than variables, some weakly active,
+        ! some dependent (sums of others): H = I, x* given
+        do k = 1, nrep
+            n = 10 + mod(k,3)*5
+            m = 3*n
+            p = qp_problem()
+            p%n = n; p%m = m; p%ms = 0; p%kappa = 1.0e2_wp
+            allocate(p%A(m,n), p%bu(m), p%bl(m), lam(m))
+            xs = [(randn(), i=1,n)]
+            do i = 1, m
+                if (i > 2*n .and. mod(i,2) == 0) then ! dependent: sum of two earlier rows
+                    p%A(i,:) = p%A(i-2*n,:) + p%A(i-2*n+1,:)
+                else
+                    p%A(i,:) = [(randn(), j=1,n)]
+                end if
+            end do
+            lam = 0.0_wp
+            do i = 1, n/2
+                lam(i) = urand() ! strictly active
+            end do
+            p%H = reshape([((merge(1.0_wp, 0.0_wp, i == j), i=1,n), j=1,n)], [n,n])
+            p%f = -xs - matmul(transpose(p%A), lam)
+            a = matmul(p%A, xs)
+            do i = 1, m
+                if (i <= 3*n/2 .or. i > 2*n) then ! tight at x* (weakly active if lam = 0)
+                    p%bu(i) = a(i)
+                else
+                    p%bu(i) = a(i) + 0.1_wp + urand()
+                end if
+                p%bl(i) = -daqp_inf
+            end do
+            deallocate(lam)
+            write(label,'("over-determined vertex ",I0)') k
+            call run_problem(p, trim(label))
+        end do
+        ! equality constraints (equal bounds) among the active rows
+        do k = 1, nrep
+            n = 20; m = 60; ms = 10; nact = 15
+            call random_problem(p, n, m, ms, nact, 1.0e2_wp, '')
+            a = [p%bu(1:ms) - 1.0e30_wp, matmul(p%A, xs_of(p))]
+            do i = ms+1, m
+                if (min(abs(a(i)-p%bu(i)), abs(a(i)-p%bl(i))) < 1.0e-9_wp*(1.0_wp+abs(a(i))) &
+                    .and. mod(i,2) == 0) then
+                    if (abs(a(i)-p%bu(i)) < abs(a(i)-p%bl(i))) then
+                        p%bl(i) = p%bu(i)
+                    else
+                        p%bu(i) = p%bl(i)
+                    end if
+                end if
+            end do
+            write(label,'("equalities ",I0)') k
+            call run_problem(p, trim(label))
+        end do
+    end subroutine set_degenerate
+
+    function xs_of(p) result(x)
+        !! the solution of a problem (solved by the port)
+        type(qp_problem), intent(in) :: p
+        real(wp), allocatable :: x(:)
+        type(daqp_result) :: r
+        allocate(x(p%n))
+        call daqp_quadprog(p%n, p%m, p%ms, p%bu, p%bl, x, r, H=p%H, f=p%f, A=p%A, settings=fsettings)
+    end function xs_of
+
+!*****************************************************************************************
+!>
+!  Set "special": infeasible, semidefinite, LP, soft constraints, diagonal H.
+
+    subroutine set_special()
+        type(qp_problem) :: p
+        integer :: k, n, m, ms, i, nrep
+        real(wp), allocatable :: xref(:)
+        character(len=64) :: label
+        call new_set('3b. special cases')
+        call rng_seed(99)
+        nrep = 10
+        if (quick) nrep = 3
+        do k = 1, nrep
+            ! infeasible: two contradicting rows
+            n = 10; m = 30; ms = 5
+            call random_problem(p, n, m, ms, 5, 1.0e2_wp, '')
+            p%A(2,:) = -p%A(1,:)
+            p%bl(ms+2) = -p%bl(ms+1) + 1.0_wp  ! -a'x >= -bl1 + 1 <=> a'x <= bl1 - 1
+            p%bu(ms+2) = daqp_inf
+            p%bl(ms+1) = p%bl(ms+1); p%bu(ms+1) = daqp_inf
+            write(label,'("infeasible ",I0)') k
+            call run_problem(p, trim(label))
+            ! semidefinite H: zero rows (semi-proximal)
+            call random_problem(p, n, m, ms, 5, 1.0e2_wp, '')
+            p%H(:,n) = 0.0_wp; p%H(n,:) = 0.0_wp
+            p%H(:,n-1) = 0.0_wp; p%H(n-1,:) = 0.0_wp
+            p%kappa = 1.0e6_wp
+            write(label,'("semidefinite (zero rows) ",I0)') k
+            call run_problem(p, trim(label))
+            ! semidefinite H: rank deficient, dense (full proximal shift)
+            call random_problem(p, n, m, ms, 5, 1.0e2_wp, '')
+            p%H = matmul(p%H(:,1:3), transpose(p%H(:,1:3)))
+            p%kappa = 1.0e6_wp
+            write(label,'("semidefinite (dense) ",I0)') k
+            call run_problem(p, trim(label))
+            ! diagonal H
+            call random_problem(p, n, m, ms, 5, 1.0e2_wp, '')
+            p%H = 0.0_wp
+            do i = 1, n
+                p%H(i,i) = 1.0_wp + 10.0_wp*urand()
+            end do
+            write(label,'("diagonal H ",I0)') k
+            call run_problem(p, trim(label))
+            ! soft constraints (on infeasible rows)
+            call random_problem(p, n, m, ms, 5, 1.0e2_wp, '')
+            p%sense = [(0_ip, i=1,m)]
+            p%sense(ms+1:ms+4) = daqp_soft
+            p%bu(ms+1) = p%bl(ms+1) - 1.0_wp
+            write(label,'("soft ",I0)') k
+            call run_problem(p, trim(label))
+            ! small LP
+            p = qp_problem()
+            p%n = 10; p%m = 40; p%ms = 10; p%has_H = .false.; p%kappa = 1.0e4_wp
+            call generate_lp(p%n, p%m, p%ms, xref, p%f, p%A, p%bu, p%bl)
+            write(label,'("LP ",I0)') k
+            call run_problem(p, trim(label))
+        end do
+    end subroutine set_special
+
+!*****************************************************************************************
+!>
+!  Set 4: warm-start sequences (MPC-like): the same QP with a changing linear
+!  term and bounds, each solve hot started from the previous working set.
+
+    subroutine set_warm()
+        type(qp_problem), target :: p
+        type(daqp_workspace) :: work
+        type(daqp_c_problem), target :: cqp
+        type(c_ptr) :: cwork
+        integer(ip) :: fflag, cflag
+        integer(c_int) :: mask
+        integer :: iseq, k, nseq, nstep, i
+        real(wp), allocatable :: f0(:), df(:), db(:)
+        character(len=64) :: label
+        call new_set('4. warm-start sequences')
+        call rng_seed(4)
+        nseq = 10; nstep = 20
+        if (quick) nseq = 3
+        do iseq = 1, nseq
+            call random_problem(p, 30, 90, 15, 20, 1.0e2_wp, '')
+            call finalize_problem(p)
+            f0 = p%f
+            df = [(randn(), i=1,p%n)]
+            ! the bounds move with a translation of the feasible set (which stays feasible)
+            db = [(0.1_wp*randn(), i=1,p%n)]
+            db = [db(1:p%ms), matmul(p%A, db)]
+            call setup_both(p, work, cqp, cwork, fflag, cflag)
+            do k = 0, nstep
+                if (k > 0) then
+                    p%f = f0 + 0.05_wp*real(k,wp)*df
+                    p%bu = p%bu + 0.05_wp*db
+                    p%bl = p%bl + 0.05_wp*db
+                    p%fc = p%f; p%buc = p%bu; p%blc = p%bl
+                    work%f = p%f; work%bupper = p%bu; work%blower = p%bl
+                    mask = daqp_update_v + daqp_update_d
+                    fflag = daqp_update_ldp(work, int(mask,ip))
+                    cflag = daqp_c_update_ldp(mask, cwork, cqp)
+                end if
+                write(label,'("sequence ",I0,", step ",I0)') iseq, k
+                call solve_and_compare(p, work, cwork, trim(label))
+            end do
+            call cmp_ws_free(cwork)
+            call daqp_destroy(work)
+        end do
+    end subroutine set_warm
+
+!*****************************************************************************************
+!>
+!  Wall clock time in seconds.
+
+    real(wp) function wtime()
+        integer(int64) :: count, rate
+        call system_clock(count, rate)
+        wtime = real(count,wp)/real(rate,wp)
+    end function wtime
+
+    real(wp) function median(t)
+        real(wp), intent(in) :: t(:)
+        real(wp), allocatable :: s(:)
+        integer :: i, j
+        real(wp) :: tmp
+        s = t
+        do i = 2, size(s)
+            tmp = s(i)
+            j = i - 1
+            do while (j >= 1)
+                if (s(j) <= tmp) exit
+                s(j+1) = s(j)
+                j = j - 1
+            end do
+            s(j+1) = tmp
+        end do
+        median = s((size(s)+1)/2)
+    end function median
+
+!*****************************************************************************************
+!>
+!  Speed: setup, cold solve, and warm (hot) solve, per QP, as the median of
+!  batches of repetitions.
+
+    subroutine speed()
+        integer, parameter :: ns(7) = [5, 10, 20, 50, 100, 200, 500]
+        integer, parameter :: nbatch = 7
+        type(qp_problem), target :: p
+        integer :: in, im, n, m, ms, nact, nrep, ib, r
+        real(wp) :: tf(3), tc(3), t0, tb(nbatch), tb2(nbatch), target_time
+        real(wp), allocatable :: rf(:,:)
+        character(len=256) :: line
+        integer :: nrow
+
+        target_time = 0.1_wp
+        if (quick) target_time = 0.01_wp
+        write(output_unit,'(A)') ''
+        write(output_unit,'(A)') '## Speed'
+        write(output_unit,'(A)') ''
+        write(output_unit,'(A)') 'Random QPs (cond(H) = 100, `ms = n/2` simple bounds, `n/2` active'// &
+            ' constraints). Time per QP in microseconds: setup (factor H, form the LDP), cold solve'// &
+            ' (from the empty working set), and warm solve (`update` of `f` and solve, from the'// &
+            ' previous working set). Each is the median of 7 batches of repetitions'// &
+            ' (about 0.1 s per batch set). Both workspaces are freed after each setup (a repeated'// &
+            ' setup of the same size on one Fortran object reuses its arrays, and is faster).'
+        write(output_unit,'(A)') ''
+        write(output_unit,'(A)') '| n | m | setup F | setup C | ratio | cold solve F | cold solve C | ratio |'// &
+            ' warm solve F | warm solve C | ratio |'
+        write(output_unit,'(A)') '|---|---|---|---|---|---|---|---|---|---|---|'
+        allocate(rf(3, 2*size(ns)))
+        nrow = 0
+        call rng_seed(5)
+        do in = 1, size(ns)
+            n = ns(in)
+            if (quick .and. n > 50) exit
+            do im = 1, 2
+                m = merge(n, 3*n, im == 1)
+                ms = n/2
+                nact = n/2
+                call random_problem(p, n, m, ms, nact, 1.0e2_wp, '')
+                call finalize_problem(p)
+                ! repetitions per batch: about target_time/nbatch per batch
+                t0 = wtime()
+                call time_fortran(p, 1, tf)
+                nrep = max(1, int(target_time/nbatch/max(1.0e-7_wp, wtime()-t0)))
+                do ib = 1, nbatch
+                    call time_fortran(p, nrep, tf)
+                    tb(ib) = tf(1); tb2(ib) = tf(2)
+                end do
+                tf(1) = median(tb); tf(2) = median(tb2)
+                do ib = 1, nbatch
+                    call time_fortran_warm(p, nrep, tb(ib))
+                end do
+                tf(3) = median(tb)
+                do ib = 1, nbatch
+                    call time_c(p, nrep, tc)
+                    tb(ib) = tc(1); tb2(ib) = tc(2)
+                end do
+                tc(1) = median(tb); tc(2) = median(tb2)
+                do ib = 1, nbatch
+                    call time_c_warm(p, nrep, tb(ib))
+                end do
+                tc(3) = median(tb)
+                nrow = nrow + 1
+                rf(:,nrow) = tf/tc
+                write(line,'("| ",I0," | ",I0,3(" | ",F10.2," | ",F10.2," | ",F5.2),"|")') n, m, &
+                    (1.0e6_wp*tf(r), 1.0e6_wp*tc(r), tf(r)/tc(r), r=1,3)
+                write(output_unit,'(A)') trim(line)
+            end do
+        end do
+        write(output_unit,'(A)') ''
+        write(output_unit,'(A,3F6.2)') 'Median ratio port/C (setup, cold solve, warm solve): ', &
+            (median(rf(r,1:nrow)), r=1,3)
+    end subroutine speed
+
+    subroutine time_fortran(p, nrep, t)
+        !! t(1): setup, t(2): cold solve (per QP)
+        type(qp_problem), intent(inout) :: p
+        integer, intent(in) :: nrep
+        real(wp), intent(out) :: t(2)
+        type(daqp_workspace) :: work
+        type(daqp_result) :: res
+        real(wp), allocatable :: x(:), lam(:)
+        integer :: k
+        integer(ip) :: flag
+        real(wp) :: t0, t1
+        allocate(x(p%n), lam(p%m))
+        work%settings = fsettings
+        t0 = wtime()
+        do k = 1, nrep  ! (freed each time, as the C workspace)
+            work%settings = fsettings
+            flag = daqp_setup(work, p%n, p%m, p%ms, p%bu, p%bl, H=p%H, f=p%f, At=p%At)
+            call daqp_destroy(work)
+        end do
+        t1 = wtime()
+        t(1) = (t1-t0)/nrep
+        t0 = wtime()
+        do k = 1, nrep
+            work%settings = fsettings
+            flag = daqp_setup(work, p%n, p%m, p%ms, p%bu, p%bl, H=p%H, f=p%f, At=p%At)
+            call daqp_solve(work, x, res, lam)
+            call daqp_destroy(work)
+        end do
+        t1 = wtime()
+        t(2) = (t1-t0)/nrep - t(1)
+        call daqp_destroy(work)
+    end subroutine time_fortran
+
+    subroutine time_fortran_warm(p, nrep, t)
+        type(qp_problem), intent(inout) :: p
+        integer, intent(in) :: nrep
+        real(wp), intent(out) :: t
+        type(daqp_workspace) :: work
+        type(daqp_result) :: res
+        real(wp), allocatable :: x(:), lam(:), f1(:), f2(:)
+        integer :: k
+        integer(ip) :: flag
+        real(wp) :: t0
+        allocate(x(p%n), lam(p%m))
+        f1 = p%f
+        f2 = p%f*1.05_wp
+        work%settings = fsettings
+        flag = daqp_setup(work, p%n, p%m, p%ms, p%bu, p%bl, H=p%H, f=p%f, At=p%At)
+        call daqp_solve(work, x, res, lam)
+        t0 = wtime()
+        do k = 1, nrep
+            if (mod(k,2) == 0) then
+                work%f = f1
+            else
+                work%f = f2
+            end if
+            flag = daqp_update_ldp(work, daqp_update_v)
+            call daqp_solve(work, x, res, lam)
+        end do
+        t = (wtime()-t0)/nrep
+        call daqp_destroy(work)
+    end subroutine time_fortran_warm
+
+    subroutine time_c(p, nrep, t)
+        type(qp_problem), intent(inout), target :: p
+        integer, intent(in) :: nrep
+        real(wp), intent(out) :: t(2)
+        type(daqp_c_problem), target :: cqp
+        type(daqp_c_result) :: cres
+        real(c_double), allocatable, target :: x(:), lam(:)
+        type(c_ptr) :: cwork
+        integer :: k
+        integer(c_int) :: flag
+        real(wp) :: t0, t1
+        allocate(x(p%n), lam(p%m))
+        cres%x = c_loc(x)
+        cres%lam = c_loc(lam)
+        call c_problem(p, cqp)
+        t0 = wtime()
+        do k = 1, nrep
+            cwork = cmp_ws_new(csettings)
+            flag = setup_daqp(cqp, cwork, c_null_ptr)
+            call cmp_ws_free(cwork)
+        end do
+        t1 = wtime()
+        t(1) = (t1-t0)/nrep
+        t0 = wtime()
+        do k = 1, nrep
+            cwork = cmp_ws_new(csettings)
+            flag = setup_daqp(cqp, cwork, c_null_ptr)
+            call daqp_c_solve(cres, cwork)
+            call cmp_ws_free(cwork)
+        end do
+        t1 = wtime()
+        t(2) = (t1-t0)/nrep - t(1)
+    end subroutine time_c
+
+    subroutine time_c_warm(p, nrep, t)
+        type(qp_problem), intent(inout), target :: p
+        integer, intent(in) :: nrep
+        real(wp), intent(out) :: t
+        type(daqp_c_problem), target :: cqp
+        type(daqp_c_result) :: cres
+        real(c_double), allocatable, target :: x(:), lam(:), f1(:), f2(:)
+        type(c_ptr) :: cwork
+        integer :: k
+        integer(c_int) :: flag
+        real(wp) :: t0
+        allocate(x(p%n), lam(p%m))
+        cres%x = c_loc(x)
+        cres%lam = c_loc(lam)
+        f1 = p%fc
+        f2 = p%fc*1.05_wp
+        call c_problem(p, cqp)
+        cwork = cmp_ws_new(csettings)
+        flag = setup_daqp(cqp, cwork, c_null_ptr)
+        call daqp_c_solve(cres, cwork)
+        t0 = wtime()
+        do k = 1, nrep
+            if (mod(k,2) == 0) then
+                p%fc = f1
+            else
+                p%fc = f2
+            end if
+            flag = daqp_c_update_ldp(int(daqp_update_v,c_int), cwork, cqp)
+            call daqp_c_solve(cres, cwork)
+        end do
+        t = (wtime()-t0)/nrep
+        call cmp_ws_free(cwork)
+        p%fc = f1
+    end subroutine time_c_warm
+
+!*****************************************************************************************
+    end program compare
+!*****************************************************************************************
