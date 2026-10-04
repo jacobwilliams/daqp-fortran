@@ -1,60 +1,53 @@
 name: CI
-
 on: [push, pull_request]
-
 jobs:
 
-  test:
-    name: tests (${{ matrix.kind }})
-    runs-on: ubuntu-latest
+  Build:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
-        kind: [REAL32, REAL64, REAL128]
-    steps:
-      - uses: actions/checkout@v4   # (the submodule is not needed)
-      - uses: fortran-lang/setup-fortran@v1
-        with:
-          compiler: gcc
-          version: 13
-      - uses: fortran-lang/setup-fpm@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Tests (debug)
-        run: fpm test --flag "-D${{ matrix.kind }} -g -fcheck=all -Wall -Wno-compare-reals -ffpe-trap=invalid,zero"
-      - name: Tests (release)
-        run: fpm test --profile release --flag "-D${{ matrix.kind }}"
-      - name: Examples
-        run: fpm run --example --all --flag "-D${{ matrix.kind }}"
+        os: [ubuntu-latest]
+        kind: ["-DREAL64", "-DREAL32", "-DREAL128", "-DINT64"]
 
-  compare:
-    name: comparison with upstream (C)
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - uses: fortran-lang/setup-fortran@v1
-        with:
-          compiler: gcc
-          version: 13
-      - uses: fortran-lang/setup-fpm@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build upstream and compare
-        run: CC=gcc tools/run_compare.sh quick
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive   # reference/qdldl, for the cross-check with the C QDLDL
 
-  docs:
-    name: documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      - name: Install
-        run: |
-          sudo apt-get install -y graphviz gfortran
-          pip install ford
-      - name: Build
-        run: ford ford.md
+    # installs pixi and creates the environment from pixi.toml/pixi.lock
+    # (gfortran, fpm, ford, fortitude, a C compiler), the same one used locally
+    - name: Setup pixi environment
+      uses: prefix-dev/setup-pixi@v0.10.2
+      with:
+        pixi-version: v0.80.0
+        locked: true   # fail if pixi.lock is out of date with pixi.toml
+        cache: true
+
+    - name: Run tests
+      run: pixi run fpm test --profile debug --flag "${{ matrix.kind }}"
+
+    - name: Compare with upstream
+      run: tools/run_compare.sh quick
+
+    - name: Lint, stack check, and cross-check with the C QDLDL
+      if: matrix.kind == '-DREAL64'
+      run: |
+        pixi run fortitude check
+        pixi run stack-check
+        pixi run crosscheck
+
+    - name: Build documentation
+      if: matrix.kind == '-DREAL64'
+      run: pixi run docs
+
+    - name: Deploy Documentation
+      if: matrix.kind == '-DREAL64' && github.ref == 'refs/heads/master'
+      uses: JamesIves/github-pages-deploy-action@v4.9.0
+      with:
+        branch: gh-pages
+        folder: doc
+        single-commit: true
