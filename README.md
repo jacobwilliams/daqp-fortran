@@ -165,7 +165,9 @@ The real kind is chosen by a preprocessor flag: `-DREAL32`, `-DREAL64` (the defa
 `-DREAL128`, e.g. `fpm test --flag "-DREAL128"`. In double and quadruple precision the
 default tolerances and constants are upstream's; in single precision, those below a few
 `epsilon` (the tolerances, `rho_soft`, `eps_prox`, and the tolerances of the primal and
-dual starts) are raised to a multiple of `epsilon`.
+dual starts) are raised to a multiple of `epsilon`. In single precision, LPs (solved by
+the proximal-point loop) are less reliable: about 2% of random LPs end with
+`daqp_cycling`, whose rounding errors swamp the progress test of the cycle guard.
 
 ## Install
 
