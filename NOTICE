@@ -4,8 +4,9 @@ dense convex quadratic programs, by Daniel Arnström:
     https://github.com/darnstrom/daqp (MIT licence)
 
 The port follows DAQP v0.10.3 (commit 29a8987d8b9a596c1ab6acf84c17d38b068b73bc).
-The files src/daqp_core.f90 and src/daqp_module.f90 are translations of, and
-changes to, DAQP's C sources (src/*.c and include/*.h of that repository).
+The files src/daqp_types.f90, src/daqp_eq_elim.f90, src/daqp_core.f90, and
+src/daqp_module.f90 are translations of, and changes to, DAQP's C sources
+(src/*.c and include/*.h of that repository).
 
 The method is described in:
 

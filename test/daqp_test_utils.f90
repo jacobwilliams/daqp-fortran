@@ -20,7 +20,7 @@
 
     public :: wp, ip
     public :: rng_seed, urand, randn, rand_int, shuffle, orthogonal
-    public :: generate_qp, generate_lp
+    public :: generate_qp, generate_lp, generate_miqp, generate_avi, make_equalities, cholesky_packed
     public :: kkt_residuals, kkt_tolerance
     public :: check, report
 
@@ -284,6 +284,188 @@
     A = Af(ms+1:m,:)
 
     end subroutine generate_lp
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  A mixed-integer QP whose first `nb` variables are binary (port of
+!  upstream's `generate_test_MIQP`): the origin is feasible, `f` makes it
+!  lucrative to leave it, and a cardinality constraint `sum(x(1:nb)) <= nb/2`
+!  makes the relaxation fractional. Requires `ms >= nb` and `m > ms`.
+
+    subroutine generate_miqp(n, m, ms, nb, H, f, A, bupper, blower, sense)
+
+    integer, intent(in) :: n, m, ms, nb  !! dimensions, number of binary variables
+    real(wp), allocatable, intent(out) :: H(:,:), f(:), A(:,:), bupper(:), blower(:)
+    integer(ip), allocatable, intent(out) :: sense(:)
+
+    real(wp), allocatable :: Mt(:,:)
+    integer :: i, j
+
+    allocate(Mt(n,n), A(m-ms,n), bupper(m), blower(m), f(n), sense(m))
+    do j = 1, n
+        do i = 1, n
+            Mt(i,j) = randn()
+        end do
+    end do
+    H = matmul(transpose(Mt), Mt)
+    do i = 1, n
+        H(i,i) = H(i,i) + 1.0_wp
+    end do
+    do j = 1, n
+        do i = 1, m-ms
+            A(i,j) = randn()
+        end do
+    end do
+    do i = 1, m
+        bupper(i) = 20.0_wp*urand()
+    end do
+    do i = 1, m
+        blower(i) = -20.0_wp*urand()
+    end do
+    do i = 1, n
+        f(i) = 100.0_wp*randn()
+    end do
+    f(1:nb) = -abs(f(1:nb))
+    bupper(1:nb) = 1.0_wp
+    blower(1:nb) = 0.0_wp
+    sense = 0
+    sense(1:nb) = 16 ! binary
+    A(1,:) = 0.0_wp
+    A(1,1:nb) = 1.0_wp
+    bupper(ms+1) = real(nb/2, wp)
+    blower(ms+1) = -1.0e30_wp
+
+    end subroutine generate_miqp
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  An affine variational inequality with a known solution (port of upstream's
+!  `generate_test_avi`): `H` positive definite but not symmetric, constraints
+!  `A x <= b` (no simple bounds).
+
+    subroutine generate_avi(n, m, xref, H, f, A, b)
+
+    integer, intent(in) :: n, m  !! dimensions
+    real(wp), allocatable, intent(out) :: xref(:), H(:,:), f(:), A(:,:), b(:)
+
+    real(wp), allocatable :: Mt(:,:), Nt(:,:), sym(:,:), asym(:,:), lam(:), ax(:)
+    integer, allocatable :: perm(:)
+    integer :: i, j, nas
+
+    allocate(A(m,n), Mt(n,n), Nt(n,n), lam(m), perm(m), b(m))
+    do j = 1, n
+        do i = 1, m
+            A(i,j) = randn()
+        end do
+    end do
+    call shuffle(perm)
+    nas = rand_int(1,n+1) - 1
+    lam = 0.0_wp
+    do i = 1, nas
+        lam(perm(i)) = urand()
+    end do
+    xref = [(randn(), i=1,n)]
+    do j = 1, n
+        do i = 1, n
+            Mt(i,j) = urand()
+        end do
+    end do
+    do j = 1, n
+        do i = 1, n
+            Nt(i,j) = randn()
+        end do
+    end do
+    sym = matmul(transpose(Mt), Mt)
+    asym = Nt - transpose(Nt)
+    H = sym/norm2(sym) + asym/norm2(asym)
+    f = -matmul(H, xref) - matmul(transpose(A), lam)
+    ax = matmul(A, xref)
+    do i = 1, m
+        b(i) = ax(i) + 5.0_wp*urand()
+    end do
+    do i = 1, nas
+        b(perm(i)) = ax(perm(i))
+    end do
+
+    end subroutine generate_avi
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Turn `neq` constraints that are active at `xref` into equalities (as
+!  upstream's `generate_test_QP_eq`: general constraints first): their bounds
+!  are collapsed onto the active one. Returns the number turned.
+
+    integer function make_equalities(ms, neq, xref, A, bupper, blower) result(k)
+
+    integer, intent(in) :: ms, neq    !! number of simple bounds, of equalities wanted
+    real(wp), intent(in) :: xref(:)   !! solution
+    real(wp), intent(in) :: A(:,:)    !! general constraints
+    real(wp), intent(inout) :: bupper(:), blower(:) !! bounds
+
+    real(wp), allocatable :: r(:)
+    integer :: i, pass, m
+    real(wp) :: bv
+
+    m = size(bupper)
+    r = [xref(1:ms), matmul(A, xref)]
+    k = 0
+    do pass = 1, 2 ! general constraints, then simple bounds
+        do i = 1, m
+            if (k >= neq) return
+            if ((pass == 1 .and. i <= ms) .or. (pass == 2 .and. i > ms)) cycle
+            if (min(abs(r(i)-bupper(i)), abs(r(i)-blower(i))) <= 1.0e-6_wp*(1.0_wp+abs(r(i)))) then
+                if (abs(r(i)-bupper(i)) <= abs(r(i)-blower(i))) then
+                    bv = bupper(i)
+                else
+                    bv = blower(i)
+                end if
+                bupper(i) = bv
+                blower(i) = bv
+                k = k + 1
+            end if
+        end do
+    end do
+
+    end function make_equalities
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  The upper Cholesky factor `R` of `H = R'R`, packed by rows.
+
+    function cholesky_packed(H) result(Rp)
+
+    real(wp), intent(in) :: H(:,:)  !! symmetric positive definite matrix
+    real(wp), allocatable :: Rp(:)
+
+    real(wp), allocatable :: R(:,:)
+    integer :: i, j, k, n
+
+    n = size(H,1)
+    allocate(R(n,n), Rp((n*(n+1))/2))
+    R = 0.0_wp
+    do j = 1, n
+        do i = 1, j
+            R(i,j) = H(i,j) - dot_product(R(1:i-1,i), R(1:i-1,j))
+            if (i < j) then
+                R(i,j) = R(i,j)/R(i,i)
+            else
+                R(j,j) = sqrt(R(j,j))
+            end if
+        end do
+    end do
+    k = 0
+    do i = 1, n
+        do j = i, n
+            k = k + 1
+            Rp(k) = R(i,j)
+        end do
+    end do
+
+    end function cholesky_packed
 !*****************************************************************************************
 
 !*****************************************************************************************

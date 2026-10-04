@@ -87,9 +87,9 @@ LDLᵀ updates), `auxiliary.c` (CSP, add/remove, blocking, refinement, soft
 constraints, noise floor), `utils.c` (LDP transformation, the factorization of
 `H` with deferred inverse and automatic regularization, the unconstrained
 check), `api.c` (setup, solve, result), `daqp_prox.c` (proximal and
-semi-proximal outer loop, with accelerated steps), and, not ported: `bnb.c`,
+semi-proximal outer loop, with accelerated steps), `bnb.c` (branch and bound),
 `hierarchical.c`, `avi.c`, `eq_elim.c` (1272 lines: elimination of
-equalities), `codegen/`. Upstream's own tests are in the interfaces (Julia
+equalities), all ported; and `codegen/` (C code generation), not ported. Upstream's own tests are in the interfaces (Julia
 `core_tests.jl`, Python, MATLAB, C++/Eigen); there are no plain C tests, and
 the build is CMake (not installed here: `tools/build_upstream.sh` compiles the
 C files directly).
@@ -105,24 +105,32 @@ s^2/(2*rho_soft)` per violated side (normalized rows): quadratic by default.
 
 ### Status of the port (2026-10-04)
 
-* Stages 0–4 are done, stage 5 except the release tag: `src/daqp_core.f90`
-  (the port), `src/daqp_module.f90` (`daqp_type`), six test programs (all
-  passing in REAL32, REAL64, REAL128), two examples, the comparison harness
-  (`compare/`, `tools/run_compare.sh`) and `compare/RESULTS.md`.
+* Stages 0–5 are done except the release tag, and the scope now covers all of
+  upstream's solvers (stage 6 and the 0.10 additions): the dual active-set
+  method, the proximal loop, branch and bound, hierarchical QPs, AVIs, the
+  elimination of equalities, individual soft weights, prefactorized Hessians,
+  primal and dual starts, the time limit, and `minrep`. Only upstream's code
+  generation and its language interfaces are not ported.
+* Sources: `src/daqp_types.f90` (constants, types), `src/daqp_eq_elim.f90`
+  (equality elimination), `src/daqp_core.f90` (everything else),
+  `src/daqp_module.f90` (`daqp_type`). Seven test programs pass in REAL32,
+  REAL64, and REAL128; three examples.
 * With `-ffp-contract=off` in both builds, the port is **bit-for-bit
-  identical** to the C code on all 756 comparison problems (same exit flags,
-  iterations, working sets, and values); with the optimized builds (-O3), the
-  same flags, iterations, and working sets, and values equal to round-off.
-* Speed (Apple M5, gfortran 15 `-O3 -funroll-loops`, clang 21 `-O3`): median
-  ratio port/C 1.06 (setup), 0.98 (cold solve), 0.97 (warm solve); at most
-  1.12 for n ≥ 20.
-* Choices: `daqp_inf` = 1e30 as upstream; dependent rows of a warm-start
-  working set are dropped (as upstream's activation does); the default
-  tolerances are floored at multiples of `epsilon` (only changes single
-  precision); `fval` with neither `f` nor a proximal term is `0.5*||u||^2`
-  (upstream leaves it unset); the core setup also accepts `A` transposed.
-* Not done: set 5 (QPs captured from sqpopt) and set 6 (Maros–Mészáros), which
-  need sqpopt's capture option; the `v0.1.0` tag.
+  identical** to the C code on all 1039 comparison problems (11 sets, every
+  feature): the same exit flags, iterations, nodes, working sets, and values.
+  With the optimized builds, the same flags, iterations, and working sets, and
+  values equal to round-off.
+* Speed (Apple M5, gfortran 15 `-O3 -funroll-loops`, clang 21 `-O3`, both
+  timing their solves as upstream does): median ratio port/C about 1.08
+  (setup), 1.00 (cold solve), 0.96 (warm solve).
+* Choices: `daqp_inf` = 1e30 as upstream; the default tolerances (and
+  `rho_soft`, `eps_prox`, the tolerances of the primal and dual starts) are
+  floored at multiples of `epsilon`, which only changes single precision;
+  `fval` of a QP with neither `f` nor a proximal term is `0.5*||u||^2`
+  (upstream leaves it unset); the core setup also accepts `A` transposed; a
+  repeated setup of the same size reuses the arrays.
+* Not done: set 5 (QPs captured from sqpopt) and set 6 (Maros–Mészáros) of
+  section 5, which need sqpopt's capture option; the `v0.1.0` tag.
 
 ---
 

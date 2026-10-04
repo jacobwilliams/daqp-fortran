@@ -13,7 +13,19 @@ s.t. blower(1:ms)  <= x(1:ms) <= bupper(1:ms)      (simple bounds)
 ```
 
 with every row two-sided (`daqp_inf` for no bound), and optional per-row flags for
-equality, immutable, and soft constraints.
+equality, immutable, soft, and binary constraints. All of DAQP's solvers are ported:
+
+* the dual active-set method for strictly convex QPs, with warm and hot starts;
+* a proximal-point outer loop for semidefinite QPs and LPs;
+* branch and bound for **binary constraints** (mixed-integer QPs);
+* **hierarchical** (lexicographic) QPs: levels of constraints, each softened and then
+  fixed at its best slack;
+* **affine variational inequalities** (a nonsymmetric `H`);
+* the **elimination of equality constraints** (a null-space reduction, when there are
+  many equalities);
+* soft constraints with uniform or **individual weights**, a **prefactorized** Hessian,
+  primal and dual starts, a time limit, and the removal of redundant constraints
+  (`daqp_minrep`).
 
 ## When to use it
 
@@ -49,12 +61,20 @@ call qp%solve(x, lam, istat)                    ! hot start from the previous wo
   keyword arguments after an omitted one): no `H` is an LP, no `A` means only simple bounds.
 * Options are components of `daqp_type` (upstream's settings, with its defaults):
   `primal_tol`, `dual_tol`, `zero_tol`, `pivot_tol`, `progress_tol`, `cycle_tol`,
-  `iter_limit`, `fval_bound`, `eps_prox`, `eta_prox`, `rho_soft`, `w_soft`, `sing_tol`,
-  `refactor_tol`. `set_defaults` restores them.
+  `iter_limit`, `fval_bound`, `eps_prox`, `eta_prox`, `rho_soft`, `w_soft`, `rel_subopt`,
+  `abs_subopt`, `sing_tol`, `refactor_tol`, `time_limit`, `eq_reduction`. `set_defaults`
+  restores them.
 * Results of the latest solve: `qp%status`, `qp%iter`, `qp%fval`, `qp%soft_slack`,
-  `qp%outer_iter` (or `qp%info(...)`).
+  `qp%outer_iter` (nodes of the branch and bound, or outer iterations), `qp%solve_time`,
+  `qp%setup_time` (or `qp%info(...)`).
 * Constraint flags: `sense(m)` in `setup`, with `daqp_equality` (or simply equal bounds),
-  `daqp_immutable`, `daqp_soft`.
+  `daqp_immutable`, `daqp_soft`, `daqp_binary`.
+* Other arguments of `setup`: `break_points` (a hierarchical QP: the last constraint of
+  each level), `is_avi` (an AVI), `R` (the Cholesky factor of `H`, packed by rows, instead
+  of `H`), `primal_start`, `dual_start`.
+* `qp%set_soft_weights(istat, rho_l, rho_u, w_l, w_u)` sets individual weights of the soft
+  constraints; `qp%set_primal_start(x, istat)` a starting point (for binary constraints,
+  an incumbent).
 * `daqp_type` is copyable (allocatable components only), and allocates nothing during
   `solve`.
 
@@ -85,8 +105,29 @@ is active, 0 when inactive. `daqp_lower_positive(lam)` converts to the conventio
 
 A row flagged `daqp_soft` may be violated: a violation `s` (of the normalized row) adds
 `w_soft*s + s**2/(2*rho_soft)` to the objective (`w_soft = 0` by default: a quadratic
-penalty; a large enough `w_soft` gives an exact penalty). The exit status is then
+penalty; a large enough `w_soft` gives an exact penalty). Individual weights per row and
+side (`set_soft_weights`) are in the units of the problem. The exit status is then
 `daqp_soft_optimal` and `qp%soft_slack` is the largest violation.
+
+### Binary constraints, hierarchies, AVIs
+
+* A row flagged `daqp_binary` must be active at one of its bounds (for a binary variable,
+  bounds 0 and 1 on a simple bound). The problem is solved by branch and bound, which
+  needs a strictly convex objective; `rel_subopt` and `abs_subopt` allow a suboptimal
+  solution, and `set_primal_start` gives an incumbent.
+* With `break_points`, the constraints form levels (the first is hard). Each next level
+  is minimized as soft constraints and then fixed at its slacks; `lam` returns the slacks.
+* With `is_avi = .true.`, the solver finds `x` in the feasible set with
+  `(Hx + f)'(y - x) >= 0` for every feasible `y`, for a nonsymmetric `H` (Douglas-Rachford
+  splitting with Newton steps). `daqp_avi` solves one in a single call.
+
+### Elimination of equalities
+
+With many equality constraints, they can be eliminated before the solve (a QR null-space
+reduction; the solution and all the multipliers are those of the original problem).
+`eq_reduction = daqp_eq_reduction_auto` (the default) does so in `daqp_quadprog` when it
+pays off, `daqp_eq_reduction_on` always (also for `setup` + `solve`), and
+`daqp_eq_reduction_off` never.
 
 ### Statuses
 
@@ -95,6 +136,7 @@ penalty; a large enough `w_soft` gives an exact penalty). The exit status is the
 | `daqp_success` | 0 | `setup`/`update` succeeded |
 | `daqp_optimal` | 1 | solved |
 | `daqp_soft_optimal` | 2 | solved, a soft constraint is violated |
+| `daqp_no_freedom` | 3 | hierarchical QP: a level failed; the solution of the levels before |
 | `daqp_optimal_inexact` | 4 | solved after persistent cycling; violates a constraint by more than `primal_tol` |
 | `daqp_infeasible` | -1 | infeasible |
 | `daqp_cycling` | -2 | cycling |
@@ -102,6 +144,8 @@ penalty; a large enough `w_soft` gives an exact penalty). The exit status is the
 | `daqp_iteration_limit` | -4 | iteration limit |
 | `daqp_nonconvex` | -5 | `H` is not positive (semi)definite |
 | `daqp_overdetermined` | -6 | inconsistent equalities in the initial working set |
+| `daqp_time_limit` | -7 | the time limit was reached |
+| `daqp_unsupported` | -8 | unsupported combination (a hierarchy with a singular `H`, or a re-solve of a hierarchy without an update) |
 | `daqp_invalid_input` | -101 | invalid sizes or indices |
 | `daqp_out_of_memory` | -102 | an allocation failed (or the problem is too large) |
 | `daqp_not_setup` | -103 | `setup` was not called, or failed |
@@ -109,16 +153,19 @@ penalty; a large enough `w_soft` gives an exact penalty). The exit status is the
 ### Low-level interface
 
 `daqp_core` holds the one-to-one port (a workspace type and plain procedures:
-`daqp_setup`, `daqp_solve`, `daqp_update_ldp`, `daqp_quadprog`, `daqp_ldp`, ...), with the
-same algorithm, order of operations, and tolerances as the C code. It also accepts `A` in
-its internal layout (`At(n,m-ms)`, a row of `A` per column), which saves a transposed copy.
+`daqp_setup`, `daqp_solve`, `daqp_update_ldp`, `daqp_quadprog`, `daqp_avi`, `daqp_minrep`,
+`daqp_ldp`, `daqp_bnb`, `daqp_hiqp`, ...), with the same algorithm, order of operations,
+and tolerances as the C code; `daqp_eq_elim` the elimination of equalities, and
+`daqp_types` the types and constants. `daqp_setup` also accepts `A` in its internal layout
+(`At(n,m-ms)`, a row of `A` per column), which saves a transposed copy.
 
 ## Real kinds
 
 The real kind is chosen by a preprocessor flag: `-DREAL32`, `-DREAL64` (the default), or
 `-DREAL128`, e.g. `fpm test --flag "-DREAL128"`. In double and quadruple precision the
-default tolerances are upstream's; in single precision, those below a few `epsilon` are
-raised to a multiple of `epsilon`.
+default tolerances and constants are upstream's; in single precision, those below a few
+`epsilon` (the tolerances, `rho_soft`, `eps_prox`, and the tolerances of the primal and
+dual starts) are raised to a multiple of `epsilon`.
 
 ## Install
 
@@ -143,18 +190,19 @@ tools/run_compare.sh quick    # a short check (CI)
 `tools/build_upstream.sh` builds the C library into `build/upstream/libdaqp.a`;
 `compare/` is a separate fpm project that solves the same problems with both (upstream's
 test problems, random QPs of sizes 2 to 500 and condition numbers up to 1e10, degenerate,
-infeasible, semidefinite, soft, LP, and warm-start sequences) and compares exit flags,
-iteration counts, working sets, solutions, multipliers, objectives, KKT residuals, and
-speed. **With fused multiply-adds disabled in both builds, the port gives bit-for-bit the
+infeasible, semidefinite, soft, LP, warm-start sequences, the elimination of equalities,
+branch and bound, hierarchical QPs, AVIs, prefactorized Hessians, primal and dual starts,
+individual soft weights, and redundant constraints: over a thousand problems) and compares
+exit flags, iteration counts, working sets, solutions, multipliers, objectives, KKT
+residuals, and speed. **With fused multiply-adds disabled in both builds, the port gives bit-for-bit the
 same results as the C code on every problem; the optimized builds agree to round-off, and
 run at the same speed** (see [`compare/RESULTS.md`](compare/RESULTS.md)).
 
 ### Not ported
 
-Branch and bound (binary constraints), hierarchical QPs, affine variational inequalities,
-the elimination of equality constraints (an optional reduction for problems with many
-equalities; the comparison disables it in the C code), individual weights of soft
-constraints, code generation, the time limit, and timing.
+Upstream's code generation (`codegen/`, which writes C source files of a workspace for
+embedded targets), and its interfaces to other languages (Julia, Python, MATLAB, C++,
+Simulink).
 
 ## Licence
 

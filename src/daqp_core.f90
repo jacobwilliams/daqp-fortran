@@ -1,16 +1,19 @@
 !*****************************************************************************************
 !> author: Jacob Williams
 !
-!  The one-to-one port of the DAQP solver (dual active-set method for dense
-!  convex quadratic programs).
+!  The Fortran port of the DAQP solver (dual active-set method for dense
+!  convex quadratic programs, with branch and bound for binary constraints,
+!  hierarchical QPs, affine variational inequalities, and a proximal-point
+!  outer loop for semidefinite problems and LPs).
 !
 !  This module is a modern Fortran translation of the C code of
 !  [DAQP](https://github.com/darnstrom/daqp) v0.10.3
-!  (Copyright (c) 2022 Daniel Arnström, MIT licence).
-!  Changed from the original: translated to Fortran, 1-based indexing,
-!  column-major storage of the constraint rows, and without the
-!  branch-and-bound, hierarchical, AVI, equality-elimination,
-!  per-constraint soft weight, and timing parts of upstream.
+!  (Copyright (c) 2022 Daniel Arnström, MIT licence): `daqp.c`,
+!  `auxiliary.c`, `factorization.c`, `utils.c`, `api.c`, `daqp_prox.c`,
+!  `bnb.c`, `hierarchical.c`, and `avi.c` (the elimination of equalities,
+!  `eq_elim.c`, is in [[daqp_eq_elim]]). Changed from the original: translated
+!  to Fortran, 1-based indexing, allocatable components instead of pointers
+!  (see [[daqp_types]] for the storage).
 !
 !  The QP is
 !
@@ -22,24 +25,12 @@
 !  `min 0.5 ||u||^2 s.t. dlower <= M u <= dupper`, with `H = R'R`,
 !  `u = R x + R'\f` and `M = A R^{-1}`, which is solved by a dual active-set
 !  method that updates the `LDL'` factors of the working set's Gram matrix.
-!
-!### Storage
-!
-!  * `R` (holding \( R^{-1} \), or \( R \) while its inverse is deferred) is
-!    the upper triangle packed by rows: element `(i,j)`, `i<=j`, is
-!    `R(ridx(i,j,n))`, and a row is contiguous.
-!  * `M(:,k)` is the k-th general constraint row of the LDP (so a row is
-!    contiguous), and `At(:,k)` the k-th row of `A`.
-!  * `Hc(j,i) = H(i,j)`: the Hessian in the memory order of the C code.
-!  * `L` is the unit lower triangle packed by rows (with a placeholder
-!    for the diagonal): element `(i,j)`, `j<=i`, is `L(lidx(i,j))`.
-!
-!  Working set positions and constraint indices are 1-based; `0` marks an
-!  empty index (upstream's `-1`).
 
     module daqp_core
 
     use daqp_kinds, only: wp => daqp_wp, ip => daqp_ip
+    use daqp_types, ridx_t => ridx, lidx_t => lidx, has_t => has ! (local copies below, which can be inlined)
+    use daqp_eq_elim
     use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
     use, intrinsic :: iso_fortran_env, only: int64
 
@@ -47,183 +38,22 @@
 
     private
 
-    ! exit flags (upstream's values)
-    integer(ip), parameter, public :: daqp_exit_optimal_inexact        = 4  !! optimal, found with the noise floor; violates a constraint by more than `primal_tol`
-    integer(ip), parameter, public :: daqp_exit_soft_optimal           = 2  !! optimal, with a soft constraint violated
-    integer(ip), parameter, public :: daqp_exit_optimal                = 1  !! optimal
-    integer(ip), parameter, public :: daqp_exit_infeasible             = -1 !! primal infeasible
-    integer(ip), parameter, public :: daqp_exit_cycle                  = -2 !! cycling detected
-    integer(ip), parameter, public :: daqp_exit_unbounded              = -3 !! unbounded (LP)
-    integer(ip), parameter, public :: daqp_exit_iterlimit              = -4 !! iteration limit reached
-    integer(ip), parameter, public :: daqp_exit_nonconvex              = -5 !! the Hessian could not be factored
-    integer(ip), parameter, public :: daqp_exit_overdetermined_initial = -6 !! inconsistent equalities in the initial working set
-    integer(ip), parameter, public :: daqp_exit_invalid_input          = -101 !! invalid input (Fortran interface)
-    integer(ip), parameter, public :: daqp_exit_out_of_memory          = -102 !! an allocation failed (Fortran interface)
-    integer(ip), parameter, public :: daqp_exit_not_setup              = -103 !! the solver was not set up (Fortran interface)
-
-    ! constraint flags (bits of `sense`)
-    integer(ip), parameter, public :: daqp_active        = 1   !! the constraint is in the working set
-    integer(ip), parameter, public :: daqp_lower         = 2   !! the active bound is the lower one
-    integer(ip), parameter, public :: daqp_immutable     = 4   !! the constraint never leaves (or enters) the working set
-    integer(ip), parameter, public :: daqp_soft          = 8   !! the constraint may be violated, at a penalty
-    integer(ip), parameter, public :: daqp_binary        = 16  !! binary constraint (not supported by the port)
-    integer(ip), parameter, public :: daqp_slack_fixed   = 32  !! the slack of the soft constraint is zero
-    integer(ip), parameter, public :: daqp_set_aside     = 64  !! temporarily set aside (proximal step)
-    integer(ip), parameter, public :: daqp_auto_equality = 128 !! active and immutable set by the detection of equal bounds
-    integer(ip), parameter, public :: daqp_equality      = daqp_active + daqp_immutable !! an equality constraint
-
-    ! update masks
-    integer(ip), parameter, public :: daqp_update_rinv          = 1
-    integer(ip), parameter, public :: daqp_update_m             = 2
-    integer(ip), parameter, public :: daqp_update_v             = 4
-    integer(ip), parameter, public :: daqp_update_d             = 8
-    integer(ip), parameter, public :: daqp_update_sense         = 16
-    integer(ip), parameter, public :: daqp_update_hierarchy     = 32
-    integer(ip), parameter, public :: daqp_update_unconstrained = 64
-
-    ! workspace state masks
-    integer(ip), parameter :: state_pending = daqp_update_rinv + daqp_update_m + daqp_update_v + &
-                                              daqp_update_d + daqp_update_sense + daqp_update_hierarchy
-    integer(ip), parameter :: state_unconstrained     = 256
-    integer(ip), parameter :: state_rinv_normalized   = 512
-    integer(ip), parameter :: state_ill_conditioned   = 2048
-    integer(ip), parameter :: state_cholesky_pending  = 4096
-    integer(ip), parameter :: state_noise_floor       = 8192
-
-    integer(ip), parameter :: empty_ind = 0                  !! an empty index (upstream's -1)
-    integer(ip), parameter :: unconstrained_optimal = -2     !! return value of [[check_unconstrained]]
-
-    real(wp), parameter, public :: daqp_inf = 1.0e30_wp      !! "infinite" bound
-
-    ! default settings
-    ! (the tolerances are floored at a multiple of epsilon, which only changes
-    ! them in single precision: in double and quadruple precision, they are
-    ! upstream's values)
-    real(wp), parameter, public :: daqp_default_prim_tol     = max(1.0e-6_wp, 100.0_wp*epsilon(1.0_wp))
-    real(wp), parameter, public :: daqp_default_dual_tol     = max(1.0e-12_wp, 10.0_wp*epsilon(1.0_wp))
-    real(wp), parameter, public :: daqp_default_zero_tol     = max(1.0e-11_wp, 10.0_wp*epsilon(1.0_wp))
-    real(wp), parameter, public :: daqp_default_prog_tol     = max(1.0e-14_wp, 10.0_wp*epsilon(1.0_wp))
-    real(wp), parameter, public :: daqp_default_pivot_tol    = 1.0e-8_wp
-    integer(ip), parameter, public :: daqp_default_cycle_tol = 10
-    real(wp), parameter, public :: daqp_default_eta          = -1.0_wp
-    integer(ip), parameter, public :: daqp_default_iter_limit = 10000
-    real(wp), parameter, public :: daqp_default_rho_soft     = 1.0e-6_wp
-    real(wp), parameter, public :: daqp_default_w_soft       = 0.0_wp
-    real(wp), parameter, public :: daqp_default_sing_tol     = max(3.7e-11_wp, 1000.0_wp*epsilon(1.0_wp))
-    real(wp), parameter, public :: daqp_default_refactor_tol = 1.0e-9_wp
-    real(wp), parameter, public :: daqp_default_eps_prox     = -max(1.0e-6_wp, 100.0_wp*epsilon(1.0_wp))
-
-    ! internal constants
-    real(wp), parameter :: auto_eta_cap        = max(1.0e-6_wp, 1000.0_wp*epsilon(1.0_wp)) ! (upstream's 1e-6, floored in single precision)
-    integer(ip), parameter :: refine_min_iter  = 5
-    real(wp), parameter :: refine_cond         = 1.0e6_wp
-    real(wp), parameter :: refine_gain         = 1.0e3_wp
-    real(wp), parameter :: refine_pivot        = 1.0e-6_wp
-    real(wp), parameter :: add_noise_gain      = 10.0_wp
-    real(wp), parameter :: prox_eps_max        = 1.0e-3_wp
-    real(wp), parameter :: hessian_cond_eps    = 0.1_wp
-    real(wp), parameter :: cond_defer_margin   = 100.0_wp
-    integer(ip), parameter :: prox_face_start  = 16
-    integer(ip), parameter :: prox_face_steps  = 3
-
-    ! what `R` holds
-    integer(ip), parameter :: rinv_none  = 0 !! no Hessian (LP): `R = I`
-    integer(ip), parameter :: rinv_dense = 1 !! dense packed `R`
-    integer(ip), parameter :: rinv_diag  = 2 !! diagonal Hessian: `R(1:n)` holds the diagonal of `R^{-1}`
-
-    type, public :: daqp_settings
-        !! Solver settings (upstream's `DAQPSettings`, with its defaults).
-        real(wp)    :: primal_tol   = daqp_default_prim_tol     !! tolerance for primal feasibility
-        real(wp)    :: dual_tol     = daqp_default_dual_tol     !! tolerance for dual feasibility
-        real(wp)    :: zero_tol     = daqp_default_zero_tol     !! values below are regarded as zero
-        real(wp)    :: pivot_tol    = daqp_default_pivot_tol    !! pivots of the `LDL'` below are reordered
-        real(wp)    :: progress_tol = daqp_default_prog_tol     !! minimum objective progress (cycle guard)
-        integer(ip) :: cycle_tol    = daqp_default_cycle_tol    !! iterations without progress before cycling is assumed
-        integer(ip) :: iter_limit   = daqp_default_iter_limit   !! maximum number of iterations
-        real(wp)    :: fval_bound   = daqp_inf             !! upper bound of the objective (infeasible above)
-        real(wp)    :: eps_prox     = daqp_default_eps_prox     !! proximal regularization (negative: automatic, only if needed)
-        real(wp)    :: eta_prox     = daqp_default_eta          !! tolerance of the proximal outer loop (negative: automatic)
-        real(wp)    :: rho_soft     = daqp_default_rho_soft     !! reciprocal quadratic weight of the soft constraints
-        real(wp)    :: rel_subopt   = 0.0_wp               !! (branch and bound only; unused)
-        real(wp)    :: abs_subopt   = 0.0_wp               !! (branch and bound only; unused)
-        real(wp)    :: sing_tol     = daqp_default_sing_tol     !! pivots of the `LDL'` below mark a singular working set
-        real(wp)    :: refactor_tol = daqp_default_refactor_tol !! pivots below trigger a refactorization at a solution
-        real(wp)    :: w_soft       = daqp_default_w_soft       !! linear weight of the soft constraints
-    end type daqp_settings
-
-    type, public :: daqp_result
-        !! Result of a solve (upstream's `DAQPResult`, without the timing).
-        real(wp)    :: fval       = 0.0_wp  !! objective function value
-        real(wp)    :: soft_slack = 0.0_wp  !! largest violation of a soft constraint
-        integer(ip) :: exitflag   = daqp_exit_not_setup !! exit flag
-        integer(ip) :: iter       = 0       !! number of iterations
-        integer(ip) :: nodes      = 0       !! number of outer (proximal) iterations
-    end type daqp_result
-
-    type, public :: daqp_workspace
-        !! The workspace of the solver (upstream's `DAQPWorkspace`).
-        !! All arrays are allocated in [[daqp_setup]], so a solve allocates nothing.
-        integer(ip) :: n  = 0  !! number of variables
-        integer(ip) :: m  = 0  !! number of constraints (including the simple bounds)
-        integer(ip) :: ms = 0  !! number of simple bounds (the first `ms` constraints)
-        integer(ip) :: ns = 0  !! number of soft constraints
-        type(daqp_settings) :: settings !! the settings
-        ! the problem
-        logical :: has_H = .false.      !! a Hessian was given (else an LP)
-        logical :: has_f = .false.      !! a linear term was given
-        logical :: has_sense = .false.  !! constraint flags were given
-        real(wp), allocatable :: Hc(:,:)      !! `Hc(j,i) = H(i,j)`
-        real(wp), allocatable :: f(:)         !! linear term
-        real(wp), allocatable :: At(:,:)      !! `At(:,k)` is the k-th row of `A` (`n x (m-ms)`)
-        real(wp), allocatable :: bupper(:)    !! upper bounds
-        real(wp), allocatable :: blower(:)    !! lower bounds
-        integer(ip), allocatable :: sense_in(:) !! the given constraint flags
-        ! the LDP
-        integer(ip) :: rmode = rinv_none      !! what `R` holds
-        real(wp), allocatable :: R(:)         !! packed upper triangular `R^{-1}` (see the module doc)
-        real(wp), allocatable :: Mr(:,:)      !! `Mr(:,k)`: the k-th general constraint of the LDP
-        real(wp), allocatable :: dupper(:)    !! upper bounds of the LDP
-        real(wp), allocatable :: dlower(:)    !! lower bounds of the LDP
-        real(wp), allocatable :: scaling(:)   !! normalization of the constraints
-        real(wp), allocatable :: Mu(:)        !! `M'u` of the latest feasibility scan
-        logical :: has_v = .false.            !! `v` is used
-        real(wp), allocatable :: v(:)         !! `v = R'\f`
-        integer(ip), allocatable :: sense(:)  !! constraint flags
-        ! iterates
-        real(wp), allocatable :: x(:)         !! the primal iterate (also `u` of the LDP)
-        real(wp), allocatable :: xold(:)      !! the previous primal iterate (proximal loop)
-        real(wp), allocatable :: lam(:)       !! dual iterate
-        real(wp), allocatable :: lam_star(:)  !! constrained stationary point
-        real(wp) :: fval = 0.0_wp             !! `||u||^2` (plus soft penalties)
-        ! LDL' factors of the working set
-        real(wp), allocatable :: L(:)         !! packed unit lower triangle
-        real(wp), allocatable :: D(:)         !! pivots
-        real(wp), allocatable :: xldl(:)      !! work array of the forward substitution
-        real(wp), allocatable :: zldl(:)      !! work array (`xldl/D`)
-        integer(ip) :: reuse_ind = 0          !! number of rows of the forward substitution that can be reused
-        integer(ip), allocatable :: WS(:)     !! the working set (constraint indices)
-        integer(ip) :: n_active = 0           !! number of active constraints
-        integer(ip) :: iterations = 0         !! number of iterations of the latest solve
-        integer(ip) :: sing_ind = empty_ind   !! position of the constraint that made the working set singular
-        logical, allocatable :: prox_mask(:)  !! directions with a proximal regularization
-        integer(ip) :: n_prox = 0             !! number of regularized directions
-        real(wp) :: soft_slack = 0.0_wp       !! largest violation of a soft constraint
-        integer(ip) :: nh = 1                 !! number of outer iterations (proximal loop)
-        integer(ip) :: state = 0              !! state mask
-        logical :: is_setup = .false.         !! set up successfully
-    end type daqp_workspace
-
-    public :: daqp_setup, daqp_solve, daqp_update_ldp, daqp_destroy, daqp_quadprog
-    public :: daqp_ldp, daqp_ldp2qp_solution, daqp_reset_workspace
+    public :: daqp_setup, daqp_solve, daqp_update_ldp, daqp_destroy, daqp_quadprog, daqp_avi
+    public :: daqp_ldp, daqp_ldp2qp_solution
     public :: daqp_activate_constraints, daqp_deactivate_constraints
     public :: daqp_set_working_set, daqp_refresh_soft_weights
+    public :: daqp_allocate_soft_weights, daqp_set_soft_weights
+    public :: daqp_set_primal_start, daqp_primal_init_active, daqp_dual_init_active
+    public :: daqp_minrep, daqp_first_violating, daqp_extract_active_duals
+    public :: daqp_bnb, daqp_hiqp, daqp_solve_avi, daqp_prox
 
     contains
-!*****************************************************************************************
 
 !*****************************************************************************************
 !>
-!  Position of element `(i,j)`, `i<=j`, of an `n x n` upper triangle packed by rows.
+!  Position of element `(i,j)`, `i<=j`, of an `n x n` upper triangle packed by
+!  rows (a copy of [[daqp_types:ridx]] in this module, so that it is inlined
+!  in the hot loops).
 
     pure integer(ip) function ridx(i,j,n)
 
@@ -238,7 +68,8 @@
 
 !*****************************************************************************************
 !>
-!  Position of element `(i,j)`, `j<=i`, of a lower triangle packed by rows.
+!  Position of element `(i,j)`, `j<=i`, of a lower triangle packed by rows
+!  (a copy of [[daqp_types:lidx]], so that it is inlined).
 
     pure integer(ip) function lidx(i,j)
 
@@ -252,7 +83,7 @@
 
 !*****************************************************************************************
 !>
-!  Whether `flag` is set in `s`.
+!  Whether `flag` is set in `s` (a copy of [[daqp_types:has]], so that it is inlined).
 
     pure logical function has(s,flag)
 
@@ -263,6 +94,10 @@
 
     end function has
 !*****************************************************************************************
+!*****************************************************************************************
+
+
+
 
 !*****************************************************************************************
 !>
@@ -350,20 +185,6 @@
     end subroutine swap_lam
 !*****************************************************************************************
 
-!*****************************************************************************************
-!>
-!  Reset the working set (upstream's `reset_daqp_workspace`).
-
-    subroutine daqp_reset_workspace(work)
-
-    type(daqp_workspace), intent(inout) :: work !! workspace
-
-    work%sing_ind  = empty_ind
-    work%n_active  = 0
-    work%reuse_ind = 0
-
-    end subroutine daqp_reset_workspace
-!*****************************************************************************************
 
 !*****************************************************************************************
 !>
@@ -567,12 +388,28 @@
 
 !*****************************************************************************************
 !>
-!  Reciprocal quadratic weight of a soft constraint.
+!  Reciprocal quadratic weight of the active side of soft constraint `id`
+!  (a zero individual weight selects `settings%rho_soft`, which is given in
+!  the normalized formulation).
 
-    pure real(wp) function soft_rho(work)
+    pure real(wp) function soft_rho(work,id)
 
     type(daqp_workspace), intent(in) :: work !! workspace
+    integer(ip), intent(in) :: id            !! constraint
 
+    real(wp) :: rho
+
+    if (work%has_weights) then
+        if (has(work%sense(id),daqp_lower)) then
+            rho = work%rho_ls(id)
+        else
+            rho = work%rho_us(id)
+        end if
+        if (rho /= 0.0_wp) then
+            soft_rho = rho*work%scaling(id)*work%scaling(id)
+            return
+        end if
+    end if
     soft_rho = work%settings%rho_soft
 
     end function soft_rho
@@ -580,12 +417,28 @@
 
 !*****************************************************************************************
 !>
-!  Linear weight of a soft constraint.
+!  Linear weight of the active side of soft constraint `id`, i.e. what the
+!  multiplier has to exceed for the slack to become nonzero (a zero individual
+!  weight selects `settings%w_soft`).
 
-    pure real(wp) function soft_w(work)
+    pure real(wp) function soft_w(work,id)
 
     type(daqp_workspace), intent(in) :: work !! workspace
+    integer(ip), intent(in) :: id            !! constraint
 
+    real(wp) :: w
+
+    if (work%has_weights) then
+        if (has(work%sense(id),daqp_lower)) then
+            w = work%w_ls(id)
+        else
+            w = work%w_us(id)
+        end if
+        if (w /= 0.0_wp) then
+            soft_w = w/work%scaling(id)
+            return
+        end if
+    end if
     soft_w = work%settings%w_soft
 
     end function soft_w
@@ -593,13 +446,14 @@
 
 !*****************************************************************************************
 !>
-!  Whether the soft constraints have a linear penalty.
+!  Whether the soft constraints may have a linear penalty, or individual weights
+!  (else every soft constraint has the same, purely quadratic penalty).
 
     pure logical function has_l1(work)
 
     type(daqp_workspace), intent(in) :: work !! workspace
 
-    has_l1 = work%settings%w_soft /= 0.0_wp
+    has_l1 = work%settings%w_soft /= 0.0_wp .or. work%has_weights
 
     end function has_l1
 !*****************************************************************************************
@@ -616,18 +470,18 @@
 
     real(wp) :: w
 
-    w = soft_w(work)
+    w = soft_w(work,id)
     if (w == 0.0_wp) then
         if (lam == 0.0_wp) then
             soft_residual = 0.0_wp
         else
-            soft_residual = soft_rho(work)*lam
+            soft_residual = soft_rho(work,id)*lam
         end if
     else
         if (has(work%sense(id),daqp_lower)) then
-            soft_residual = soft_rho(work)*(lam + w)
+            soft_residual = soft_rho(work,id)*(lam + w)
         else
-            soft_residual = soft_rho(work)*(lam - w)
+            soft_residual = soft_rho(work,id)*(lam - w)
         end if
     end if
 
@@ -646,13 +500,13 @@
 
     real(wp) :: w
 
-    w = soft_w(work)
+    w = soft_w(work,id)
     if (w == 0.0_wp) then
-        soft_penalty = soft_rho(work)*lam*lam
+        soft_penalty = soft_rho(work,id)*lam*lam
     else if (has(work%sense(id),daqp_slack_fixed)) then
         soft_penalty = 0.0_wp
     else
-        soft_penalty = soft_rho(work)*(lam*lam-w*w)
+        soft_penalty = soft_rho(work,id)*(lam*lam-w*w)
     end if
 
     end function soft_penalty
@@ -706,13 +560,16 @@
 !*****************************************************************************************
 !>
 !  Use the noise floor when adding constraints (cycling that persists after a
-!  refactorization). Returns false if the cycling is to be reported.
+!  refactorization). Returns false if the cycling is to be reported (for the
+!  proximal method and hierarchical problems, which handle cycling themselves,
+!  for a nonsymmetric AVI, or if the floor is already used).
 
     logical function set_noise_floor(work)
 
     type(daqp_workspace), intent(inout) :: work !! workspace
 
-    if (work%n_prox > 0 .or. has(work%state,state_noise_floor)) then
+    if (work%n_prox > 0 .or. is_hierarchical(work) .or. is_avi_nonsym(work) .or. &
+        has(work%state,state_noise_floor)) then
         set_noise_floor = .false.
     else
         work%state = ior(work%state, state_noise_floor)
@@ -795,7 +652,7 @@
     work%sense(add_ind) = ior(work%sense(add_ind), daqp_active)
     rho = 0.0_wp
     if (has(work%sense(add_ind),daqp_soft) .and. .not. has(work%sense(add_ind),daqp_slack_fixed)) &
-        rho = soft_rho(work)
+        rho = soft_rho(work,add_ind)
     call update_LDL_add(work, add_ind, rho)
     work%n_active = work%n_active + 1
     work%WS(work%n_active) = add_ind
@@ -823,7 +680,7 @@
     ! mark whether the slack is zero, given the multiplier
     if (has(work%sense(add_ind),daqp_soft)) then
         work%sense(add_ind) = iand(work%sense(add_ind), not(daqp_immutable))
-        w = soft_w(work)
+        w = soft_w(work,add_ind)
         lower = has(work%sense(add_ind),daqp_lower)
         if (w > 0.0_wp) then
             y = lam; if (lower) y = -lam
@@ -857,7 +714,7 @@
     n = work%n
     fval = 0.0_wp
     l1 = has_l1(work)
-    work%x = 0.0_wp
+    work%x(1:n) = 0.0_wp
     do i = 1, work%n_active
         id = work%WS(i)
         li = work%lam_star(i)
@@ -1058,7 +915,7 @@
         else
             ! the multiplier is confined to [0,w] while the slack is zero and
             ! to [w,inf) otherwise; the state switches when it leaves its range
-            w = soft_w(work)
+            w = soft_w(work,ind)
             fixed = has(work%sense(ind),daqp_slack_fixed)
             target = w; if (fixed) target = 0.0_wp
             lo = target; if (singular) lo = 0.0_wp
@@ -1123,7 +980,7 @@
     ! nothing in the factorization depends on the diagonal of the last row,
     ! so a slack there can switch without forming its row of M*M' again
     if (rm_ind == work%n_active .and. .not. singular) then
-        rho = soft_rho(work)
+        rho = soft_rho(work,ind)
         if (release) then
             work%D(rm_ind) = work%D(rm_ind) + rho
         else
@@ -1228,7 +1085,7 @@
     lower = has(work%sense(id),daqp_lower)
     flip = lower
     if (has(work%sense(id),daqp_soft) .and. has(work%sense(id),daqp_slack_fixed)) then
-        w = soft_w(work)
+        w = soft_w(work,id)
         y = work%lam(s); if (lower) y = -y
         if (w > 0.0_wp .and. y >= w-work%settings%dual_tol) flip = .not. lower
     end if
@@ -1291,6 +1148,9 @@
         ind_old = work%WS(rm_ind)
         ! binaries never swap order (since this order is exploited)
         if (has(work%sense(ind_old),daqp_binary) .and. has(work%sense(work%WS(na)),daqp_binary)) return
+        if (allocated(work%bnb)) then
+            if (rm_ind-1 < work%bnb%n_clean) return
+        end if
         lam_old = work%lam(rm_ind)
         call remove_constraint(work, rm_ind) ! pivot_last might be recursively called here
         if (work%sing_ind /= empty_ind) return ! abort if D becomes singular
@@ -1315,7 +1175,7 @@
 
     lam = 1.0_wp
     w = 0.0_wp
-    if (has(work%sense(id),daqp_soft)) w = soft_w(work)
+    if (has(work%sense(id),daqp_soft)) w = soft_w(work,id)
     if (w > 0.0_wp) then
         if (has(work%sense(id),daqp_slack_fixed)) then
             lam = 0.9_wp*w
@@ -1425,12 +1285,13 @@
 
     integer(ip) :: i, id
 
+    if (allocated(work%bnb)) work%bnb%n_root_ws = 0 ! also drop the BnB warm start
     do i = 1, work%n_active
         id = work%WS(i)
         if (has(work%sense(id),daqp_immutable)) cycle
         work%sense(id) = iand(work%sense(id), not(daqp_active))
     end do
-    call daqp_reset_workspace(work)
+    call daqp_reset_workspace(work) ! the next update activates the remaining ones
 
     end subroutine daqp_deactivate_constraints
 !*****************************************************************************************
@@ -1593,12 +1454,12 @@
     if (id <= work%ms) then
         val = work%x(id)
     else
-        val = dot_seq(work%n, work%At(:,id-work%ms), work%x)
+        val = dot_seq(work%n, work%qp%At(:,id-work%ms), work%x)
     end if
     if (has(work%sense(id),daqp_lower)) then
-        active_residual = val - work%blower(id)
+        active_residual = val - work%qp%blower(id)
     else
-        active_residual = val - work%bupper(id)
+        active_residual = val - work%qp%bupper(id)
     end if
 
     end function active_residual
@@ -1653,7 +1514,7 @@
     n = work%n
     na = work%n_active
     dfval = 0.0_wp
-    if (na == 0 .or. work%sing_ind /= empty_ind) return
+    if (na == 0 .or. .not. work%has_qp .or. work%sing_ind /= empty_ind) return
 
     ! skip if x is accurate
     if (.not. has(work%state,state_ill_conditioned) .and. work%n_prox == 0) then
@@ -1711,6 +1572,20 @@
 
 !*****************************************************************************************
 !>
+!  Time since the start of the solve [s].
+
+    real(wp) function elapsed_time(work)
+
+    type(daqp_workspace), intent(in) :: work !! workspace
+
+    integer(int64) :: count, rate
+
+    call system_clock(count, rate)
+    elapsed_time = real(count-work%timer_start,wp)/real(rate,wp)
+
+    end function elapsed_time
+!*****************************************************************************************
+!>
 !  Solve the LDP with the dual active-set method (upstream's `daqp_ldp`).
 !  Returns the exit flag.
 
@@ -1764,7 +1639,8 @@
                     end do
 
                     ! if the LDL is truly ill-conditioned, refactor for a better pivot ordering
-                    if (work%n_active > 2 .and. .not. tried_repair .and. &
+                    ! (not in BnB, which relies on the order of the working set)
+                    if (work%n_active > 2 .and. .not. tried_repair .and. .not. allocated(work%bnb) .and. &
                         min_D < work%settings%refactor_tol) then
                         tried_repair = .true.
                         ! correct LOWER/UPPER (important for equality constraints)
@@ -1813,7 +1689,7 @@
                 if (work%fval - best_fval < work%settings%progress_tol) then
                     cycle_counter = cycle_counter + 1
                     if (cycle_counter-1 > work%settings%cycle_tol) then
-                        if (tried_repair) then
+                        if (tried_repair .or. allocated(work%bnb)) then
                             if (.not. set_noise_floor(work)) then
                                 exitflag = daqp_exit_cycle
                                 exit
@@ -1838,6 +1714,12 @@
             call compute_singular_direction(work)
             if (.not. remove_blocking(work)) then
                 exitflag = daqp_exit_infeasible
+                exit
+            end if
+        end if
+        if (work%timer_on .and. mod(iter,32_ip) == 0) then
+            if (elapsed_time(work) > work%settings%time_limit) then
+                exitflag = daqp_exit_timelimit
                 exit
             end if
         end if
@@ -1894,15 +1776,16 @@
 !>
 !  Largest absolute diagonal element of `H`.
 
-    pure real(wp) function hessian_scale_of(work) result(hs)
+    pure real(wp) function hessian_scale_of(n,H) result(hs)
 
-    type(daqp_workspace), intent(in) :: work !! workspace
+    integer(ip), intent(in) :: n     !! dimension
+    real(wp), intent(in) :: H(n,n)   !! Hessian
 
     integer(ip) :: i
 
     hs = 0.0_wp
-    do i = 1, work%n
-        if (abs(work%Hc(i,i)) > hs) hs = abs(work%Hc(i,i))
+    do i = 1, n
+        if (abs(H(i,i)) > hs) hs = abs(H(i,i))
     end do
 
     end function hessian_scale_of
@@ -1910,16 +1793,19 @@
 
 !*****************************************************************************************
 !>
-!  Form the packed Cholesky factor `R` of `H` (with reciprocal diagonal).
-!  Returns false if a pivot is not positive.
+!  Form the packed Cholesky factor `R` of `H` (with reciprocal diagonal), or
+!  copy a given factor `Rf`. Returns 1, 0 if an unfactored Hessian needs a
+!  regularization, or `daqp_exit_nonconvex`.
 
-    logical function form_R(work,regularize_all,eps,min_pivot,max_pivot)
+    integer(ip) function form_R(work,regularize_all,eps,min_pivot,max_pivot,H,Rf) result(flag)
 
     type(daqp_workspace), intent(inout) :: work !! workspace
     logical, intent(in) :: regularize_all    !! regularize all the directions
     real(wp), intent(in) :: eps              !! the regularization
     real(wp), intent(out) :: min_pivot       !! smallest pivot (of the unregularized directions)
     real(wp), intent(out) :: max_pivot       !! largest pivot
+    real(wp), intent(in), optional :: H(work%n,work%n) !! Hessian (`Hc` convention)
+    real(wp), intent(in), optional :: Rf(:)  !! Cholesky factor, packed by rows
 
     integer(ip) :: i, j, k, n, di, kik, kij
     real(wp) :: pivot, inv_diag, s, s0, s1, s2, s3, c
@@ -1927,12 +1813,27 @@
     n = work%n
     min_pivot = daqp_inf
     max_pivot = 0.0_wp
-    form_R = .false.
+    flag = 1
+
+    if (present(Rf)) then ! the factor is given
+        do i = 1, n
+            di = ridx(i,i,n)
+            if (Rf(di) <= work%settings%zero_tol) then
+                flag = daqp_exit_nonconvex
+                return
+            end if
+            work%R(di) = 1.0_wp/Rf(di)
+            do j = 1, n-i
+                work%R(di+j) = Rf(di+j)
+            end do
+        end do
+        return
+    end if
 
     ! pack (symmetrized) H
     k = 1
     do i = 1, n
-        work%R(k) = work%Hc(i,i)
+        work%R(k) = H(i,i)
         if (regularize_all) then
             work%R(k) = work%R(k) + eps
         else if (work%n_prox > 0) then
@@ -1940,11 +1841,12 @@
         end if
         k = k + 1
         do j = i+1, n
-            work%R(k) = 0.5_wp*(work%Hc(j,i) + work%Hc(i,j))
+            work%R(k) = 0.5_wp*(H(j,i) + H(i,j))
             k = k + 1
         end do
     end do
 
+    flag = 0
     do i = 1, n
         di = ridx(i,i,n)
         pivot = work%R(di)
@@ -1998,7 +1900,7 @@
         end do
         work%R(di) = inv_diag
     end do
-    form_R = .true.
+    flag = 1
 
     end function form_R
 !*****************************************************************************************
@@ -2039,22 +1941,29 @@
 !  Complete the inverse of the factor, and check the conditioning of `H`.
 !  Returns false if `H` needs to be refactored with a regularization.
 
-    logical function finish_Rinv(work)
+    logical function finish_Rinv(work,is_factored,H)
 
     type(daqp_workspace), intent(inout) :: work !! workspace
+    logical, intent(in) :: is_factored          !! the factor was given (then `H` is not needed)
+    real(wp), intent(in), optional :: H(work%n,work%n) !! Hessian (`Hc` convention)
 
     integer(ip) :: i, j, k, n
-    real(wp) :: hinv_max, hmax, hii, s2
+    real(wp) :: hinv_max, hmax, hii, s2, cnd
+    logical :: installed
 
     n = work%n
     work%state = iand(work%state, not(state_cholesky_pending))
     call invert_R(work)
-    ! cond(H) >= max (H^-1)_ii * max H_ii
+    ! cond(H) >= max (H^-1)_ii * max H_ii (H_ii >= R_ii^2 if H is factored)
     hinv_max = 0.0_wp
     hmax = 0.0_wp
     k = 1
     do i = 1, n
-        hii = work%Hc(i,i)
+        if (is_factored) then
+            hii = 1.0_wp/(work%R(k)*work%R(k))
+        else
+            hii = H(i,i)
+        end if
         s2 = 0.0_wp
         do j = i, n
             s2 = s2 + work%R(k)*work%R(k)
@@ -2064,11 +1973,17 @@
         if (hii > hmax) hmax = hii
     end do
     ! regularize an ill-conditioned Hessian, or mark it for refinement
-    if (work%n_prox == 0 .and. real(n,wp)*epsilon(1.0_wp)*hinv_max*hmax > hessian_cond_eps) then
-        finish_Rinv = .false.
-        return
+    installed = .false.
+    if (allocated(work%eq)) installed = work%eq%installed
+    cnd = hinv_max*hmax
+    if (.not. is_factored .and. work%n_prox == 0 .and. .not. allocated(work%avi)) then
+        if ((installed .and. cnd > hessian_cond_max) .or. &
+            real(n,wp)*epsilon(1.0_wp)*hinv_max*hmax > hessian_cond_eps) then
+            finish_Rinv = .false.
+            return
+        end if
     end if
-    if (hinv_max*hmax > refine_cond) work%state = ior(work%state, state_ill_conditioned)
+    if (cnd > refine_cond) work%state = ior(work%state, state_ill_conditioned)
     finish_Rinv = .true.
 
     end function finish_Rinv
@@ -2079,18 +1994,22 @@
 !  Factor `H` (upstream's `daqp_update_R`): diagonal, dense, or regularized
 !  (proximal) when it is singular. With `defer_inverse`, the inverse of a
 !  well-conditioned factor is deferred until a constrained solve needs it.
+!  `H` absent and `Rf` absent: an LP; `Rf`: the Cholesky factor is given.
 
-    integer(ip) function update_R(work,defer_inverse) result(flag)
+    integer(ip) function update_R(work,defer_inverse,H,Rf) result(flag)
 
     type(daqp_workspace), intent(inout) :: work !! workspace
     logical, intent(in) :: defer_inverse !! defer the inverse of the factor
+    real(wp), intent(in), optional :: H(work%n,work%n) !! Hessian (`Hc` convention)
+    real(wp), intent(in), optional :: Rf(:) !! Cholesky factor of H, packed by rows
 
-    integer(ip) :: i, j, n, regularization_tries
+    integer(ip) :: i, j, n, regularization_tries, di
     real(wp) :: eps, zero_tol, factor_tol, hessian_scale, acceptance_tol, &
-                dmin, dmax, hi, min_pivot, max_pivot, d, cond, eps_mach, ptol
-    logical :: regularize_all, force_prox, is_diagonal, ok, zero_row
+                dmin, dmax, hi, min_pivot, max_pivot, d, cond, eps_mach, ptol, abs_diag
+    logical :: regularize_all, force_prox, is_diagonal, ok, zero_row, is_factored, installed
 
     n = work%n
+    is_factored = present(Rf)
     eps = work%settings%eps_prox
     zero_tol = work%settings%zero_tol
     factor_tol = zero_tol
@@ -2099,67 +2018,97 @@
     eps_mach = epsilon(1.0_wp)
     flag = 1
 
-    force_prox = work%settings%eps_prox > 0.0_wp
+    force_prox = work%settings%eps_prox > 0.0_wp .and. .not. is_factored .and. &
+                 .not. is_avi_nonsym(work)
     regularize_all = force_prox
 
     ! reset the semi-proximal mask for this factorization
-    work%prox_mask = .false.
+    work%prox_mask(1:n) = .false.
     work%n_prox = 0
     work%state = iand(work%state, not(state_rinv_normalized + state_ill_conditioned + &
                                       state_cholesky_pending))
 
-    if (.not. work%has_H) then ! LP: all directions need proximal regularization
-        if (work%has_f) work%n_prox = n
+    if (.not. present(H) .and. .not. is_factored) then ! LP: all directions need proximal regularization
+        if (work%has_qp) then
+            if (work%qp%has_f) work%n_prox = n
+        end if
         work%scaling(1:work%ms) = 1.0_wp
         return
     end if
 
     ! check if diagonal
     is_diagonal = .true.
-    do i = 1, n
-        if (abs(work%Hc(i,i)) > hessian_scale) hessian_scale = abs(work%Hc(i,i))
-        do j = i+1, n
-            if (work%Hc(j,i) > zero_tol .or. work%Hc(j,i) < -zero_tol) then
-                is_diagonal = .false.
-                exit
-            end if
+    if (.not. is_factored) then
+        do i = 1, n
+            abs_diag = H(i,i)
+            if (abs_diag < 0.0_wp) abs_diag = -abs_diag
+            if (abs_diag > hessian_scale) hessian_scale = abs_diag
+            do j = i+1, n
+                if (H(j,i) > zero_tol .or. H(j,i) < -zero_tol) then
+                    is_diagonal = .false.
+                    exit
+                end if
+            end do
+            if (.not. is_diagonal) exit
         end do
-        if (.not. is_diagonal) exit
-    end do
+    else
+        do i = 1, n
+            di = ridx(i,i,n)
+            do j = 1, n-i
+                if (Rf(di+j) > zero_tol .or. Rf(di+j) < -zero_tol) then
+                    is_diagonal = .false.
+                    exit
+                end if
+            end do
+            if (.not. is_diagonal) exit
+        end do
+    end if
 
     if (force_prox) then
-        if (.not. is_diagonal) hessian_scale = hessian_scale_of(work)
+        if (.not. is_diagonal) hessian_scale = hessian_scale_of(n, H)
         eps = prox_reg_scaled(work, hessian_scale)
         if (eps <= 0.0_wp) then
             flag = daqp_exit_nonconvex
             return
         end if
         work%n_prox = n
-        work%prox_mask = .true.
+        work%prox_mask(1:n) = .true.
     end if
 
     ! diagonal case
     if (is_diagonal) then
-        if (hessian_scale > 0.0_wp) factor_tol = zero_tol*hessian_scale
-        eps = prox_reg_scaled(work, hessian_scale)
+        if (.not. is_factored) then
+            if (hessian_scale > 0.0_wp) factor_tol = zero_tol*hessian_scale
+            eps = prox_reg_scaled(work, hessian_scale)
+        end if
+        ! allow small-scale Hessians without tightening the absolute
+        ! acceptance threshold for large-scale Hessians
         acceptance_tol = min(factor_tol, zero_tol)
         work%rmode = rinv_diag
         dmin = daqp_inf
         dmax = 0.0_wp
         do i = 1, n
-            hi = work%Hc(i,i)
-            if (force_prox .or. hi <= factor_tol) then
-                if (.not. force_prox) then
-                    work%prox_mask(i) = .true.
-                    work%n_prox = work%n_prox + 1
+            if (is_factored) then
+                hi = Rf(ridx(i,i,n))
+                if (hi <= zero_tol) then
+                    flag = daqp_exit_nonconvex
+                    return
                 end if
-                hi = hi + eps
+            else
+                hi = H(i,i)
+                if (force_prox .or. hi <= factor_tol) then
+                    if (.not. force_prox) then
+                        work%prox_mask(i) = .true.
+                        work%n_prox = work%n_prox + 1
+                    end if
+                    hi = hi + eps
+                end if
+                if (hi <= acceptance_tol) then
+                    flag = daqp_exit_nonconvex
+                    return
+                end if
+                hi = sqrt(hi)
             end if
-            if (hi <= acceptance_tol) then
-                flag = daqp_exit_nonconvex
-                return
-            end if
-            hi = sqrt(hi)
             work%R(i) = 1.0_wp/hi
             if (i <= work%ms) work%scaling(i) = hi
             if (hi < dmin) dmin = hi
@@ -2171,14 +2120,14 @@
 
     ! not diagonal
     work%rmode = rinv_dense
-    if (.not. regularize_all) then
+    if (.not. is_factored .and. .not. regularize_all .and. .not. allocated(work%avi)) then
         ! zero rows of H are decoupled => regularize only them (semi-proximal)
-        hessian_scale = hessian_scale_of(work)
+        hessian_scale = hessian_scale_of(n, H)
         do i = 1, n
-            if (work%Hc(i,i) /= 0.0_wp) cycle
+            if (H(i,i) /= 0.0_wp) cycle
             zero_row = .true.
             do j = 1, n
-                if (work%Hc(j,i) /= 0.0_wp .or. work%Hc(i,j) /= 0.0_wp) then
+                if (H(j,i) /= 0.0_wp .or. H(i,j) /= 0.0_wp) then
                     zero_row = .false.
                     exit
                 end if
@@ -2197,8 +2146,13 @@
     end if
 
     do ! form R (retried with a larger regularization)
-        ok = form_R(work, regularize_all, eps, min_pivot, max_pivot)
-        if (ok) then
+        i = form_R(work, regularize_all, eps, min_pivot, max_pivot, H, Rf)
+        if (i < 0) then
+            flag = i
+            return
+        end if
+        ok = i == 1
+        if (ok .and. .not. is_factored) then
             if ((regularize_all .or. work%n_prox > 0) .and. .not. force_prox) then
                 ptol = sqrt(zero_tol)
             else
@@ -2218,16 +2172,23 @@
                     if (d > dmax) dmax = d
                 end do
                 cond = cond_defer_margin*(dmax*dmax)/(dmin*dmin)
+                installed = .false.
+                if (allocated(work%eq)) installed = work%eq%installed
                 if (ieee_is_finite(dmin) .and. ieee_is_finite(dmax) .and. dmin > 0.0_wp) then
                     if (ieee_is_finite(cond)) then
-                        if (real(n,wp)*eps_mach*cond <= hessian_cond_eps) then
+                        if (real(n,wp)*eps_mach*cond <= hessian_cond_eps .and. &
+                            .not. (installed .and. cond > hessian_cond_max)) then
                             work%state = ior(work%state, state_cholesky_pending)
                             return
                         end if
                     end if
                 end if
             end if
-            if (finish_Rinv(work)) return
+            if (finish_Rinv(work, is_factored, H)) return
+        end if
+        if (is_factored) then ! (not reached: a factor is never regularized)
+            flag = daqp_exit_nonconvex
+            return
         end if
 
         ! regularize the Hessian
@@ -2239,7 +2200,7 @@
             regularization_tries = regularization_tries + 1
             eps = eps*2.0_wp
         else
-            hessian_scale = hessian_scale_of(work)
+            hessian_scale = hessian_scale_of(n, H)
             eps = prox_reg_scaled(work, hessian_scale)
             if (eps <= 0.0_wp) then
                 flag = daqp_exit_nonconvex
@@ -2247,11 +2208,49 @@
             end if
             regularize_all = .true.
             work%n_prox = n
-            work%prox_mask = .true.
+            work%prox_mask(1:n) = .true.
         end if
     end do
 
     end function update_R
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Factor the Hessian of the problem in the workspace (`daqp_update_Rinv` on
+!  `qp->H`).
+
+    integer(ip) function update_R_qp(work,defer_inverse) result(flag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    logical, intent(in) :: defer_inverse !! defer the inverse of the factor
+
+    if (work%qp%problem_type == daqp_problem_factored) then
+        flag = update_R(work, defer_inverse, Rf=work%qp%Rf)
+    else if (work%qp%has_H) then
+        flag = update_R(work, defer_inverse, H=work%qp%Hc)
+    else
+        flag = update_R(work, defer_inverse)
+    end if
+
+    end function update_R_qp
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Complete the inverse of the factor of the Hessian of the problem in the workspace.
+
+    logical function finish_Rinv_qp(work)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    if (work%qp%problem_type == daqp_problem_factored) then
+        finish_Rinv_qp = finish_Rinv(work, .true.)
+    else
+        finish_Rinv_qp = finish_Rinv(work, .false., work%qp%Hc)
+    end if
+
+    end function finish_Rinv_qp
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2262,29 +2261,35 @@
 
     type(daqp_workspace), intent(in) :: work !! workspace
 
-    integer(ip) :: i
+    integer(ip) :: i, n
     real(wp) :: recovered, rinv
 
     eps = 0.0_wp
-    if (work%n_prox == 0 .or. .not. work%has_H) return
+    n = work%n
+    if (work%n_prox == 0 .or. .not. work%has_qp) return
+    if (.not. work%qp%has_H) return
 
-    if (work%rmode == rinv_diag .and. work%n_prox < work%n) then
-        i = findloc(work%prox_mask, .true., dim=1)
-        eps = 1.0_wp/(work%R(i)*work%R(i)) - work%Hc(i,i)
+    if (work%rmode == rinv_diag .and. work%n_prox < n) then
+        i = findloc(work%prox_mask(1:n), .true., dim=1)
+        eps = 1.0_wp/(work%R(i)*work%R(i)) - work%qp%Hc(i,i)
         return
     end if
     if (work%rmode == rinv_diag) then
-        eps = prox_reg_scaled(work, hessian_scale_of(work))
+        ! diagonal regularization has no retry loop, so reproduce its
+        ! scale-based floor directly
+        eps = abs(work%settings%eps_prox)
+        if (work%qp%problem_type /= daqp_problem_factored) &
+            eps = prox_reg_scaled(work, hessian_scale_of(n, work%qp%Hc))
         return
     end if
 
     ! semi-proximal: recover eps from a regularized row of Rinv (e_i/sqrt(eps))
-    if (work%n_prox < work%n) then
-        i = findloc(work%prox_mask, .true., dim=1)
+    if (work%n_prox < n) then
+        i = findloc(work%prox_mask(1:n), .true., dim=1)
         if (i <= work%ms .and. has(work%state,state_rinv_normalized)) then
             rinv = 1.0_wp/work%scaling(i)
         else
-            rinv = work%R(ridx(i,i,work%n))
+            rinv = work%R(ridx(i,i,n))
         end if
         eps = 1.0_wp/(rinv*rinv)
         return
@@ -2293,9 +2298,9 @@
     ! handle the eps-shift correctly for simple bounds
     rinv = work%R(1)
     if (work%ms > 0) rinv = rinv/work%scaling(1)
-    recovered = 1.0_wp/(rinv*rinv) - work%Hc(1,1)
+    recovered = 1.0_wp/(rinv*rinv) - work%qp%Hc(1,1)
 
-    eps = prox_reg_scaled(work, hessian_scale_of(work))
+    eps = prox_reg_scaled(work, hessian_scale_of(n, work%qp%Hc))
     if (eps <= 0.0_wp) then
         eps = 0.0_wp
         return
@@ -2355,8 +2360,8 @@
 
     type(daqp_workspace), intent(inout) :: work !! workspace
 
-    if (.not. work%has_v .or. .not. work%has_f) return
-    work%v = work%f
+    if (.not. work%has_v .or. .not. work%qp%has_f) return
+    work%v(1:work%n) = work%qp%f(1:work%n)
     call transform_v(work, work%v)
 
     end subroutine update_v
@@ -2452,10 +2457,10 @@
     case (rinv_dense)
         do k = 1, mA
             do j = 1, ns ! undo the scaling in Rinv
-                work%Mr(j,k) = work%At(j,k)/work%scaling(j)
+                work%Mr(j,k) = work%qp%At(j,k)/work%scaling(j)
             end do
             do j = ns+1, n
-                work%Mr(j,k) = work%At(j,k)
+                work%Mr(j,k) = work%qp%At(j,k)
             end do
         end do
         ! Mr(:,k) <-- Rinv'*Mr(:,k), in place, four rows of A at a time
@@ -2468,12 +2473,12 @@
     case (rinv_diag)
         do k = 1, mA
             do i = 1, n
-                work%Mr(i,k) = work%At(i,k)*work%R(i)
+                work%Mr(i,k) = work%qp%At(i,k)*work%R(i)
             end do
         end do
     case default ! copy A to M
         do k = 1, mA
-            work%Mr(:,k) = work%At(:,k)
+            work%Mr(:,k) = work%qp%At(:,k)
         end do
     end select
 
@@ -2497,8 +2502,8 @@
     n = work%n
     work%reuse_ind = 0 ! the right-hand side changed => cannot reuse intermediate results
     do i = 1, work%m
-        work%dupper(i) = work%bupper(i)*work%scaling(i)
-        work%dlower(i) = work%blower(i)*work%scaling(i)
+        work%dupper(i) = work%qp%bupper(i)*work%scaling(i)
+        work%dlower(i) = work%qp%blower(i)*work%scaling(i)
     end do
 
     if (.not. work%has_v) return
@@ -2550,7 +2555,7 @@
     do_activate = 0
     do i = 1, work%m
         if (has(work%sense(i),daqp_immutable) .and. .not. has(work%sense(i),daqp_auto_equality)) cycle
-        diff = work%bupper(i) - work%blower(i)
+        diff = work%qp%bupper(i) - work%qp%blower(i)
         if (diff < -work%settings%primal_tol) then ! trivial infeasibility
             do_activate = daqp_exit_infeasible
             return
@@ -2623,7 +2628,7 @@
             ! keep downstream transformations well-defined for constraints
             ! that are omitted from the normalized LDP
             work%scaling(i) = 1.0_wp
-            if (work%bupper(i) < -zero_tol .or. work%blower(i) > zero_tol) then
+            if (work%qp%bupper(i) < -zero_tol .or. work%qp%blower(i) > zero_tol) then
                 if (iand(work%sense(i), daqp_immutable+daqp_active) /= daqp_immutable .and. &
                     .not. has(work%sense(i),daqp_soft)) then
                     flag = daqp_exit_infeasible
@@ -2658,8 +2663,8 @@
     real(wp) :: vi, s
 
     n = work%n
-    if (work%has_f) then
-        vs(1:n) = work%f
+    if (work%qp%has_f) then
+        vs(1:n) = work%qp%f
     else
         vs(1:n) = 0.0_wp
     end if
@@ -2706,7 +2711,8 @@
     flag = 0
     if (.not. has(mask,daqp_update_unconstrained)) return
     if (iand(mask, daqp_update_rinv+daqp_update_m+daqp_update_v+daqp_update_d) == 0) return
-    if (work%n_prox > 0) return ! not a standard QP
+    ! not a standard QP/AVI
+    if (allocated(work%bnb) .or. is_hierarchical(work) .or. work%n_prox > 0) return
     do i = 1, work%m ! no equalities
         if (iand(work%sense(i), daqp_active+daqp_immutable) /= 0) return
     end do
@@ -2725,6 +2731,16 @@
         else
             call unconstrained_cholesky(work, work%xldl, feasible)
         end if
+    else if (is_avi_nonsym(work)) then
+        ! AVI: the unconstrained solution is x = -H^{-1} f
+        if (work%qp%has_f) then
+            call daqp_lu_solve(work%avi%LU_H, work%avi%P_H, work%qp%f, work%x, n)
+        else
+            work%x(1:n) = 0.0_wp
+        end if
+        do i = 1, n
+            work%x(i) = -work%x(i)
+        end do
     else if (work%has_v) then
         select case (work%rmode)
         case (rinv_dense)
@@ -2752,20 +2768,20 @@
             end do
         end select
     else
-        work%x = 0.0_wp ! no linear term: the unconstrained optimum is x = 0
+        work%x(1:n) = 0.0_wp ! no linear term: the unconstrained optimum is x = 0
     end if
 
     ! check the simple bounds
     do i = 1, work%ms
-        work%dupper(i) = work%bupper(i) - work%x(i)
-        work%dlower(i) = work%blower(i) - work%x(i)
+        work%dupper(i) = work%qp%bupper(i) - work%x(i)
+        work%dlower(i) = work%qp%blower(i) - work%x(i)
         if (work%dupper(i) < -primal_tol .or. work%dlower(i) > primal_tol) feasible = .false.
     end do
     ! check the general constraints
     do i = work%ms+1, work%m
-        s = dot_seq(n, work%At(:,i-work%ms), work%x)
-        work%dupper(i) = work%bupper(i) - s
-        work%dlower(i) = work%blower(i) - s
+        s = dot_seq(n, work%qp%At(:,i-work%ms), work%x)
+        work%dupper(i) = work%qp%bupper(i) - s
+        work%dlower(i) = work%qp%blower(i) - s
         if (work%dupper(i) < -primal_tol .or. work%dlower(i) > primal_tol) feasible = .false.
     end do
     if (feasible) then
@@ -2783,32 +2799,39 @@
 
 !*****************************************************************************************
 !>
-!  Form the LDP of the problem in the workspace, as marked by `mask_in`
-!  (upstream's `daqp_update_ldp`). Returns 0, or a negative exit flag.
+!  Form the LDP of the problem that is in the workspace (the reduced problem
+!  of an equality elimination is passed here as it is), as marked by
+!  `mask_in`. Returns 0, or a negative exit flag.
 
-    integer(ip) function daqp_update_ldp(work,mask_in) result(flag)
+    integer(ip) function update_ldp_core(mask_in,work) result(flag)
 
+    integer(ip), intent(in) :: mask_in          !! the parts to update (`daqp_update_*`)
     type(daqp_workspace), intent(inout) :: work !! workspace
-    integer(ip), intent(in) :: mask_in !! the parts to update (`daqp_update_*`)
 
-    integer(ip) :: mask, unconstrained_flag, i
+    integer(ip) :: mask, unconstrained_flag, i, m_tmp
     logical :: do_activate
 
     do_activate = .false.
     unconstrained_flag = 0
 
-    ! also form what an earlier update left pending
+    ! also form what an earlier update left pending (everything stays pending
+    ! until this update completes, so an update that fails is redone)
     mask = ior(mask_in, iand(work%state, state_pending))
     work%state = ior(iand(work%state, state_rinv_normalized + state_ill_conditioned + &
                                       state_cholesky_pending), &
                      iand(mask, state_pending))
 
+    ! dimensions of the problem
+    work%n = work%qp%n
+    work%m = work%qp%m
+    work%ms = work%qp%ms
+
     ! update the constraint flags
     if (has(mask,daqp_update_sense)) then
-        if (.not. work%has_sense) then ! all constraints are inequalities
-            work%sense = 0
+        if (.not. work%qp%has_sense) then ! all constraints are inequalities
+            work%sense(1:work%m) = 0
         else
-            work%sense = work%sense_in
+            work%sense(1:work%m) = work%qp%sense(1:work%m)
             do_activate = .true.
         end if
     end if
@@ -2820,9 +2843,26 @@
         if (flag == 1) do_activate = .true.
     end if
 
-    ! form R first; the inverse is deferred until after the candidate check
+    ! form R first; dense QPs defer the inverse until after the candidate check
     if (has(mask,daqp_update_rinv)) then
-        flag = update_R(work, .true.)
+        if (.not. allocated(work%avi)) then
+            flag = update_R_qp(work, .true.)
+        else
+            call update_avi(work)
+            if (work%avi%is_symmetric) then
+                flag = update_R(work, .false., H=work%qp%Hc)
+            else
+                ! early unconstrained check for an AVI: skip the factorization
+                ! if x = -H^{-1}f is feasible
+                unconstrained_flag = check_unconstrained(work, mask)
+                if (unconstrained_flag == unconstrained_optimal) then
+                    flag = 0
+                    return
+                end if
+                i = daqp_lu(work%avi%H_rho, work%avi%P_H2, work%n)
+                flag = update_R(work, .false., H=work%avi%Hs_rho)
+            end if
+        end if
         if (flag < 0) return
     end if
 
@@ -2830,7 +2870,7 @@
     if (.not. has(work%state,state_cholesky_pending) .and. &
         iand(mask, daqp_update_rinv+daqp_update_v) /= 0) call update_v(work)
 
-    unconstrained_flag = check_unconstrained(work, mask)
+    if (.not. is_avi_nonsym(work)) unconstrained_flag = check_unconstrained(work, mask)
     if (unconstrained_flag == unconstrained_optimal) then
         ! Rinv (or R), v, and sense are formed, but not M and d, which depend on them
         work%state = iand(work%state, not(daqp_update_rinv + daqp_update_v + daqp_update_sense))
@@ -2844,11 +2884,11 @@
     if (has(work%state,state_cholesky_pending)) then
         work%state = ior(work%state, daqp_update_m)
         mask = ior(mask, daqp_update_m)
-        if (.not. finish_Rinv(work)) then
+        if (.not. finish_Rinv_qp(work)) then
             ! refactor with regularization => v and d from the check are stale
             work%state = ior(work%state, daqp_update_rinv)
             mask = ior(mask, daqp_update_rinv)
-            flag = update_R(work, .false.)
+            flag = update_R_qp(work, .false.)
             if (flag < 0) return
             unconstrained_flag = 0
             call update_v(work)
@@ -2879,15 +2919,90 @@
         end if
     end if
 
+    ! update the hierarchy
+    if (has(mask,daqp_update_hierarchy)) then
+        work%nh = work%qp%nh
+        work%has_bp = work%qp%nh > 1
+        if (work%has_bp) then
+            work%break_points = work%qp%break_points
+        else if (allocated(work%break_points)) then
+            deallocate(work%break_points)
+        end if
+    end if
+
+    ! hierarchies are not allowed for prox and nonsymmetric AVIs
+    if (is_hierarchical(work) .and. (work%n_prox > 0 .or. is_avi_nonsym(work))) then
+        flag = daqp_exit_unsupported
+        return
+    end if
+
     flag = 0
     ! an empty working set can be one that a reset left out
     if (do_activate .or. work%n_active == 0) then
         call daqp_reset_workspace(work)
-        flag = daqp_activate_constraints(work)
+        if (.not. is_hierarchical(work)) then
+            flag = daqp_activate_constraints(work)
+        else ! activate the first level (since those constraints are hard)
+            m_tmp = work%m
+            work%m = work%break_points(1)
+            flag = daqp_activate_constraints(work)
+            work%m = m_tmp
+        end if
     end if
     if (flag < 0) return
     work%state = iand(work%state, not(state_pending)) ! everything has been formed
     flag = 0
+
+    end function update_ldp_core
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Update the workspace with (changes in) the problem in `work%qp`, as marked
+!  by `mask_in` (upstream's `daqp_update_ldp`). If the equality constraints are
+!  to be eliminated, the LDP is formed for the reduced problem, and the
+!  workspace keeps describing the original problem otherwise.
+!  Returns 0, or a negative exit flag.
+
+    integer(ip) function daqp_update_ldp(work,mask_in) result(flag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: mask_in !! the parts to update (`daqp_update_*`)
+
+    integer(ip) :: mask
+    logical :: was_reduced
+
+    mask = mask_in
+    was_reduced = is_reduced(work)
+    call daqp_eq_restore(work)
+    ! the constraint flags are indexed by the original problem, also while its
+    ! equality constraints are eliminated
+    if (has(mask,daqp_update_sense)) then
+        if (.not. work%qp%has_sense) then
+            work%sense(1:work%qp%m) = 0
+        else
+            work%sense(1:work%qp%m) = work%qp%sense(1:work%qp%m)
+        end if
+    end if
+    if (daqp_eq_wanted(work, mask)) then
+        flag = daqp_eq_update(work, mask, update_ldp_core)
+        if (flag /= eq_not_reduced) then
+            work%n = work%qp%n
+            work%m = work%qp%m
+            work%ms = work%qp%ms
+            return
+        end if
+    else
+        call daqp_eq_deactivate(work)
+    end if
+    ! the LDP of the problem was not formed while its equalities were eliminated
+    if (was_reduced) then
+        mask = ior(mask, daqp_update_m + daqp_update_d)
+        if (work%qp%has_H .or. work%qp%problem_type == daqp_problem_factored) &
+            mask = ior(mask, daqp_update_rinv)
+        if (work%qp%has_f) mask = ior(mask, daqp_update_v)
+    end if
+    flag = update_ldp_core(mask, work)
 
     end function daqp_update_ldp
 !*****************************************************************************************
@@ -2911,9 +3026,9 @@
         if (i <= work%ms) then
             val = work%x(i)
         else
-            val = dot_seq(work%n, work%At(:,i-work%ms), work%x)
+            val = dot_seq(work%n, work%qp%At(:,i-work%ms), work%x)
         end if
-        if (val > work%bupper(i)+tol .or. val < work%blower(i)-tol) then
+        if (val > work%qp%bupper(i)+tol .or. val < work%qp%blower(i)-tol) then
             violates_hard = .true.
             return
         end if
@@ -2941,7 +3056,7 @@
     ms = work%ms
     do i = 1, n
         if (.not. work%prox_mask(i)) cycle
-        r = sqrt((work%Hc(i,i)+eps)/(work%Hc(i,i)+eps_new))
+        r = sqrt((work%qp%Hc(i,i)+eps)/(work%qp%Hc(i,i)+eps_new))
         if (work%rmode /= rinv_dense) then
             work%R(i) = work%R(i)*r
             if (i <= ms) work%scaling(i) = work%scaling(i)/r
@@ -2956,7 +3071,7 @@
         norm2 = 1.0_wp
         do j = 1, n
             if (.not. work%prox_mask(j) .or. work%Mr(j,k) == 0.0_wp) cycle
-            r = sqrt((work%Hc(j,j)+eps)/(work%Hc(j,j)+eps_new))
+            r = sqrt((work%qp%Hc(j,j)+eps)/(work%qp%Hc(j,j)+eps_new))
             norm2 = norm2 + (r*r-1.0_wp)*work%Mr(j,k)*work%Mr(j,k)
             work%Mr(j,k) = work%Mr(j,k)*r
         end do
@@ -2995,9 +3110,9 @@
         lower = has(work%sense(id),daqp_lower)
         q = work%lam_star(i)*work%scaling(id)
         if (lower) then
-            gap = gap - q*work%blower(id)
+            gap = gap - q*work%qp%blower(id)
         else
-            gap = gap - q*work%bupper(id)
+            gap = gap - q*work%qp%bupper(id)
         end if
         if (lower) then
             wrong_sign = q > 0.0_wp
@@ -3005,8 +3120,8 @@
             wrong_sign = q < 0.0_wp
         end if
         if (.not. has(work%sense(id),daqp_immutable) .and. wrong_sign) then
-            if (work%bupper(id) < daqp_inf .and. work%blower(id) > -daqp_inf) then
-                gap = gap - abs(q)*(work%bupper(id)-work%blower(id))
+            if (work%qp%bupper(id) < daqp_inf .and. work%qp%blower(id) > -daqp_inf) then
+                gap = gap - abs(q)*(work%qp%bupper(id)-work%qp%blower(id))
             else
                 wrong = wrong + abs(q)
             end if
@@ -3036,7 +3151,7 @@
     na = work%n_active
     prox_project_step = .false.
     ! near a vertex, the inner solver resolves the remaining face cheaper
-    if (na >= 9*n/10 .or. work%sing_ind /= empty_ind .or. .not. work%has_H) return
+    if (na >= 9*n/10 .or. work%sing_ind /= empty_ind .or. .not. work%qp%has_H) return
     do i = 1, na
         if (has(work%sense(work%WS(i)),daqp_soft)) return
     end do
@@ -3096,17 +3211,17 @@
     do i = 1, n
         work%xldl(i) = work%x(i) - work%xold(i)
     end do
-    if (work%has_f) then
+    if (work%qp%has_f) then
         do i = 1, n
-            gd = gd + work%f(i)*work%xldl(i)
+            gd = gd + work%qp%f(i)*work%xldl(i)
         end do
     end if
-    if (work%has_H) then
+    if (work%qp%has_H) then
         do i = 1, n
-            hii = abs(work%Hc(i,i))
+            hii = abs(work%qp%Hc(i,i))
             s = 0.0_wp
             do j = 1, n
-                s = s + work%Hc(j,i)*work%xldl(j)
+                s = s + work%qp%Hc(j,i)*work%xldl(j)
             end do
             work%zldl(i) = s
             if (hii > hmax) hmax = hii
@@ -3154,14 +3269,14 @@
             ad = 0.0_wp
             ax = 0.0_wp
             do j = 1, n
-                ax = ax + work%At(j,k)*work%x(j)
-                ad = ad + work%At(j,k)*(work%x(j)-work%xold(j))
+                ax = ax + work%qp%At(j,k)*work%x(j)
+                ad = ad + work%qp%At(j,k)*(work%x(j)-work%xold(j))
             end do
         end if
-        if (ad > 0.0_wp .and. work%bupper(i) < daqp_inf) then
-            sb = (work%bupper(i)-ax)/ad
-        else if (ad < 0.0_wp .and. work%blower(i) > -daqp_inf) then
-            sb = (work%blower(i)-ax)/ad
+        if (ad > 0.0_wp .and. work%qp%bupper(i) < daqp_inf) then
+            sb = (work%qp%bupper(i)-ax)/ad
+        else if (ad < 0.0_wp .and. work%qp%blower(i) > -daqp_inf) then
+            sb = (work%qp%blower(i)-ax)/ad
         else
             cycle
         end if
@@ -3231,7 +3346,7 @@
                 if (id <= work%ms) then
                     ad = work%xldl(id)
                 else
-                    ad = dot_seq(work%n, work%At(:,id-work%ms), work%xldl)
+                    ad = dot_seq(work%n, work%qp%At(:,id-work%ms), work%xldl)
                 end if
                 if (abs(s*ad) > work%settings%primal_tol) then
                     leave = .true.
@@ -3246,7 +3361,7 @@
                     work%x(k) = work%x(k) + s*work%xldl(k)
                 end do
                 moved = .true.
-            else if (.not. work%has_H .and. .not. moved .and. .not. skipped) then
+            else if (.not. work%qp%has_H .and. .not. moved .and. .not. skipped) then
                 flag = daqp_exit_unbounded
                 return
             end if
@@ -3309,6 +3424,7 @@
     integer(ip) :: i, total_iter, nx, step_flag
     logical :: center_relaxed, is_lp, all_pd, adaptive, rescaled, converged, projected
     real(wp) :: s_prev, max_diff, tol_stat, eta, eps, eps_max, hmax, eps0, prox_norm
+    real(wp), parameter :: relaxation = 1.5_wp
 
     total_iter = 0
     s_prev = -1.0_wp
@@ -3330,11 +3446,11 @@
 
     ! eps of semi-proximal directions can be changed cheaply (prox_rescale);
     ! a failed inner problem (often due to a small eps) is resolved with eps_max
-    adaptive = .not. is_lp .and. .not. all_pd .and. work%n_prox < nx
+    adaptive = .not. is_lp .and. .not. all_pd .and. .not. allocated(work%avi) .and. work%n_prox < nx
     eps_max = eps
     rescaled = .false.
     if (adaptive) then
-        hmax = hessian_scale_of(work)
+        hmax = hessian_scale_of(nx, work%qp%Hc)
         ! reset an eps that an earlier solve has raised
         eps0 = abs(work%settings%eps_prox)
         if (eps0 < sqrt(work%settings%zero_tol)*hmax) eps0 = sqrt(work%settings%zero_tol)*hmax
@@ -3370,13 +3486,13 @@
             end if
             if (eps > 1.0e3_wp) eps = 1.0e3_wp
             do i = 1, nx
-                work%v(i) = work%f(i)*eps - work%x(i)
+                work%v(i) = work%qp%f(i)*eps - work%x(i)
             end do
         else
             if (work%n_prox == nx) then ! full shift
-                if (work%has_f) then
+                if (work%qp%has_f) then
                     do i = 1, nx
-                        work%v(i) = work%f(i) - eps*work%x(i)
+                        work%v(i) = work%qp%f(i) - eps*work%x(i)
                     end do
                 else
                     do i = 1, nx
@@ -3386,14 +3502,14 @@
             else ! regularize only the singular directions
                 do i = 1, nx
                     if (work%prox_mask(i)) then
-                        if (work%has_f) then
-                            work%v(i) = work%f(i) - eps*work%x(i)
+                        if (work%qp%has_f) then
+                            work%v(i) = work%qp%f(i) - eps*work%x(i)
                         else
                             work%v(i) = -eps*work%x(i)
                         end if
                     else
-                        if (work%has_f) then
-                            work%v(i) = work%f(i) - 0.0_wp*work%x(i)
+                        if (work%qp%has_f) then
+                            work%v(i) = work%qp%f(i) - 0.0_wp*work%x(i)
                         else
                             work%v(i) = -0.0_wp*work%x(i)
                         end if
@@ -3424,7 +3540,7 @@
                 eps = eps_max
                 rescaled = .true.
                 s_prev = -1.0_wp
-                work%x = work%xold ! the center
+                work%x(1:nx) = work%xold(1:nx) ! the center
                 cycle
             end if
         end if
@@ -3469,19 +3585,26 @@
         projected = .false.
         if (work%iterations /= 1) then ! the working set has changed
             s_prev = -1.0_wp
-            if (.not. is_lp .and. work%settings%eps_prox < 0.0_wp .and. &
+            if (.not. is_lp .and. .not. allocated(work%avi) .and. work%settings%eps_prox < 0.0_wp .and. &
                 work%nh >= prox_face_start .and. work%iterations <= 3) then
                 projected = prox_project_step(work, eps)
             end if
         end if
         if ((work%iterations == 1 .or. projected) .and. work%n_active < nx .and. &
             total_iter < work%settings%iter_limit) then
-            step_flag = prox_step(work, s_prev, eps, projected)
-            if (step_flag == daqp_exit_unbounded) then
-                exitflag = daqp_exit_unbounded
-                exit
+            if (allocated(work%avi)) then
+                do i = 1, nx
+                    work%x(i) = work%xold(i) + relaxation*(work%x(i) - work%xold(i))
+                end do
+                center_relaxed = .true.
+            else
+                step_flag = prox_step(work, s_prev, eps, projected)
+                if (step_flag == daqp_exit_unbounded) then
+                    exitflag = daqp_exit_unbounded
+                    exit
+                end if
+                center_relaxed = step_flag == 1
             end if
-            center_relaxed = step_flag == 1
         end if
     end do
 
@@ -3508,7 +3631,7 @@
 
 !*****************************************************************************************
 !>
-!  Deallocate the workspace.
+!  Deallocate the workspace (the settings are kept).
 
     subroutine daqp_destroy(work)
 
@@ -3521,95 +3644,6 @@
     work%settings = settings
 
     end subroutine daqp_destroy
-!*****************************************************************************************
-
-!*****************************************************************************************
-!>
-!  Allocate `a(n)`, unless it already has that size. A nonzero `istat` is kept.
-
-    subroutine resize1(a,n,istat)
-
-    real(wp), allocatable, intent(inout) :: a(:) !! array
-    integer(ip), intent(in) :: n                 !! size
-    integer(ip), intent(inout) :: istat          !! status (nonzero if an allocation failed)
-
-    integer :: stat
-
-    if (allocated(a)) then
-        if (size(a) == n) return
-        deallocate(a)
-    end if
-    allocate(a(n), stat=stat)
-    if (stat /= 0) istat = stat
-
-    end subroutine resize1
-!*****************************************************************************************
-
-!*****************************************************************************************
-!>
-!  Allocate `a(n1,n2)`, unless it already has that shape. A nonzero `istat` is kept.
-
-    subroutine resize2(a,n1,n2,istat)
-
-    real(wp), allocatable, intent(inout) :: a(:,:) !! array
-    integer(ip), intent(in) :: n1                  !! number of rows
-    integer(ip), intent(in) :: n2                  !! number of columns
-    integer(ip), intent(inout) :: istat            !! status (nonzero if an allocation failed)
-
-    integer :: stat
-
-    if (allocated(a)) then
-        if (size(a,1) == n1 .and. size(a,2) == n2) return
-        deallocate(a)
-    end if
-    allocate(a(n1,n2), stat=stat)
-    if (stat /= 0) istat = stat
-
-    end subroutine resize2
-!*****************************************************************************************
-
-!*****************************************************************************************
-!>
-!  Allocate `a(n)`, unless it already has that size. A nonzero `istat` is kept.
-
-    subroutine resize1i(a,n,istat)
-
-    integer(ip), allocatable, intent(inout) :: a(:) !! array
-    integer(ip), intent(in) :: n                    !! size
-    integer(ip), intent(inout) :: istat             !! status (nonzero if an allocation failed)
-
-    integer :: stat
-
-    if (allocated(a)) then
-        if (size(a) == n) return
-        deallocate(a)
-    end if
-    allocate(a(n), stat=stat)
-    if (stat /= 0) istat = stat
-
-    end subroutine resize1i
-!*****************************************************************************************
-
-!*****************************************************************************************
-!>
-!  Allocate `a(n)`, unless it already has that size. A nonzero `istat` is kept.
-
-    subroutine resize1l(a,n,istat)
-
-    logical, allocatable, intent(inout) :: a(:) !! array
-    integer(ip), intent(in) :: n                !! size
-    integer(ip), intent(inout) :: istat         !! status (nonzero if an allocation failed)
-
-    integer :: stat
-
-    if (allocated(a)) then
-        if (size(a) == n) return
-        deallocate(a)
-    end if
-    allocate(a(n), stat=stat)
-    if (stat /= 0) istat = stat
-
-    end subroutine resize1l
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -3639,13 +3673,16 @@
 
 !*****************************************************************************************
 !>
-!  Set up the workspace for a QP, and form its LDP (upstream's `setup_daqp`).
-!  The settings are taken from `work%settings`, which the caller sets first.
+!  Set up the workspace for a problem, and form its LDP (upstream's
+!  `setup_daqp_main`, with the problem given in the Fortran layout: `H(n,n)`,
+!  `A(m-ms,n)`, or `A` transposed in `At(n,m-ms)`). The settings are taken
+!  from `work%settings`, which the caller sets first.
 !
-!  The data is given in the Fortran layout: `H(n,n)`, `A(m-ms,n)`.
 !  Returns 1, or a negative exit flag.
 
-    integer(ip) function daqp_setup(work,n,m,ms,bupper,blower,H,f,A,sense,init_mask,At) result(flag)
+    integer(ip) function daqp_setup(work,n,m,ms,bupper,blower,H,f,A,sense,init_mask,At, &
+                                    break_points,problem_type,Rf,primal_start,dual_start, &
+                                    setup_time) result(flag)
 
     type(daqp_workspace), intent(inout) :: work !! workspace
     integer(ip), intent(in) :: n   !! number of variables
@@ -3657,44 +3694,109 @@
     real(wp), intent(in), optional :: f(n)      !! linear term
     real(wp), intent(in), optional :: A(m-ms,n) !! constraint matrix (absent if `m == ms`)
     integer(ip), intent(in), optional :: sense(m) !! constraint flags
-    integer(ip), intent(in), optional :: init_mask !! extra update mask (`daqp_update_unconstrained`)
-    real(wp), intent(in), optional :: At(n,m-ms) !! the transpose of `A` (instead of `A`: a row of `A` per
-                                                 !! column, the internal layout, which saves a transposed copy)
+    integer(ip), intent(in), optional :: init_mask !! extra update mask (`daqp_update_unconstrained`, `daqp_update_eliminate`)
+    real(wp), intent(in), optional :: At(n,m-ms) !! the transpose of `A` (instead of `A`)
+    integer(ip), intent(in), optional :: break_points(:) !! the last constraint of each level (hierarchical QP)
+    integer(ip), intent(in), optional :: problem_type !! `daqp_problem_qp` (default) or `daqp_problem_avi`
+    real(wp), intent(in), optional :: Rf(:)     !! the Cholesky factor of `H`, packed by rows (instead of `H`)
+    real(wp), intent(in), optional :: primal_start(n) !! a primal start (its active constraints start the working set)
+    real(wp), intent(in), optional :: dual_start(m)   !! a dual start (its nonzero multipliers start the working set)
+    real(wp), intent(out), optional :: setup_time    !! time of the setup [s]
 
-    integer(ip) :: istat, nw, mask
+    integer(ip) :: istat, nw, ns, nb, mask, i, start
+    integer(int64) :: t0, t1, rate
 
+    call system_clock(t0, rate)
+    if (present(setup_time)) setup_time = 0.0_wp
+    ! (arrays of the right size are kept, for repeated setups)
     work%is_setup = .false.
-    work%n = n
-    work%m = m
-    work%ms = ms
-    work%has_H = present(H)
-    work%has_f = present(f)
-    work%has_sense = present(sense)
-    work%ns = 0
-    if (present(sense)) work%ns = count(iand(sense, daqp_soft) /= 0)
+    if (allocated(work%eq)) deallocate(work%eq)
+    if (allocated(work%bnb)) deallocate(work%bnb)
+    if (allocated(work%avi)) deallocate(work%avi)
+    if (allocated(work%break_points)) deallocate(work%break_points)
+    if (allocated(work%qp%break_points)) deallocate(work%qp%break_points)
+    if (allocated(work%qp%Rf)) deallocate(work%qp%Rf)
+    work%has_weights = .false.
 
-    ! allocate (arrays of the right size are kept, for repeated setups)
-    nw = n + work%ns  ! to account for soft constraints
+    ! the problem
+    work%qp%n = n
+    work%qp%m = m
+    work%qp%ms = ms
+    work%qp%problem_type = daqp_problem_qp
+    if (present(problem_type)) work%qp%problem_type = problem_type
+    if (present(Rf)) work%qp%problem_type = daqp_problem_factored
+    work%qp%has_H = present(H) .or. present(Rf)
+    work%qp%has_f = present(f)
+    work%qp%has_sense = present(sense) .or. present(primal_start) .or. present(dual_start)
     ! the packed triangles are indexed by default integers
-    if ((int(nw,int64)+1_int64)*(int(nw,int64)+2_int64)/2_int64 > int(huge(1_ip),int64) .or. &
+    if ((int(n,int64)+1_int64)*(int(n,int64)+int(m,int64)+2_int64)/2_int64 > int(huge(1_ip),int64) .or. &
         int(n,int64)*int(max(n,m-ms),int64) > int(huge(1_ip),int64)) then
         call daqp_destroy(work)
         flag = daqp_exit_out_of_memory
         return
     end if
     istat = 0
-    ! the problem
-    if (work%has_H) then
-        call resize2(work%Hc, n, n, istat)
+    if (present(H)) then
+        call resize2(work%qp%Hc, n, n, istat)
     else
-        call resize2(work%Hc, 0, 0, istat)
+        call resize2(work%qp%Hc, 0_ip, 0_ip, istat)
     end if
-    call resize1(work%f, n, istat)
-    call resize2(work%At, n, m-ms, istat)
-    call resize1(work%bupper, m, istat)
-    call resize1(work%blower, m, istat)
-    call resize1i(work%sense_in, m, istat)
+    if (present(Rf)) call resize1(work%qp%Rf, (n*(n+1))/2, istat)
+    call resize1(work%qp%f, n, istat)
+    call resize2(work%qp%At, n, m-ms, istat)
+    call resize1(work%qp%bupper, m, istat)
+    call resize1(work%qp%blower, m, istat)
+    call resize1i(work%qp%sense, m, istat)
+    if (istat /= 0) then
+        call daqp_destroy(work)
+        flag = daqp_exit_out_of_memory
+        return
+    end if
+    if (present(H)) work%qp%Hc = transpose(H)
+    if (present(Rf)) work%qp%Rf = Rf(1:(n*(n+1))/2)
+    if (present(f)) then
+        work%qp%f = f
+    else
+        work%qp%f = 0.0_wp
+    end if
+    if (present(At)) then
+        work%qp%At = At
+    else if (present(A)) then
+        call transpose_into(A, work%qp%At)
+    else
+        work%qp%At = 0.0_wp
+    end if
+    work%qp%bupper = bupper
+    work%qp%blower = blower
+    work%qp%sense = 0
+    if (present(sense)) work%qp%sense = sense
+    work%qp%nh = 1
+    if (present(break_points)) then
+        work%qp%nh = int(size(break_points), ip)
+        work%qp%break_points = break_points
+    end if
+    ! the starting working set from a dual or a primal start
+    if (present(dual_start)) then
+        call daqp_dual_init_active(work%qp, dual_start)
+    else if (present(primal_start)) then
+        call daqp_primal_init_active(work%qp, primal_start)
+    end if
+
+    ! count the soft and binary constraints (to account for them in the allocation)
+    ns = count(iand(work%qp%sense, daqp_soft) /= 0)
+    nb = count(iand(work%qp%sense, daqp_binary) /= 0)
+    if (work%qp%nh > 1) then ! the largest level, if several hierarchies
+        ns = 0
+        start = 0
+        do i = 1, work%qp%nh
+            ns = max(ns, work%qp%break_points(i)-start)
+            start = work%qp%break_points(i)
+        end do
+    end if
+
     ! the iterates
+    nw = n + ns
+    work%n = n
     call resize1(work%lam, nw+1, istat)
     call resize1(work%lam_star, nw+1, istat)
     call resize1i(work%WS, nw+1, istat)
@@ -3705,43 +3807,11 @@
     call resize1(work%x, n, istat)
     call resize1(work%xold, n, istat)
     call resize1l(work%prox_mask, n, istat)
-    ! the LDP
-    call resize1(work%scaling, m, istat)
-    call resize2(work%Mr, n, m-ms, istat)
-    call resize1(work%Mu, m-ms, istat)
-    call resize1(work%dupper, m, istat)
-    call resize1(work%dlower, m, istat)
-    call resize1i(work%sense, m, istat)
-    call resize1(work%v, n, istat)
-    if (work%has_H) then
-        call resize1(work%R, (n*(n+1))/2, istat)
-    else
-        call resize1(work%R, 0, istat)
-    end if
     if (istat /= 0) then
         call daqp_destroy(work)
         flag = daqp_exit_out_of_memory
         return
     end if
-
-    if (work%has_H) work%Hc = transpose(H)
-    if (work%has_f) then
-        work%f = f
-    else
-        work%f = 0.0_wp
-    end if
-    if (present(At)) then
-        work%At = At
-    else if (present(A)) then
-        call transpose_into(A, work%At)
-    else
-        work%At = 0.0_wp
-    end if
-    work%bupper = bupper
-    work%blower = blower
-    work%sense_in = 0
-    if (work%has_sense) work%sense_in = sense
-
     ! (the work arrays are written before they are read, as upstream's malloc'ed ones)
     work%x = 0.0_wp  ! an uninitialized iterate is 0
     work%xold = 0.0_wp
@@ -3750,28 +3820,77 @@
     work%n_prox = 0
     work%state = 0
     work%soft_slack = 0.0_wp
+    work%has_weights = .false.
     work%nh = 1
-    work%fval = 0.0_wp
+    work%has_bp = .false.
+    work%timer_on = .false.
+    work%has_qp = .true.
     call daqp_reset_workspace(work)
 
+    if (work%qp%problem_type == daqp_problem_avi) then
+        allocate(work%avi)
+        call allocate_avi(work%avi, n)
+    end if
+
+    ! branch and bound
+    if (nb > n) then
+        call daqp_destroy(work)
+        flag = daqp_exit_overdetermined_initial
+        return
+    end if
+    if (nb > 0) then
+        allocate(work%bnb)
+        work%bnb%nb = nb
+        allocate(work%bnb%bin_ids(nb), work%bnb%tree(nb+2), work%bnb%tree_ws((nw+1)*(nb+1)), &
+                 work%bnb%fixed_ids(nb+1), work%bnb%root_ws(nw+1))
+        nb = 0
+        do i = 1, m
+            if (has(work%qp%sense(i),daqp_binary)) then
+                nb = nb + 1
+                work%bnb%bin_ids(nb) = i
+            end if
+        end do
+        work%bnb%n_nodes = 0
+        work%bnb%nws = 0
+        work%bnb%n_root_ws = 0
+    end if
+
+    ! the LDP: always update M, d and sense
+    mask = daqp_update_m + daqp_update_d + daqp_update_sense
+    if (present(init_mask)) mask = ior(mask, init_mask)
+    if (work%qp%has_H) mask = ior(mask, daqp_update_rinv)
+    if (work%qp%has_f) mask = ior(mask, daqp_update_v)
+    ! for an LP, mark all directions as needing proximal regularization
+    if (.not. work%qp%has_H .and. work%qp%has_f) work%n_prox = n
+    work%m = m
+    work%ms = ms
+    call resize1(work%scaling, m, istat)
+    call resize2(work%Mr, n, m-ms, istat)
+    call resize1(work%Mu, m-ms, istat)
+    call resize1(work%dupper, m, istat)
+    call resize1(work%dlower, m, istat)
+    call resize1i(work%sense, m, istat)
+    call resize1(work%v, n, istat)
+    if (work%qp%has_H) then
+        call resize1(work%R, (n*(n+1))/2, istat)
+    else
+        call resize1(work%R, 0_ip, istat)
+    end if
+    if (istat /= 0) then
+        call daqp_destroy(work)
+        flag = daqp_exit_out_of_memory
+        return
+    end if
     work%scaling = 1.0_wp
     work%v = 0.0_wp
     work%sense = 0
-    work%has_v = work%has_f
-    if (work%has_H) then
+    work%has_v = work%qp%has_f
+    if (work%qp%has_H) then
         work%rmode = rinv_dense
     else
         work%rmode = rinv_none
     end if
-
-    ! always update M, d and sense
-    mask = daqp_update_m + daqp_update_d + daqp_update_sense
-    if (present(init_mask)) mask = ior(mask, init_mask)
-    if (work%has_H) mask = ior(mask, daqp_update_rinv)
-    if (work%has_f) mask = ior(mask, daqp_update_v)
-
-    ! for an LP, mark all directions as needing proximal regularization
-    if (.not. work%has_H .and. work%has_f) work%n_prox = n
+    if (work%qp%nh > 1) mask = ior(mask, daqp_update_hierarchy)
 
     istat = daqp_update_ldp(work, mask)
     if (istat < 0) then
@@ -3781,13 +3900,17 @@
     end if
 
     ! a singular quadratic needs v for the proximal linear term even without f
-    if (work%n_prox > 0 .and. .not. work%has_v .and. work%has_H) then
+    if (work%n_prox > 0 .and. .not. work%has_v .and. work%qp%has_H) then
         work%has_v = .true.
         work%v = 0.0_wp
     end if
 
     work%is_setup = .true.
     flag = 1
+    call system_clock(t1)
+    if (present(setup_time)) setup_time = real(t1-t0,wp)/real(rate,wp)
+
+    if (present(primal_start)) call daqp_set_primal_start(work, primal_start)
 
     end function daqp_setup
 !*****************************************************************************************
@@ -3804,8 +3927,10 @@
     integer(ip), intent(in) :: active(:)  !! indices of the active constraints
     logical, intent(in) :: at_lower(:)    !! whether each is active at its lower bound
 
-    integer(ip) :: i, id
+    integer(ip) :: i, id, c, sm
+    logical :: installed
 
+    call daqp_eq_restore(work)
     do i = 1, work%m
         if (has(work%sense(i),daqp_immutable)) cycle
         work%sense(i) = iand(work%sense(i), not(daqp_active))
@@ -3820,83 +3945,148 @@
             work%sense(id) = iand(work%sense(id), not(daqp_lower))
         end if
     end do
-    call daqp_reset_workspace(work)
-    flag = daqp_activate_constraints(work)
+    if (is_reduced(work)) then
+        ! pass the flags to the constraints of the reduced problem
+        sm = daqp_active + daqp_lower
+        do c = 1, work%eq%mr
+            if (has(work%eq%other%sense(c),daqp_immutable)) cycle
+            work%eq%other%sense(c) = ior(iand(work%eq%other%sense(c), not(sm)), &
+                                         iand(work%sense(work%eq%keep(c)), sm))
+        end do
+        installed = daqp_eq_install(work)
+        call daqp_reset_workspace(work)
+        flag = daqp_activate_constraints(work)
+        call daqp_eq_restore(work)
+    else
+        call daqp_reset_workspace(work)
+        flag = daqp_activate_constraints(work)
+    end if
 
     end function daqp_set_working_set
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
-!  Refactor the working set after a change of `rho_soft` or `w_soft` on a
-!  live workspace (upstream's `daqp_refresh_soft_weights`).
+!  Allocate the individual weights of the soft constraints (zero, which selects
+!  the settings). Returns false if there are no constraints.
+
+    logical function daqp_allocate_soft_weights(work)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: m, istat
+
+    daqp_allocate_soft_weights = .true.
+    if (work%has_weights) return ! already allocated
+    ! (the weights are indexed by the original problem, also if its equality
+    ! constraints are eliminated)
+    m = work%m
+    daqp_allocate_soft_weights = .false.
+    if (m == 0) return
+    istat = 0
+    call resize1(work%rho_ls, m, istat)
+    call resize1(work%rho_us, m, istat)
+    call resize1(work%w_ls, m, istat)
+    call resize1(work%w_us, m, istat)
+    if (istat /= 0) return
+    work%rho_ls = 0.0_wp
+    work%rho_us = 0.0_wp
+    work%w_ls = 0.0_wp
+    work%w_us = 0.0_wp
+    work%has_weights = .true.
+    daqp_allocate_soft_weights = .true.
+
+    end function daqp_allocate_soft_weights
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Refactor the working set after a change of the weights of the soft
+!  constraints (upstream's `daqp_refresh_soft_weights`).
 
     subroutine daqp_refresh_soft_weights(work)
 
     type(daqp_workspace), intent(inout) :: work !! workspace
 
-    integer(ip) :: i, flag
+    integer(ip) :: i, flag, m
+    logical :: reduced, rebuild
 
+    ! the working set is that of the reduced problem if equalities are eliminated
+    reduced = daqp_eq_install(work)
     ! only an active soft constraint makes the factorization stale
+    rebuild = .false.
     do i = 1, work%n_active
         if (has(work%sense(work%WS(i)),daqp_soft)) then
-            call daqp_reset_workspace(work)
-            flag = daqp_activate_constraints(work)
-            return
+            rebuild = .true.
+            exit
         end if
     end do
+    if (rebuild) then
+        call daqp_reset_workspace(work)
+        if (is_hierarchical(work)) then
+            m = work%m
+            work%m = work%break_points(1)
+            flag = daqp_activate_constraints(work)
+            work%m = m
+        else
+            flag = daqp_activate_constraints(work)
+        end if
+    end if
+    if (reduced) call daqp_eq_restore(work)
 
     end subroutine daqp_refresh_soft_weights
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
-!  Solve the QP from the current working set (upstream's `daqp_solve`).
+!  Set the weights of the soft constraints, one entry per constraint of the
+!  original problem (an absent argument leaves that weight untouched; a zero
+!  weight selects the settings). A violation `s` of a soft constraint adds
+!  `w*s + s^2/(2*rho)` to the objective. Returns false if they could not be
+!  allocated.
 
-    subroutine daqp_solve(work,x,res,lam)
+    logical function daqp_set_soft_weights(work,rho_l,rho_u,w_l,w_u)
 
     type(daqp_workspace), intent(inout) :: work !! workspace
-    real(wp), intent(out) :: x(:)               !! the solution (size `n`)
-    type(daqp_result), intent(out) :: res       !! exit flag, objective, iterations
-    real(wp), intent(out), optional :: lam(:)   !! multipliers (size `m`)
+    real(wp), intent(in), optional :: rho_l(:) !! reciprocal quadratic weight of the lower side
+    real(wp), intent(in), optional :: rho_u(:) !! reciprocal quadratic weight of the upper side
+    real(wp), intent(in), optional :: w_l(:)   !! linear weight of the lower side
+    real(wp), intent(in), optional :: w_u(:)   !! linear weight of the upper side
+
+    integer(ip) :: m
+
+    daqp_set_soft_weights = daqp_allocate_soft_weights(work)
+    if (.not. daqp_set_soft_weights) return
+    m = size(work%rho_ls)
+    if (present(rho_l)) work%rho_ls(1:m) = rho_l(1:m)
+    if (present(rho_u)) work%rho_us(1:m) = rho_u(1:m)
+    if (present(w_l)) work%w_ls(1:m) = w_l(1:m)
+    if (present(w_u)) work%w_us(1:m) = w_u(1:m)
+    call daqp_refresh_soft_weights(work)
+
+    end function daqp_set_soft_weights
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Package the result (upstream's `daqp_extract_result`).
+
+    subroutine extract_result(work,x,res,lam)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    real(wp), intent(inout) :: x(:)             !! the solution
+    type(daqp_result), intent(inout) :: res     !! result
+    real(wp), intent(inout), optional :: lam(:) !! multipliers
 
     integer(ip) :: i, id
     real(wp) :: l
     logical :: wrong_sign
 
-    if (.not. work%is_setup) then
-        res%exitflag = daqp_exit_not_setup
-        x = 0.0_wp
-        if (present(lam)) lam = 0.0_wp
-        return
-    end if
+    x(1:work%n) = work%x(1:work%n)
 
-    work%nh = 1
-    if (.not. has(work%state,state_unconstrained)) then
-        if (work%n_prox == 0) then
-            res%exitflag = daqp_ldp(work)
-            if (res%exitflag > 0) then
-                call daqp_ldp2qp_solution(work) ! retrieve the QP solution
-                call refine_primal(work)        ! refine x (if it might be inaccurate)
-                ! constraints were only added above the rounding level
-                if (has(work%state,state_noise_floor)) then
-                    if (violates_hard(work)) res%exitflag = daqp_exit_optimal_inexact
-                end if
-            end if
-        else
-            res%exitflag = daqp_prox(work)
-        end if
-    else ! unconstrained optimum
-        work%iterations = 1
-        work%fval = 0.0_wp
-        work%soft_slack = 0.0_wp
-        res%exitflag = daqp_exit_optimal
-    end if
-
-    ! package the result
-    x = work%x
-    if (present(lam)) then
-        lam = 0.0_wp
+    ! multipliers of ordinary QPs (hierarchical QPs form theirs in daqp_hiqp)
+    if (present(lam) .and. .not. is_hierarchical(work)) then
+        lam(1:work%m) = 0.0_wp
         do i = 1, work%n_active
             id = work%WS(i)
             l = work%lam_star(i)
@@ -3916,34 +4106,159 @@
     end if
 
     ! shift back the function value
-    if (work%has_v .and. work%rmode /= rinv_none) then ! QP
+    if (work%has_v .and. .not. is_avi_nonsym(work) .and. work%rmode /= rinv_none) then ! QP or symmetric AVI
         res%fval = work%fval
         do i = 1, work%n
             res%fval = res%fval - work%v(i)*work%v(i)
         end do
         res%fval = res%fval*0.5_wp
-    else if (work%has_f) then ! LP
+    else if (work%has_qp .and. work%qp%has_f) then ! LP (or AVI)
         res%fval = 0.0_wp
         do i = 1, work%n
-            res%fval = res%fval + work%f(i)*work%x(i)
+            res%fval = res%fval + work%qp%f(i)*work%x(i)
         end do
-    else ! no linear term (upstream leaves this undefined)
+    else if (.not. is_hierarchical(work)) then
+        ! no linear term: upstream leaves fval unset (which an equality
+        ! elimination then forms as 0.5*fval, the objective)
         res%fval = 0.5_wp*work%fval
     end if
 
     res%soft_slack = work%soft_slack
     res%iter = work%iterations
-    res%nodes = work%nh
+    if (allocated(work%bnb)) then
+        res%nodes = work%bnb%nodecount
+    else if (is_hierarchical(work)) then
+        res%nodes = 1
+    else
+        res%nodes = work%nh
+    end if
+
+    end subroutine extract_result
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  The multipliers of the working set, as they are (upstream's
+!  `daqp_extract_active_duals`).
+
+    subroutine daqp_extract_active_duals(work,lam)
+
+    type(daqp_workspace), intent(in) :: work !! workspace
+    real(wp), intent(out) :: lam(:)          !! multipliers (size `m`)
+
+    integer(ip) :: i
+
+    lam = 0.0_wp
+    do i = 1, work%n_active
+        lam(work%WS(i)) = work%lam_star(i)
+    end do
+
+    end subroutine daqp_extract_active_duals
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve the problem from the current working set (upstream's `daqp_solve`).
+
+    subroutine daqp_solve(work,x,res,lam)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    real(wp), intent(out) :: x(:)               !! the solution (size `n`)
+    type(daqp_result), intent(out) :: res       !! exit flag, objective, iterations
+    real(wp), intent(out), optional :: lam(:)   !! multipliers (size `m`)
+
+    integer(ip) :: flag
+    integer(int64) :: t0, t1, rate
+    logical :: reduced
+
+    x = 0.0_wp
+    if (present(lam)) lam = 0.0_wp
+    if (.not. work%is_setup) then
+        res%exitflag = daqp_exit_not_setup
+        return
+    end if
+
+    call system_clock(t0, rate)
+    if (.not. work%has_bp) work%nh = 1
+    ! a policy that no longer eliminates takes effect before the solve
+    if (is_reduced(work) .and. work%settings%eq_reduction == daqp_eq_reduction_off) then
+        flag = daqp_update_ldp(work, 0_ip)
+        if (flag < 0) then
+            res%exitflag = flag
+            return
+        end if
+    end if
+    ! solve the reduced problem if the equalities are eliminated (unless the
+    ! latest update found its right-hand side to be infeasible)
+    if (is_reduced(work)) then
+        if (work%eq%error < 0) then
+            res%exitflag = work%eq%error
+            return
+        end if
+    end if
+    reduced = daqp_eq_install(work)
+    work%timer_on = work%settings%time_limit > 0.0_wp
+    work%timer_start = t0
+
+    if (.not. has(work%state,state_unconstrained)) then
+        if (work%n_prox == 0) then ! select the algorithm
+            if (.not. is_avi_nonsym(work)) then
+                if (allocated(work%bnb)) then
+                    res%exitflag = daqp_bnb(work)
+                else if (is_hierarchical(work)) then
+                    res%exitflag = daqp_hiqp(work, lam)
+                else
+                    res%exitflag = daqp_ldp(work)
+                end if
+                if (res%exitflag > 0) then
+                    call daqp_ldp2qp_solution(work) ! retrieve the QP solution
+                    ! refine x (if it might be inaccurate)
+                    if (.not. allocated(work%bnb) .and. .not. is_hierarchical(work)) then
+                        call refine_primal(work)
+                        ! constraints were only added above the rounding level
+                        if (has(work%state,state_noise_floor)) then
+                            if (violates_hard(work)) res%exitflag = daqp_exit_optimal_inexact
+                        end if
+                    end if
+                end if
+            else ! AVI
+                res%exitflag = daqp_solve_avi(work)
+            end if
+        else ! proximal
+            if (allocated(work%bnb)) then
+                res%exitflag = daqp_exit_nonconvex
+            else
+                res%exitflag = daqp_prox(work)
+            end if
+        end if
+    else ! unconstrained optimum
+        work%iterations = 1
+        work%fval = 0.0_wp
+        work%soft_slack = 0.0_wp
+        res%exitflag = daqp_exit_optimal
+    end if
+    work%timer_on = .false.
+
+    ! package the result
+    call extract_result(work, x, res, lam)
+    if (reduced) then
+        call daqp_eq_expand(work, x, res%fval, lam)
+        call daqp_eq_restore(work)
+    end if
+    call system_clock(t1)
+    res%solve_time = real(t1-t0,wp)/real(rate,wp)
 
     end subroutine daqp_solve
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
-!  Set up and solve a QP in one call (upstream's `daqp_quadprog`, with the
-!  check of the unconstrained optimum, and without the equality elimination).
+!  Set up and solve a problem in one call (upstream's `daqp_quadprog`: with the
+!  check of the unconstrained optimum, and the automatic elimination of
+!  equalities).
 
-    subroutine daqp_quadprog(n,m,ms,bupper,blower,x,res,lam,H,f,A,sense,settings)
+    subroutine daqp_quadprog(n,m,ms,bupper,blower,x,res,lam,H,f,A,sense,settings, &
+                             break_points,problem_type,Rf,primal_start,dual_start)
 
     integer(ip), intent(in) :: n   !! number of variables
     integer(ip), intent(in) :: m   !! number of constraints (including the simple bounds)
@@ -3958,13 +4273,21 @@
     real(wp), intent(in), optional :: A(m-ms,n) !! constraint matrix
     integer(ip), intent(in), optional :: sense(m) !! constraint flags
     type(daqp_settings), intent(in), optional :: settings !! settings (default: upstream's)
+    integer(ip), intent(in), optional :: break_points(:) !! the last constraint of each level (hierarchical QP)
+    integer(ip), intent(in), optional :: problem_type !! `daqp_problem_qp` (default) or `daqp_problem_avi`
+    real(wp), intent(in), optional :: Rf(:)     !! the Cholesky factor of `H`, packed by rows (instead of `H`)
+    real(wp), intent(in), optional :: primal_start(n) !! a primal start
+    real(wp), intent(in), optional :: dual_start(m)   !! a dual start
 
     type(daqp_workspace) :: work
     integer(ip) :: flag
+    real(wp) :: setup_time
 
     if (present(settings)) work%settings = settings
     flag = daqp_setup(work, n, m, ms, bupper, blower, H, f, A, sense, &
-                      init_mask=daqp_update_unconstrained)
+                      init_mask=daqp_update_unconstrained+daqp_update_eliminate, &
+                      break_points=break_points, problem_type=problem_type, Rf=Rf, &
+                      primal_start=primal_start, dual_start=dual_start, setup_time=setup_time)
     if (flag < 0) then
         res%exitflag = flag
         x = 0.0_wp
@@ -3972,9 +4295,1455 @@
         return
     end if
     call daqp_solve(work, x, res, lam)
+    res%setup_time = setup_time
     call daqp_destroy(work)
 
     end subroutine daqp_quadprog
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve an affine variational inequality in one call (upstream's `daqp_avi`):
+!  find `x` with `blower <= [x(1:ms); A x] <= bupper` and
+!  `(H x + f)'(y - x) >= 0` for all feasible `y` (`H` need not be symmetric).
+
+    subroutine daqp_avi(n,m,ms,H,f,bupper,blower,x,res,lam,A,sense,settings)
+
+    integer(ip), intent(in) :: n   !! number of variables
+    integer(ip), intent(in) :: m   !! number of constraints (including the simple bounds)
+    integer(ip), intent(in) :: ms  !! number of simple bounds
+    real(wp), intent(in) :: H(n,n)    !! the matrix of the AVI
+    real(wp), intent(in) :: f(n)      !! linear term
+    real(wp), intent(in) :: bupper(m) !! upper bounds
+    real(wp), intent(in) :: blower(m) !! lower bounds
+    real(wp), intent(out) :: x(n)     !! the solution
+    type(daqp_result), intent(out) :: res     !! exit flag, iterations
+    real(wp), intent(out), optional :: lam(m) !! multipliers
+    real(wp), intent(in), optional :: A(m-ms,n) !! constraint matrix
+    integer(ip), intent(in), optional :: sense(m) !! constraint flags
+    type(daqp_settings), intent(in), optional :: settings !! settings
+
+    call daqp_quadprog(n, m, ms, bupper, blower, x, res, lam, H, f, A, sense, settings, &
+                       problem_type=daqp_problem_avi)
+
+    end subroutine daqp_avi
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Mark the constraints that are active at `x` (within 1e-9) as active in the
+!  constraint flags of the problem, as a starting working set (upstream's
+!  `daqp_primal_init_active`; nothing is done for a problem with binary
+!  constraints, for which `x` is only used as an incumbent).
+
+    subroutine daqp_primal_init_active(qp,x)
+
+    type(daqp_problem), intent(inout) :: qp !! the problem
+    real(wp), intent(in) :: x(:)            !! primal iterate
+
+    integer(ip) :: i, j
+    real(wp) :: ax, slack, tol
+
+    tol = max(1.0e-9_wp, 100.0_wp*epsilon(1.0_wp)) ! (upstream's 1e-9, floored in single precision)
+    if (.not. allocated(qp%sense)) then
+        allocate(qp%sense(qp%m))
+        qp%sense = 0
+    end if
+    qp%has_sense = .true.
+    do i = 1, qp%m
+        if (has(qp%sense(i),daqp_binary)) return
+    end do
+    do i = 1, qp%m
+        if (has(qp%sense(i),daqp_immutable)) cycle
+        if (i <= qp%ms) then
+            ax = x(i)
+        else
+            ax = 0.0_wp
+            do j = 1, qp%n
+                ax = ax + x(j)*qp%At(j,i-qp%ms)
+            end do
+        end if
+        slack = ax - qp%bupper(i)
+        if (slack < tol .and. slack > -tol) then
+            qp%sense(i) = ior(qp%sense(i), daqp_active)
+            qp%sense(i) = iand(qp%sense(i), not(daqp_lower))
+        else
+            slack = ax - qp%blower(i)
+            if (slack < tol .and. slack > -tol) &
+                qp%sense(i) = ior(qp%sense(i), daqp_active+daqp_lower)
+        end if
+    end do
+
+    end subroutine daqp_primal_init_active
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Mark the constraints with a nonzero multiplier (beyond 1e-12) as active in
+!  the constraint flags of the problem, as a starting working set (upstream's
+!  `daqp_dual_init_active`).
+
+    subroutine daqp_dual_init_active(qp,lam)
+
+    type(daqp_problem), intent(inout) :: qp !! the problem
+    real(wp), intent(in) :: lam(:)          !! dual iterate
+
+    integer(ip) :: i
+    real(wp) :: tol
+
+    tol = max(1.0e-12_wp, 10.0_wp*epsilon(1.0_wp)) ! (upstream's 1e-12, floored in single precision)
+    if (.not. allocated(qp%sense)) then
+        allocate(qp%sense(qp%m))
+        qp%sense = 0
+    end if
+    qp%has_sense = .true.
+    do i = 1, qp%m
+        if (has(qp%sense(i),daqp_immutable)) cycle
+        if (lam(i) > tol) then
+            qp%sense(i) = ior(qp%sense(i), daqp_active)
+            qp%sense(i) = iand(qp%sense(i), not(daqp_lower))
+        else if (lam(i) < -tol) then
+            qp%sense(i) = ior(qp%sense(i), daqp_active+daqp_lower)
+        end if
+    end do
+
+    end subroutine daqp_dual_init_active
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Set the starting iterate (upstream's `daqp_set_primal_start`); with binary
+!  constraints, `x` is used as an incumbent if it is feasible.
+
+    subroutine daqp_set_primal_start(work,x)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    real(wp), intent(in) :: x(:)                !! iterate of the original problem
+
+    logical :: reduced
+
+    ! x is given for the original problem, also if its equalities are eliminated
+    reduced = daqp_eq_install(work)
+    if (.not. has(work%state,state_unconstrained)) then
+        if (reduced) then
+            call daqp_eq_set_primal_start(work, x)
+        else
+            work%x(1:work%n) = x(1:work%n)
+        end if
+        if (allocated(work%bnb)) work%state = ior(work%state, state_incumbent)
+    end if
+    if (reduced) call daqp_eq_restore(work)
+
+    end subroutine daqp_set_primal_start
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Determine the redundant constraints of a polyhedron `A x <= b` (upstream's
+!  `daqp_minrep`): the first `ms` constraints are `x(1:ms) <= b(1:ms)`, the
+!  others `A x <= b(ms+1:)`. `is_redundant(i)` is 1 if constraint `i` is
+!  redundant, 0 otherwise.
+
+    subroutine daqp_minrep(A,b,ms,is_redundant,settings)
+
+    real(wp), intent(in) :: A(:,:)              !! general constraints `(m-ms,n)`
+    real(wp), intent(in) :: b(:)                !! right-hand sides `(m)`
+    integer(ip), intent(in) :: ms               !! number of simple bounds
+    integer(ip), intent(out) :: is_redundant(:) !! `(m)`
+    type(daqp_settings), intent(in), optional :: settings !! settings
+
+    type(daqp_workspace) :: work
+    integer(ip) :: n, m, nw
+
+    n = int(size(A,2), ip)
+    m = int(size(b), ip)
+    if (present(settings)) work%settings = settings
+    work%has_qp = .false.
+    work%n = n
+    work%m = m
+    work%ms = ms
+    nw = n
+    allocate(work%lam(nw+1), work%lam_star(nw+1), work%WS(nw+1), work%D(nw+1), &
+             work%xldl(nw+1), work%zldl(nw+1), work%L(((nw+1)*(nw+2))/2), &
+             work%x(n), work%xold(n), work%prox_mask(n))
+    work%x = 0.0_wp
+    work%xold = 0.0_wp
+    work%D(1) = 0.0_wp
+    work%prox_mask = .false.
+    allocate(work%Mr(n,m-ms), work%Mu(m-ms), work%dupper(m), work%dlower(m), work%sense(m), &
+             work%scaling(m), work%v(0), work%R(0))
+    call transpose_into(A, work%Mr)
+    work%dupper = b
+    work%dlower = -daqp_inf
+    work%sense = 0
+    work%scaling = 1.0_wp  ! (no scaling: exactly as upstream's NULL)
+    work%rmode = rinv_none
+    work%has_v = .false.
+    call daqp_reset_workspace(work)
+    call minrep_work(work, is_redundant)
+
+    end subroutine daqp_minrep
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Determine the redundant constraints of the LDP in the workspace (upstream's
+!  `daqp_minrep_work`).
+
+    subroutine minrep_work(work,is_redundant)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(out) :: is_redundant(:) !! 1 if redundant, 0 otherwise
+
+    integer(ip) :: i, j, exitflag
+
+    is_redundant(1:work%m) = -1
+    do i = 1, work%m
+        if (is_redundant(i) /= -1 .or. has(work%sense(i),daqp_immutable)) cycle
+        call daqp_reset_workspace(work)
+        work%sense(i) = daqp_active + daqp_immutable
+        call add_constraint(work, i, 1.0_wp)
+        exitflag = daqp_ldp(work)
+        if (exitflag == daqp_exit_infeasible) then
+            is_redundant(i) = 1
+            work%sense(i) = iand(work%sense(i), not(daqp_active)) ! (remains immutable -> ignored)
+        else
+            is_redundant(i) = 0
+            work%sense(i) = iand(work%sense(i), not(daqp_immutable))
+            if (exitflag == daqp_exit_optimal) then
+                do j = 1, work%n_active ! all active constraints are also nonredundant
+                    is_redundant(work%WS(j)) = 0
+                end do
+            end if
+        end if
+        call daqp_deactivate_constraints(work)
+    end do
+
+    end subroutine minrep_work
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  The first constraint that `x` violates by more than `tol` (upstream's
+!  `daqp_first_violating`), or `m+1` if none.
+
+    integer(ip) function daqp_first_violating(x,A,bu,bl,ms,tol) result(ind)
+
+    real(wp), intent(in) :: x(:)    !! point `(n)`
+    real(wp), intent(in) :: A(:,:)  !! general constraints `(m-ms,n)`
+    real(wp), intent(in) :: bu(:)   !! upper bounds `(m)`
+    real(wp), intent(in) :: bl(:)   !! lower bounds `(m)`
+    integer(ip), intent(in) :: ms   !! number of simple bounds
+    real(wp), intent(in) :: tol     !! tolerance
+
+    integer(ip) :: i, j, m, n
+    real(wp) :: ax
+
+    m = int(size(bu), ip)
+    n = int(size(x), ip)
+    do i = 1, ms
+        if (x(i) > bu(i)+tol .or. x(i) < bl(i)-tol) then
+            ind = i
+            return
+        end if
+    end do
+    do i = ms+1, m
+        ax = 0.0_wp
+        do j = 1, n
+            ax = ax + A(i-ms,j)*x(j)
+        end do
+        if (ax > bu(i)+tol .or. ax < bl(i)-tol) then
+            ind = i
+            return
+        end if
+    end do
+    ind = m + 1 ! no constraint is violated
+
+    end function daqp_first_violating
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Allocate the data of an AVI (upstream's `allocate_daqp_avi`).
+
+    subroutine allocate_avi(avi,n)
+
+    type(daqp_avi_data), intent(inout) :: avi !! AVI
+    integer(ip), intent(in) :: n              !! number of variables
+
+    avi%is_symmetric = .false.
+    avi%retry_rho_needed = .false.
+    avi%rho = 0.0_wp
+    allocate(avi%Hsym(n,n), avi%Hs_rho(n,n), avi%H_rho(n,n), avi%LU_H(n,n), &
+             avi%P_H2(n), avi%P_H(n), avi%P_S(n), avi%kkt_buffer(n*n+2*n), &
+             avi%Hx(n), avi%x(n), avi%y(n), avi%xtemp(n))
+
+    end subroutine allocate_avi
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  LU factorization with partial pivoting, in place, of the `n x n` row-major
+!  matrix `A` (`A(j*n+i+1)` is element `(j,i)`, 0-based). Returns 0, or -1 if
+!  a pivot is below 1e-12 (upstream's `daqp_lu`).
+
+    integer(ip) function daqp_lu(A,P,n) result(flag)
+
+    real(wp), intent(inout) :: A(*)      !! matrix; factors on output
+    integer(ip), intent(inout) :: P(*)   !! permutation (1-based)
+    integer(ip), intent(in) :: n         !! dimension
+
+    integer(ip) :: i, j, k, pivot, tmp_p
+    real(wp) :: max_val, pA, tmp
+
+    do i = 1, n
+        P(i) = i
+    end do
+    flag = 0
+    do i = 0, n-1
+        ! pivot
+        max_val = 0.0_wp
+        pivot = i
+        do j = i, n-1
+            pA = A(j*n+i+1)
+            if (pA < 0.0_wp) pA = -pA
+            if (pA > max_val) then
+                max_val = pA
+                pivot = j
+            end if
+        end do
+        ! check for singularity
+        if (max_val < 1.0e-12_wp) then
+            flag = -1
+            return
+        end if
+        ! swap rows
+        do k = 0, n-1
+            tmp = A(i*n+k+1)
+            A(i*n+k+1) = A(pivot*n+k+1)
+            A(pivot*n+k+1) = tmp
+        end do
+        tmp_p = P(i+1)
+        P(i+1) = P(pivot+1)
+        P(pivot+1) = tmp_p
+        ! elimination
+        do j = i+1, n-1
+            A(j*n+i+1) = A(j*n+i+1)/A(i*n+i+1)
+            do k = i+1, n-1
+                A(j*n+k+1) = A(j*n+k+1) - A(j*n+i+1)*A(i*n+k+1)
+            end do
+        end do
+    end do
+
+    end function daqp_lu
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve `A x = b` with the factors of [[daqp_lu]] (upstream's `daqp_lu_solve`).
+
+    subroutine daqp_lu_solve(LU,P,b,x,n)
+
+    real(wp), intent(in) :: LU(*)     !! factors
+    integer(ip), intent(in) :: P(*)   !! permutation
+    real(wp), intent(in) :: b(*)      !! right-hand side
+    real(wp), intent(inout) :: x(*)   !! solution
+    integer(ip), intent(in) :: n      !! dimension
+
+    integer(ip) :: i, j
+
+    ! solve Ly = Pb
+    do i = 0, n-1
+        x(i+1) = b(P(i+1))
+        do j = 0, i-1
+            x(i+1) = x(i+1) - LU(i*n+j+1)*x(j+1)
+        end do
+    end do
+    ! solve Ux = y
+    do i = n-1, 0, -1
+        do j = i+1, n-1
+            x(i+1) = x(i+1) - LU(i*n+j+1)*x(j+1)
+        end do
+        x(i+1) = x(i+1)/LU(i*n+i+1)
+    end do
+
+    end subroutine daqp_lu_solve
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Set up the matrices of an AVI (upstream's `daqp_update_avi`): the symmetric
+!  part, its shift by `rho` (Douglas-Rachford), and the LU factors of `H`.
+
+    subroutine update_avi(work)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: i, j, n, lu_status
+    real(wp) :: val, min_diag, max_row_sum, fro_norm_sq, max_asymmetry, row_sum, &
+                asymmetry, hessian_scale, min_lu_pivot, pivot
+
+    n = work%qp%n
+    associate (avi => work%avi, H => work%qp%Hc)
+    min_diag = daqp_inf
+    max_row_sum = 0.0_wp
+    fro_norm_sq = 0.0_wp
+    max_asymmetry = 0.0_wp
+    avi%rho = 0.0_wp
+    avi%retry_rho_needed = .false.
+    do i = 1, n
+        row_sum = 0.0_wp
+        do j = 1, n
+            if (j > i) then
+                asymmetry = abs(H(j,i) - H(i,j))
+                if (asymmetry > max_asymmetry) max_asymmetry = asymmetry
+            end if
+            val = (H(j,i) + H(i,j))*0.5_wp
+            avi%Hsym(j,i) = val
+            avi%Hs_rho(j,i) = val
+            avi%H_rho(j,i) = H(j,i)
+            avi%LU_H(j,i) = H(j,i)
+            if (val < 0.0_wp) then
+                row_sum = row_sum - val
+            else
+                row_sum = row_sum + val
+            end if
+            fro_norm_sq = fro_norm_sq + H(j,i)*H(j,i)
+            if (i == j .and. val < min_diag) min_diag = val
+        end do
+        if (row_sum > max_row_sum) max_row_sum = row_sum
+    end do
+    hessian_scale = sqrt(fro_norm_sq)
+    if (hessian_scale < 1.0_wp) hessian_scale = 1.0_wp
+    avi%is_symmetric = max_asymmetry <= work%settings%zero_tol*hessian_scale
+    if (avi%is_symmetric) return
+
+    ! detect a possibly problematic rho from the LU pivots
+    lu_status = daqp_lu(avi%LU_H, avi%P_H, n)
+    if (lu_status == 0 .and. min_diag > 0.0_wp) then
+        min_lu_pivot = daqp_inf
+        do i = 1, n
+            pivot = abs(avi%LU_H(i,i))
+            if (pivot < min_lu_pivot) min_lu_pivot = pivot
+        end do
+        if (min_lu_pivot < avi_pivot_trigger*min_diag) avi%retry_rho_needed = .true.
+    end if
+
+    ! start with the default step length heuristic
+    if (min_diag > 0.0_wp .and. max_row_sum > 0.0_wp) then
+        avi%rho = sqrt(min_diag*max_row_sum)
+    else
+        avi%rho = sqrt(fro_norm_sq)/2.0_wp
+    end if
+    do i = 1, n
+        avi%Hs_rho(i,i) = avi%Hs_rho(i,i) + avi%rho
+        avi%H_rho(i,i) = avi%H_rho(i,i) + avi%rho
+    end do
+    ! (the factorization of H_rho is deferred until needed)
+    end associate
+
+    end subroutine update_avi
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Retry an AVI with a reduced `rho` (upstream's
+!  `daqp_retry_avi_with_reduced_rho`). Returns 0 if no retry is needed, 1, or
+!  a negative exit flag.
+
+    integer(ip) function retry_avi_with_reduced_rho(work) result(flag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: i, n
+
+    flag = 0
+    if (.not. allocated(work%avi)) return
+    if (.not. work%avi%retry_rho_needed) return
+    n = work%n
+    associate (avi => work%avi)
+    avi%retry_rho_needed = .false. ! at most one retry per setup
+    avi%rho = avi%rho/avi_retry_rho_reduction
+    avi%Hs_rho = avi%Hsym
+    avi%H_rho = work%qp%Hc
+    do i = 1, n
+        avi%Hs_rho(i,i) = avi%Hs_rho(i,i) + avi%rho
+        avi%H_rho(i,i) = avi%H_rho(i,i) + avi%rho
+    end do
+    i = daqp_lu(avi%H_rho, avi%P_H2, n)
+    end associate
+    flag = update_R(work, .false., H=work%avi%Hs_rho)
+    if (flag < 0) return
+    call update_v(work)
+    flag = update_M(work)
+    if (flag < 0) return
+    call normalize_Rinv(work)
+    call update_d(work)
+    flag = 1
+
+    end function retry_avi_with_reduced_rho
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve a nonsymmetric AVI (upstream's `daqp_solve_avi`): Douglas-Rachford
+!  splitting, with each step an LDP of the symmetric part, and Newton steps
+!  (a KKT solve on the working set) when the working set settles.
+
+    recursive integer(ip) function daqp_solve_avi(work) result(exitflag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: n, i, j, k, tot_iter, counter, terminate_limit, original_limit, &
+                   previous_outer_iterations, retry_flag
+    real(wp) :: val, s, s2, minimum_newton_residual
+    logical :: retry_requested
+
+    n = work%n
+    exitflag = -10
+    tot_iter = 0
+    counter = 0
+    terminate_limit = 5
+    retry_requested = .false.
+    minimum_newton_residual = daqp_inf
+
+    work%nh = 0 ! counts the outer iterations
+    associate (avi => work%avi)
+    avi%x(1:n) = work%x(1:n) ! initial iterate
+
+    k = 0
+    do while (k < work%settings%iter_limit)
+        work%nh = work%nh + 1
+        ! xtemp = H*x + f - (Hsym + rho I)x
+        do i = 1, n
+            s = 0.0_wp
+            s2 = 0.0_wp
+            do j = 1, n
+                s = s + work%qp%Hc(j,i)*avi%x(j)
+                s2 = s2 + avi%Hs_rho(j,i)*avi%x(j)
+            end do
+            avi%Hx(i) = s
+            avi%xtemp(i) = s + work%qp%f(i) - s2
+        end do
+
+        ! update the linear term
+        if (work%has_v) then
+            work%v(1:n) = avi%xtemp(1:n)
+            call transform_v(work, work%v)
+        end if
+        call update_d(work)
+
+        exitflag = daqp_ldp(work)
+
+        if (exitflag < 0) exit
+        call daqp_ldp2qp_solution(work)
+        tot_iter = tot_iter + work%iterations
+
+        if (counter == terminate_limit) then ! check if the Newton step made progress
+            s = 0.0_wp
+            do i = 1, n
+                val = avi%x(i) - work%x(i)
+                s = s + val*val
+            end do
+            ! no decrease since the last Newton iterate -> revert the Newton step
+            if (s > minimum_newton_residual) then
+                avi%x(1:n) = work%xold(1:n)
+                if (terminate_limit == 30 .and. avi%retry_rho_needed) then
+                    retry_requested = .true.
+                    exit
+                end if
+                terminate_limit = terminate_limit + 5 ! give DR more time to converge
+                if (terminate_limit > 30) terminate_limit = 30
+            else
+                minimum_newton_residual = s
+                avi%y(1:n) = work%x(1:n)
+            end if
+        else ! update the y iterate
+            avi%y(1:n) = work%x(1:n)
+        end if
+
+        ! the working set has not changed -> check the KKT conditions
+        if (work%iterations == 1) then
+            counter = counter + 1
+            if (counter == terminate_limit) then
+                work%xold(1:n) = avi%x(1:n) ! in case the Newton step fails
+                call daqp_solve_avi_kkt(work) ! find a KKT point
+                if (daqp_check_optimal_avi(work)) then
+                    work%x(1:n) = avi%x(1:n)
+                    exitflag = 1
+                    exit
+                end if
+                k = k + 1
+                cycle
+            end if
+        else
+            counter = 0
+        end if
+
+        do i = 1, n
+            avi%xtemp(i) = avi%rho*avi%y(i) + avi%Hx(i)
+            avi%y(i) = avi%y(i) - avi%x(i)
+        end do
+        do i = 1, n
+            avi%xtemp(i) = avi%xtemp(i) + 0.5_wp*avi%Hsym(i,i)*avi%y(i) ! diagonal
+            do j = i+1, n
+                val = 0.5_wp*avi%Hsym(j,i)
+                avi%xtemp(i) = avi%xtemp(i) + val*avi%y(j)
+                avi%xtemp(j) = avi%xtemp(j) + val*avi%y(i)
+            end do
+        end do
+        call daqp_lu_solve(avi%H_rho, avi%P_H2, avi%xtemp, avi%x, n)
+        k = k + 1
+    end do
+    end associate
+
+    if (retry_requested) then
+        original_limit = work%settings%iter_limit
+        previous_outer_iterations = work%nh
+        retry_flag = retry_avi_with_reduced_rho(work)
+        if (retry_flag < 0) then
+            exitflag = retry_flag
+            return
+        end if
+        if (retry_flag > 0 .and. k+1 < original_limit) then
+            work%settings%iter_limit = original_limit - (k+1)
+            retry_flag = daqp_solve_avi(work)
+            work%settings%iter_limit = original_limit
+            work%iterations = work%iterations + tot_iter
+            work%nh = work%nh + previous_outer_iterations
+            exitflag = retry_flag
+            return
+        end if
+        work%iterations = tot_iter
+        exitflag = daqp_exit_iterlimit
+        return
+    end if
+    if (k == work%settings%iter_limit) exitflag = daqp_exit_iterlimit
+    work%iterations = tot_iter
+
+    end function daqp_solve_avi
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  The KKT point of an AVI on the working set (upstream's `daqp_solve_avi_kkt`):
+!  `S lam = -A_W H^{-1} f - b_W` with `S = A_W H^{-1} A_W'`, then
+!  `H x = -f - A_W' lam`.
+
+    subroutine daqp_solve_avi_kkt(work)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: i, j, k, nAS, n, row_idx, roff, flag
+    real(wp) :: s, lj
+
+    nAS = work%n_active
+    n = work%n
+    roff = nAS*nAS ! the right-hand side follows S in kkt_buffer
+    associate (avi => work%avi, qp => work%qp, temp => work%avi%xtemp)
+
+    ! S = A_WS * H^-1 * A_WS^T
+    do i = 0, nAS-1
+        ! temp = H^-1 * A_row_WS(i)^T
+        row_idx = work%WS(i+1)
+        if (row_idx <= work%ms) then ! simple bound
+            avi%kkt_buffer(roff+1:roff+n) = 0.0_wp
+            avi%kkt_buffer(roff+row_idx) = 1.0_wp
+            call daqp_lu_solve(avi%LU_H, avi%P_H, avi%kkt_buffer(roff+1:roff+n), temp, n)
+        else
+            call daqp_lu_solve(avi%LU_H, avi%P_H, qp%At(:,row_idx-work%ms), temp, n)
+        end if
+        do j = 0, nAS-1
+            row_idx = work%WS(j+1)
+            if (row_idx <= work%ms) then ! simple bound
+                s = temp(row_idx)
+            else ! general constraint
+                s = 0.0_wp
+                do k = 1, n
+                    s = s + qp%At(k,row_idx-work%ms)*temp(k)
+                end do
+            end if
+            avi%kkt_buffer(j*nAS+i+1) = s
+        end do
+    end do
+
+    ! the right-hand side: -A_WS * H^-1 * f - b_WS
+    call daqp_lu_solve(avi%LU_H, avi%P_H, qp%f, temp, n)
+    do i = 0, nAS-1
+        row_idx = work%WS(i+1)
+        if (has(work%sense(row_idx),daqp_lower)) then
+            s = qp%blower(row_idx)
+        else
+            s = qp%bupper(row_idx)
+        end if
+        if (row_idx <= work%ms) then
+            s = s + temp(row_idx)
+        else
+            do k = 1, n
+                s = s + qp%At(k,row_idx-work%ms)*temp(k)
+            end do
+        end if
+        avi%kkt_buffer(roff+i+1) = -s
+        ! soft constraints -> the diagonal of S is regularized
+        if (has(work%sense(row_idx),daqp_soft)) &
+            avi%kkt_buffer(i*(nAS+1)+1) = avi%kkt_buffer(i*(nAS+1)+1) + &
+                work%settings%rho_soft/(work%scaling(row_idx)*work%scaling(row_idx))
+    end do
+
+    ! lambda: S * lambda = rhs
+    flag = daqp_lu(avi%kkt_buffer, avi%P_S, nAS)
+    call daqp_lu_solve(avi%kkt_buffer, avi%P_S, avi%kkt_buffer(roff+1:roff+nAS), work%lam_star, nAS)
+
+    ! x: H * x = -f - A_WS^T * lambda
+    do i = 1, n
+        temp(i) = -qp%f(i)
+    end do
+    do j = 1, nAS
+        lj = work%lam_star(j)
+        row_idx = work%WS(j)
+        if (row_idx <= work%ms) then
+            temp(row_idx) = temp(row_idx) - lj
+        else
+            do i = 1, n
+                temp(i) = temp(i) - qp%At(i,row_idx-work%ms)*lj
+            end do
+        end if
+    end do
+    call daqp_lu_solve(avi%LU_H, avi%P_H, temp, avi%x, n)
+    end associate
+
+    end subroutine daqp_solve_avi_kkt
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Whether the KKT point of an AVI is optimal (upstream's `daqp_check_optimal_avi`).
+
+    logical function daqp_check_optimal_avi(work)
+
+    type(daqp_workspace), intent(in) :: work !! workspace
+
+    integer(ip) :: i, j
+    real(wp) :: dual_tol, primal_tol, ax
+
+    daqp_check_optimal_avi = .false.
+    dual_tol = work%settings%dual_tol
+    primal_tol = work%settings%primal_tol
+    ! the dual variables
+    do i = 1, work%n_active
+        if (has(work%sense(work%WS(i)),daqp_immutable)) cycle
+        if (has(work%sense(work%WS(i)),daqp_lower)) then
+            if (work%lam_star(i) > dual_tol) return
+        else
+            if (work%lam_star(i) < -dual_tol) return
+        end if
+    end do
+    ! simple constraints
+    do i = 1, work%ms
+        if (has(work%sense(i),daqp_active)) cycle
+        if (work%avi%x(i) > work%qp%bupper(i) + primal_tol) return
+        if (work%avi%x(i) < work%qp%blower(i) - primal_tol) return
+    end do
+    ! general constraints
+    do i = work%ms+1, work%m
+        if (has(work%sense(i),daqp_active)) cycle
+        ax = 0.0_wp
+        do j = 1, work%n
+            ax = ax + work%qp%At(j,i-work%ms)*work%avi%x(j)
+        end do
+        if (ax > work%qp%bupper(i) + primal_tol) return
+        if (ax < work%qp%blower(i) - primal_tol) return
+    end do
+    daqp_check_optimal_avi = .true. ! an optimal KKT point is found
+
+    end function daqp_check_optimal_avi
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Branch-and-bound constraint id helpers: the bit `bnb_lower_bit` marks the
+!  lower bound.
+
+    pure integer(ip) function add_lower_flag(x)
+    integer(ip), intent(in) :: x !! constraint id
+    add_lower_flag = ibset(x, bnb_lower_bit)
+    end function add_lower_flag
+
+    pure integer(ip) function remove_lower_flag(x)
+    integer(ip), intent(in) :: x !! constraint id
+    remove_lower_flag = ibclr(x, bnb_lower_bit)
+    end function remove_lower_flag
+
+    pure integer(ip) function toggle_lower_flag(x)
+    integer(ip), intent(in) :: x !! constraint id
+    toggle_lower_flag = ieor(x, ishft(1_ip, bnb_lower_bit))
+    end function toggle_lower_flag
+
+    pure logical function extract_lower_flag(x)
+    integer(ip), intent(in) :: x !! constraint id
+    extract_lower_flag = btest(x, bnb_lower_bit)
+    end function extract_lower_flag
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Signed distance of binary constraint `id` from the midpoint of its bounds.
+
+    real(wp) function binary_diff(work,id) result(diff)
+
+    type(daqp_workspace), intent(in) :: work !! workspace
+    integer(ip), intent(in) :: id            !! constraint
+
+    integer(ip) :: j, disp
+
+    diff = 0.5_wp*(work%dupper(id)+work%dlower(id))
+    if (id <= work%ms) then ! simple bound
+        if (work%rmode /= rinv_dense) then ! Hessian is identity (or diagonal)
+            diff = diff - work%x(id)
+        else
+            disp = ridx(id,id,work%n)
+            do j = id, work%n
+                diff = diff - work%R(disp)*work%x(j)
+                disp = disp + 1
+            end do
+        end if
+    else ! general bound (add_infeasible already computed M*u)
+        diff = diff - work%Mu(id-work%ms)
+    end if
+
+    end function binary_diff
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Store the free part of the working set in `ids`. Returns the number stored.
+
+    integer(ip) function bnb_store_ws(work,ids) result(n_ids)
+
+    type(daqp_workspace), intent(in) :: work !! workspace
+    integer(ip), intent(inout) :: ids(:)     !! storage
+
+    integer(ip) :: i, id
+
+    n_ids = 0
+    do i = work%bnb%neq+1, work%n_active
+        id = work%WS(i)
+        if (iand(work%sense(id), daqp_immutable+daqp_binary) /= daqp_immutable+daqp_binary) then
+            n_ids = n_ids + 1
+            if (has(work%sense(id),daqp_lower)) then
+                ids(n_ids) = add_lower_flag(id)
+            else
+                ids(n_ids) = id
+            end if
+        end if
+    end do
+
+    end function bnb_store_ws
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Add the constraints in `ids` to the working set (aborted if the basis gets singular).
+
+    subroutine bnb_load_ws(work,ids,n_ids)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: ids(:)           !! constraints (with the lower-bound bit)
+    integer(ip), intent(in) :: n_ids            !! number of constraints
+
+    integer(ip) :: i, id
+
+    do i = 1, n_ids
+        call add_upper_lower(work, ids(i))
+        if (work%sing_ind /= empty_ind) then
+            id = work%WS(work%n_active)
+            work%n_active = work%n_active - 1
+            work%sense(id) = iand(work%sense(id), not(daqp_active))
+            work%sing_ind = empty_ind
+            exit
+        end if
+    end do
+
+    end subroutine bnb_load_ws
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  The immutable constraints (e.g., equalities) are kept fixed as a prefix of
+!  the working set throughout the tree. Returns the length of that prefix.
+
+    integer(ip) function bnb_setup_root(work) result(flag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: i, j, nfixed
+
+    nfixed = work%n_active
+    do i = 1, work%n_active
+        if (.not. has(work%sense(work%WS(i)),daqp_immutable)) then
+            nfixed = i - 1
+            exit
+        end if
+    end do
+    do j = nfixed+1, work%n_active
+        if (has(work%sense(work%WS(j)),daqp_immutable)) exit
+    end do
+    if (j > work%n_active) then ! the mutable constraints are a warm start
+        flag = nfixed
+        return
+    end if
+
+    ! immutable after mutable => only activate the immutable constraints
+    do i = 1, work%n_active
+        if (.not. has(work%sense(work%WS(i)),daqp_immutable)) &
+            work%sense(work%WS(i)) = iand(work%sense(work%WS(i)), not(daqp_active))
+    end do
+    call daqp_reset_workspace(work)
+    flag = daqp_activate_constraints(work)
+    if (flag >= 0) flag = work%n_active
+
+    end function bnb_setup_root
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Use the candidate in `x` as an incumbent. Returns its objective (internal
+!  scale), with `u = R*x+v` stored in `xold`, or -1 if it is infeasible.
+
+    real(wp) function bnb_incumbent(work) result(fval)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: i, j, n, disp
+    real(wp) :: val, tol
+
+    fval = -1.0_wp
+    if (.not. work%has_qp) return
+    n = work%n
+    tol = work%settings%primal_tol
+
+    ! check feasibility (soft constraints are treated as hard)
+    do i = 1, work%m
+        if (i <= work%ms) then
+            val = work%x(i)
+        else
+            val = dot_seq(n, work%qp%At(:,i-work%ms), work%x)
+        end if
+        if (has(work%sense(i),daqp_immutable) .and. .not. has(work%sense(i),daqp_active) .and. &
+            .not. has(work%sense(i),daqp_binary)) cycle ! ignored
+        if (val > work%qp%bupper(i)+tol .or. val < work%qp%blower(i)-tol) return
+        if (has(work%sense(i),daqp_binary) .and. val > work%qp%blower(i)+tol .and. &
+            val < work%qp%bupper(i)-tol) return
+    end do
+
+    ! invert daqp_ldp2qp_solution: u = R*x + v
+    work%xold(1:n) = work%x(1:n)
+    if (work%rmode == rinv_dense) then
+        do i = 1, work%ms
+            work%xold(i) = work%xold(i)*work%scaling(i)
+        end do
+        do i = n, 1, -1 ! back substitution with the upper triangular Rinv
+            disp = ridx(i,i,n)
+            do j = i+1, n
+                work%xold(i) = work%xold(i) - work%R(disp+j-i)*work%xold(j)
+            end do
+            work%xold(i) = work%xold(i)/work%R(disp)
+        end do
+    else if (work%rmode == rinv_diag) then
+        do i = 1, n
+            work%xold(i) = work%xold(i)/work%R(i)
+        end do
+    end if
+    if (work%has_v) then
+        do i = 1, n
+            work%xold(i) = work%xold(i) + work%v(i)
+        end do
+    end if
+    fval = 0.0_wp
+    do i = 1, n
+        fval = fval + work%xold(i)*work%xold(i)
+    end do
+
+    end function bnb_incumbent
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Branch and bound over the binary constraints (upstream's `daqp_bnb`).
+!  Returns the exit flag; `x` (`u`) holds the best solution.
+
+    integer(ip) function daqp_bnb(work) result(exitflag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+
+    integer(ip) :: branch_id, node
+    real(wp) :: fval_bound0, eps_r, fval_inc
+    logical :: have_sol
+
+    exitflag = bnb_setup_root(work)
+    if (exitflag < 0) return
+    work%bnb%neq = exitflag
+
+    ! warm start the root with the root working set of the previous solve
+    ! (unless a warm start has been provided)
+    if (work%n_active == work%bnb%neq) &
+        call bnb_load_ws(work, work%bnb%root_ws, work%bnb%n_root_ws)
+
+    ! modify the upper bound based on the absolute/relative suboptimality tolerance
+    fval_bound0 = work%settings%fval_bound
+    eps_r = 1.0_wp/(1.0_wp+work%settings%rel_subopt)
+    work%settings%fval_bound = (fval_bound0 - work%settings%abs_subopt)*eps_r
+    have_sol = .false.
+
+    ! start from a user-provided integer-feasible solution
+    if (has(work%state,state_incumbent)) then
+        work%state = iand(work%state, not(state_incumbent))
+        fval_inc = 0.5_wp*bnb_incumbent(work)
+        if (fval_inc >= 0.0_wp .and. fval_inc < fval_bound0) then
+            work%settings%fval_bound = (fval_inc - work%settings%abs_subopt)*eps_r
+            have_sol = .true. ! a feasible solution is stored in xold
+        end if
+    end if
+
+    associate (bnb => work%bnb)
+    bnb%itercount = 0
+    bnb%nodecount = 0
+    ! the root node
+    bnb%tree(1) = daqp_node(bin_id=0, depth=-1, ws_start=0, ws_end=0)
+    bnb%n_nodes = 1
+    bnb%n_clean = bnb%neq
+    bnb%nws = 0
+
+    exitflag = daqp_exit_infeasible
+    ! tree exploration
+    do while (bnb%n_nodes > 0)
+        bnb%n_nodes = bnb%n_nodes - 1
+        node = bnb%n_nodes + 1
+        exitflag = process_node(work, node) ! solve the relaxation
+        if (bnb%tree(node)%depth < 0 .and. exitflag > 0) &
+            bnb%n_root_ws = bnb_store_ws(work, bnb%root_ws)
+        ! individual relaxations are often too short to reach the timer check in
+        ! daqp_ldp, so also enforce the limit across the tree
+        if (work%timer_on .and. iand(bnb%nodecount, 31_ip) == 0) then
+            if (elapsed_time(work) > work%settings%time_limit) then
+                exitflag = daqp_exit_timelimit
+                exit
+            end if
+        end if
+        ! cut conditions
+        if (exitflag == daqp_exit_infeasible) cycle ! dominance cut
+        if (exitflag < 0) exit ! the inner solver failed
+
+        ! find an index to branch over
+        branch_id = get_branch_id(work)
+        if (branch_id == empty_ind) then ! nothing to branch over => integer feasible
+            work%settings%fval_bound = (0.5_wp*work%fval - work%settings%abs_subopt)*eps_r
+            call swap_x(work) ! store the feasible solution
+            have_sol = .true.
+        else
+            call spawn_children(work, node, branch_id)
+        end if
+    end do
+
+    ! exploration completed
+    work%iterations = bnb%itercount
+    ! restore the root state (unfix the binaries etc.) so that the workspace can
+    ! be reused for subsequent solves
+    call node_cleanup_workspace(work, bnb%neq)
+    bnb%n_clean = bnb%neq
+    end associate
+    if (.not. have_sol) then
+        work%settings%fval_bound = fval_bound0
+        if (exitflag >= 0) exitflag = daqp_exit_infeasible
+    else
+        ! invert fval_bound = (0.5*fval_best - abs_subopt)*eps_r to recover fval_best
+        work%fval = 2.0_wp*work%settings%fval_bound/eps_r + 2.0_wp*work%settings%abs_subopt
+        work%settings%fval_bound = fval_bound0
+        call swap_x(work) ! x (u) holds the best feasible solution
+        if (exitflag >= daqp_exit_infeasible) exitflag = daqp_exit_optimal
+    end if
+
+    end function daqp_bnb
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve the relaxation of a node (upstream's `daqp_process_node`).
+
+    integer(ip) function process_node(work,node) result(exitflag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: node             !! node (index in the tree)
+
+    integer(ip) :: depth
+    logical :: cleanup
+
+    work%bnb%nodecount = work%bnb%nodecount + 1
+    depth = work%bnb%tree(node)%depth
+    if (depth >= 0) then
+        ! fix a binary constraint
+        work%bnb%fixed_ids(depth+1) = work%bnb%tree(node)%bin_id
+        ! set up the relaxation
+        cleanup = work%bnb%n_nodes == 0
+        if (.not. cleanup) cleanup = work%bnb%tree(node-1)%depth /= depth
+        if (cleanup) then
+            ! the sibling has been processed => fix the workspace state
+            work%bnb%n_clean = work%bnb%n_clean + (depth - work%bnb%tree(node+1)%depth)
+            call node_cleanup_workspace(work, work%bnb%n_clean)
+            call warmstart_node(work, node)
+        else
+            call add_upper_lower(work, work%bnb%tree(node)%bin_id)
+            work%sense(remove_lower_flag(work%bnb%tree(node)%bin_id)) = &
+                ior(work%sense(remove_lower_flag(work%bnb%tree(node)%bin_id)), daqp_immutable) ! equality
+            if (work%sing_ind /= empty_ind) call setup_cold_bnb(work, node) ! cold start, not to miss integer feasible
+        end if
+    end if
+    ! solve the relaxation
+    exitflag = daqp_ldp(work)
+    work%bnb%itercount = work%bnb%itercount + work%iterations
+
+    if (exitflag == daqp_exit_cycle) then ! try to repair (cold start)
+        ! a cycle can be caused by stale cached forward-substitution data
+        work%reuse_ind = 0
+        call setup_cold_bnb(work, node)
+        exitflag = daqp_ldp(work)
+        work%bnb%itercount = work%bnb%itercount + work%iterations
+    end if
+
+    end function process_node
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  The binary constraint to branch over (with the lower-bound bit for the
+!  lower endpoint), or `empty_ind` if the relaxation is integer feasible.
+
+    integer(ip) function get_branch_id(work) result(branch)
+
+    type(daqp_workspace), intent(in) :: work !! workspace
+
+    integer(ip) :: i, id
+    real(wp) :: diff, dist, tol, ad
+
+    branch = empty_ind
+    do i = 1, work%bnb%nb
+        id = work%bnb%bin_ids(i)
+        if (has(work%sense(id),daqp_active)) cycle ! skip fixed binary constraints
+        ! signed distance from the midpoint between the bounds
+        diff = binary_diff(work, id)
+        ! a zero-dual binary constraint can lie at an endpoint without being
+        ! active: it is already integer feasible
+        ad = diff
+        if (diff < 0.0_wp) ad = -diff
+        dist = 0.5_wp*(work%dupper(id)-work%dlower(id)) - ad
+        tol = work%settings%primal_tol*work%scaling(id)
+        if (dist <= tol) cycle
+        ! explore the endpoint nearest to the relaxation first
+        if (diff < 0.0_wp) then
+            branch = id
+        else
+            branch = add_lower_flag(id)
+        end if
+        return
+    end do
+
+    end function get_branch_id
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Replace a node by its two children.
+
+    subroutine spawn_children(work,node,branch_id)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: node             !! node
+    integer(ip), intent(in) :: branch_id        !! constraint to branch over
+
+    call save_warmstart(work, node)
+    associate (tree => work%bnb%tree)
+    ! child 1 (reuses the current node)
+    tree(node)%bin_id = toggle_lower_flag(branch_id)
+    tree(node)%depth = tree(node)%depth + 1
+    ! child 2
+    tree(node+1)%bin_id = branch_id
+    tree(node+1)%depth = tree(node)%depth
+    tree(node+1)%ws_start = tree(node)%ws_start
+    tree(node+1)%ws_end = tree(node)%ws_end
+    end associate
+    work%bnb%n_nodes = work%bnb%n_nodes + 2
+
+    end subroutine spawn_children
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Restore the working set to its first `n_clean` constraints.
+
+    subroutine node_cleanup_workspace(work,n_clean)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: n_clean          !! constraints to keep
+
+    integer(ip) :: i, id
+
+    do i = n_clean+1, work%n_active
+        id = work%WS(i)
+        if (has(work%sense(id),daqp_binary)) then
+            work%sense(id) = iand(work%sense(id), not(daqp_active+daqp_immutable))
+        else
+            work%sense(id) = iand(work%sense(id), not(daqp_active))
+        end if
+    end do
+    work%sing_ind = empty_ind
+    work%n_active = n_clean
+    ! only the retained prefix can still have a valid cached substitution
+    if (work%reuse_ind > n_clean) work%reuse_ind = n_clean
+
+    end subroutine node_cleanup_workspace
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Warm start a node: its fixed constraints, then its stored working set.
+
+    subroutine warmstart_node(work,node)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: node             !! node
+
+    integer(ip) :: i, ws_start, ws_end
+
+    ! add the fixed constraints
+    do i = work%bnb%n_clean - work%bnb%neq, work%bnb%tree(node)%depth
+        call add_upper_lower(work, work%bnb%fixed_ids(i+1))
+        work%sense(remove_lower_flag(work%bnb%fixed_ids(i+1))) = &
+            ior(work%sense(remove_lower_flag(work%bnb%fixed_ids(i+1))), daqp_immutable)
+    end do
+    work%bnb%n_clean = work%bnb%neq + work%bnb%tree(node)%depth
+    ! add the free constraints
+    ws_start = work%bnb%tree(node)%ws_start
+    ws_end = work%bnb%tree(node)%ws_end
+    call bnb_load_ws(work, work%bnb%tree_ws(ws_start+1:), ws_end-ws_start)
+    work%bnb%nws = ws_start ! always move up the tree after a warm start
+
+    end subroutine warmstart_node
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Store the working set of a node, as the warm start of its children.
+
+    subroutine save_warmstart(work,node)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: node             !! node
+
+    integer(ip) :: nstored
+
+    work%bnb%tree(node)%ws_start = work%bnb%nws
+    nstored = bnb_store_ws(work, work%bnb%tree_ws(work%bnb%nws+1:))
+    work%bnb%nws = work%bnb%nws + nstored
+    work%bnb%tree(node)%ws_end = work%bnb%nws
+
+    end subroutine save_warmstart
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Add a constraint at its upper bound, or at its lower one if `add_id` has
+!  the lower-bound bit.
+
+    subroutine add_upper_lower(work,add_id)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: add_id           !! constraint (with the lower-bound bit)
+
+    integer(ip) :: id
+
+    id = remove_lower_flag(add_id)
+    if (extract_lower_flag(add_id)) then
+        work%sense(id) = ior(work%sense(id), daqp_lower)
+        call add_constraint(work, id, -1.0_wp)
+    else
+        work%sense(id) = iand(work%sense(id), not(daqp_lower))
+        call add_constraint(work, id, 1.0_wp)
+    end if
+
+    end subroutine add_upper_lower
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Cold start a node: only its fixed constraints.
+
+    subroutine setup_cold_bnb(work,node)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    integer(ip), intent(in) :: node             !! node
+
+    integer(ip) :: i
+
+    call node_cleanup_workspace(work, work%bnb%n_clean)
+    do i = work%bnb%n_clean - work%bnb%neq, work%bnb%tree(node)%depth
+        call add_upper_lower(work, work%bnb%fixed_ids(i+1))
+        work%sense(remove_lower_flag(work%bnb%fixed_ids(i+1))) = &
+            ior(work%sense(remove_lower_flag(work%bnb%fixed_ids(i+1))), daqp_immutable)
+    end do
+    work%bnb%n_clean = work%bnb%neq + work%bnb%tree(node)%depth
+
+    end subroutine setup_cold_bnb
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Solve a hierarchical (lexicographic) QP (upstream's `daqp_hiqp`): the first
+!  level is hard; each following level is soft, and is made hard at the slacks
+!  it ends up with. `lam` (if present) is set to the slacks of the soft levels.
+
+    integer(ip) function daqp_hiqp(work,lam) result(exitflag)
+
+    type(daqp_workspace), intent(inout) :: work !! workspace
+    real(wp), intent(inout), optional :: lam(:) !! slacks of the soft levels
+
+    integer(ip) :: i, j, jj, id, start, iend, iterations, nfree, n_active_old
+    real(wp) :: w
+
+    iterations = 0
+    exitflag = 0
+    ! one hierarchy -> just solve a normal LDP
+    if (.not. is_hierarchical(work)) then
+        exitflag = daqp_ldp(work)
+        return
+    end if
+
+    ! a previous solve shifted d by the slacks of the soft levels, so it has to
+    ! be reformed by an update first
+    if (has(work%state,daqp_update_d) .and. work%has_qp) then
+        exitflag = daqp_exit_unsupported
+        return
+    end if
+
+    if (present(lam)) lam(1:work%m) = 0.0_wp
+
+    ! move down the hierarchy ((0-based) constraints start..end-1 form a level)
+    start = work%break_points(1)
+    ! a previous solve leaves constraints of the soft levels in the working set;
+    ! restart from the (hard) first level, whose active set is kept
+    do i = 1, work%n_active
+        if (work%WS(i) > start) exit
+    end do
+    if (i <= work%n_active) then
+        work%m = start
+        call daqp_reset_workspace(work)
+        exitflag = daqp_activate_constraints(work)
+        if (exitflag < 0) return
+        exitflag = 0
+    end if
+    nfree = work%n
+    do i = 2, work%nh
+        ! initialize the current level
+        iend = work%break_points(i)
+        work%m = iend
+        ! soften the constraints and activate
+        do j = start+1, iend
+            work%sense(j) = ior(work%sense(j), daqp_soft)
+            if (has(work%sense(j),daqp_active)) then
+                if (has(work%sense(j),daqp_lower)) then
+                    call add_constraint(work, j, -1.0_wp)
+                else
+                    call add_constraint(work, j, 1.0_wp)
+                end if
+                if (work%sing_ind /= empty_ind) then
+                    ! dependent constraint (e.g., from a warm start): leave it out,
+                    ! and make it mutable so that it is not ignored
+                    work%sense(j) = iand(work%sense(j), not(daqp_active))
+                    work%sense(j) = iand(work%sense(j), not(daqp_immutable))
+                    work%n_active = work%n_active - 1
+                    work%sing_ind = empty_ind
+                    if (work%reuse_ind > work%n_active) work%reuse_ind = work%n_active
+                end if
+            end if
+        end do
+
+        ! save the best solution in case daqp_ldp fails
+        work%xold(1:work%n) = work%x(1:work%n)
+        ! solve the LDP
+        exitflag = daqp_ldp(work)
+        iterations = iterations + work%iterations
+        if (exitflag < 0) exit
+
+        if (iterations >= work%settings%iter_limit) then
+            exitflag = daqp_exit_iterlimit
+            exit
+        end if
+
+        ! perturb the right-hand side with the slacks of the level
+        do j = 1, work%n_active
+            id = work%WS(j)
+            if (has(work%sense(id),daqp_soft)) then
+                w = soft_slack(work, j)
+                if (w < -work%settings%primal_tol) then
+                    work%dlower(id) = work%dlower(id) + w
+                else if (w > work%settings%primal_tol) then
+                    work%dupper(id) = work%dupper(id) + w
+                end if
+                if (present(lam)) then
+                    if (has(work%sense(id),daqp_lower)) then ! for weakly active
+                        w = w - 1.0e-14_wp
+                    else
+                        w = w + 1.0e-14_wp
+                    end if
+                    lam(id) = w
+                end if
+            end if
+        end do
+
+        ! make the constraints of the current level hard
+        do j = start+1, iend
+            work%sense(j) = iand(work%sense(j), not(daqp_soft))
+        end do
+
+        if (i == work%nh) exit
+
+        ! find the first active constraint of the current level
+        do j = 1, work%n_active
+            if (work%WS(j) > start) exit
+        end do
+
+        ! reactivate the constraints of the current level (to address soft->hard)
+        n_active_old = min(work%n_active, work%n)
+        do jj = n_active_old+1, work%n_active
+            work%sense(work%WS(jj)) = iand(work%sense(work%WS(jj)), not(daqp_active+daqp_immutable))
+        end do
+        work%n_active = j - 1
+        work%reuse_ind = j - 1
+        work%sing_ind = empty_ind
+        do jj = j, n_active_old
+            call add_constraint(work, work%WS(jj), work%lam_star(jj))
+            ! skip if the working set becomes overdetermined
+            if (work%sing_ind /= empty_ind) then
+                call remove_constraint(work, jj)
+                work%sing_ind = empty_ind
+                work%sense(work%WS(jj)) = iand(work%sense(work%WS(jj)), not(daqp_immutable))
+            else
+                if (has(work%sense(work%WS(jj)),daqp_immutable)) nfree = nfree - 1
+            end if
+        end do
+
+        if (nfree <= 0) exit ! no degrees of freedom left
+        ! move up the hierarchy
+        start = iend
+    end do
+    ! finalize
+    if (exitflag < 0) then ! restore a point that was good before it failed
+        work%x(1:work%n) = work%xold(1:work%n)
+        exitflag = daqp_exit_no_freedom
+    end if
+    work%iterations = iterations ! total number of iterations
+    work%state = ior(work%state, daqp_update_d) ! the levels have shifted d
+
+    end function daqp_hiqp
 !*****************************************************************************************
 
 !*****************************************************************************************

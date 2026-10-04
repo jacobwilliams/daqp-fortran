@@ -9,6 +9,10 @@ src_dir: ./src
 output_dir: ./doc
 preprocess: true
 preprocessor: gfortran -E -cpp
+predocmark_alt: >
+predocmark: <
+docmark_alt:
+docmark: !
 fpp_extensions: F90
 display: public
          protected

@@ -34,17 +34,17 @@ CFLAGS="${CFLAGS:--O3}"
 mkdir -p "$OUT/obj"
 rm -f "$OUT"/obj/*.o "$OUT/libdaqp.a"
 
-# double precision, individual soft weights (upstream's defaults); without
-# PROFILING, so that the C solver does not time itself (the port does not)
+# double precision, individual soft weights, and PROFILING (upstream's defaults:
+# the time limit and the timing of setup and solve, as the port has them)
 for f in "$SRC"/src/*.c; do
-    "$CC" $CFLAGS -I"$SRC/include" -c "$f" -o "$OUT/obj/$(basename "${f%.c}").o"
+    "$CC" $CFLAGS -DPROFILING -I"$SRC/include" -c "$f" -o "$OUT/obj/$(basename "${f%.c}").o"
 done
 ar rcs "$OUT/libdaqp.a" "$OUT"/obj/*.o
 
 {
     echo "upstream commit: $(git -C "$SRC" rev-parse HEAD) ($(git -C "$SRC" describe --tags 2>/dev/null || echo untagged))"
     echo "compiler: $("$CC" --version | head -1)"
-    echo "flags: $CFLAGS"
+    echo "flags: $CFLAGS -DPROFILING"
 } > "$OUT/build_info.txt"
 cat "$OUT/build_info.txt"
 echo "built $OUT/libdaqp.a"

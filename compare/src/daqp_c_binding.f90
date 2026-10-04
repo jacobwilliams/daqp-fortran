@@ -95,6 +95,40 @@
             type(c_ptr), value :: work
             type(daqp_c_problem), intent(inout) :: qp
         end function daqp_c_update_ldp
+        integer(c_int) function setup_daqp_main(qp, work, setup_time, init_mask) bind(c, name='setup_daqp_main')
+            import :: daqp_c_problem, c_ptr, c_int
+            type(daqp_c_problem), intent(inout) :: qp
+            type(c_ptr), value :: work
+            type(c_ptr), value :: setup_time
+            integer(c_int), value :: init_mask
+        end function setup_daqp_main
+        integer(c_int) function daqp_c_set_soft_weights(work, rho_l, rho_u, w_l, w_u) &
+                bind(c, name='daqp_set_soft_weights')
+            import :: c_ptr, c_int
+            type(c_ptr), value :: work, rho_l, rho_u, w_l, w_u
+        end function daqp_c_set_soft_weights
+        subroutine daqp_c_primal_init_active(qp, x) bind(c, name='daqp_primal_init_active')
+            import :: daqp_c_problem, c_double
+            type(daqp_c_problem), intent(inout) :: qp
+            real(c_double), intent(in) :: x(*)
+        end subroutine daqp_c_primal_init_active
+        subroutine daqp_c_dual_init_active(qp, lam) bind(c, name='daqp_dual_init_active')
+            import :: daqp_c_problem, c_double
+            type(daqp_c_problem), intent(inout) :: qp
+            real(c_double), intent(in) :: lam(*)
+        end subroutine daqp_c_dual_init_active
+        subroutine daqp_c_set_primal_start(work, x) bind(c, name='daqp_set_primal_start')
+            import :: c_ptr, c_double
+            type(c_ptr), value :: work
+            real(c_double), intent(in) :: x(*)
+        end subroutine daqp_c_set_primal_start
+        subroutine daqp_c_minrep(is_redundant, A, b, n, m, ms) bind(c, name='daqp_minrep')
+            import :: c_int, c_double
+            integer(c_int), intent(out) :: is_redundant(*)
+            real(c_double), intent(inout) :: A(*)
+            real(c_double), intent(inout) :: b(*)
+            integer(c_int), value :: n, m, ms
+        end subroutine daqp_c_minrep
         ! helpers (c_shim.c)
         type(c_ptr) function cmp_ws_new(settings) bind(c, name='cmp_ws_new')
             import :: daqp_c_settings, c_ptr
@@ -125,6 +159,8 @@
     end interface
 
     public :: daqp_default_settings, daqp_c_quadprog, setup_daqp, daqp_c_solve, daqp_c_update_ldp
+    public :: setup_daqp_main, daqp_c_set_soft_weights, daqp_c_primal_init_active, daqp_c_dual_init_active
+    public :: daqp_c_set_primal_start, daqp_c_minrep
     public :: cmp_ws_new, cmp_ws_free, cmp_ws_n_active, cmp_ws_working_set, cmp_ws_set_working_set
 
     end module daqp_c_binding
