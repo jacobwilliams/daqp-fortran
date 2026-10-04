@@ -10,7 +10,9 @@ extend-exclude = [
 ]
 ignore = [
     "S241",
-    "C003"
+    "C003",
+    "C121",
+    "C071"
 ]
 
 [check.line-too-long]

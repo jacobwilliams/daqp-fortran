@@ -8,7 +8,7 @@
     module daqp_test_utils
 
     use daqp_kinds, only: wp => daqp_wp, ip => daqp_ip
-    use iso_fortran_env, only: int64, output_unit
+    use, intrinsic :: iso_fortran_env, only: int64, output_unit
 
     implicit none
 

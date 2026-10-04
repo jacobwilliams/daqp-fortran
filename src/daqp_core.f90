@@ -288,8 +288,9 @@
     ! l <-- Mk*m
     do i = 1, na
         id = work%WS(i)
-        if (has(work%sense(id),daqp_soft) .and. .not. has(work%sense(id),daqp_slack_fixed)) &
-            ns_active = ns_active + 1
+        if (has(work%sense(id),daqp_soft) .and. .not. has(work%sense(id),daqp_slack_fixed)) then
+          ns_active = ns_active + 1
+        end if
         if (id <= work%ms) then
             mk_null = work%rmode /= rinv_dense
             j = max(start_col, id)
@@ -651,8 +652,9 @@
 
     work%sense(add_ind) = ior(work%sense(add_ind), daqp_active)
     rho = 0.0_wp
-    if (has(work%sense(add_ind),daqp_soft) .and. .not. has(work%sense(add_ind),daqp_slack_fixed)) &
-        rho = soft_rho(work,add_ind)
+    if (has(work%sense(add_ind),daqp_soft) .and. .not. has(work%sense(add_ind),daqp_slack_fixed)) then
+      rho = soft_rho(work,add_ind)
+    end if
     call update_LDL_add(work, add_ind, rho)
     work%n_active = work%n_active + 1
     work%WS(work%n_active) = add_ind
@@ -1032,8 +1034,9 @@
         end if
         ! linear weight of a nonzero slack
         if (l1) then
-            if (has(work%sense(id),daqp_soft) .and. .not. has(work%sense(id),daqp_slack_fixed)) &
-                s = s - soft_residual(work, id, 0.0_wp)
+            if (has(work%sense(id),daqp_soft) .and. .not. has(work%sense(id),daqp_slack_fixed)) then
+              s = s - soft_residual(work, id, 0.0_wp)
+            end if
         end if
         rs = ((i-1)*i)/2
         do j = 1, i-1
@@ -1252,8 +1255,9 @@
             ! the dependency might only be numerical => keep as a mutable constraint
             id = drop_singular_last(work)
             if (dependency_residual > work%settings%primal_tol*dependency_scale .or. &
-                dependency_residual < -work%settings%primal_tol*dependency_scale) &
-                exitflag = daqp_exit_overdetermined_initial
+                dependency_residual < -work%settings%primal_tol*dependency_scale) then
+              exitflag = daqp_exit_overdetermined_initial
+            end if
         end if
     end do
 
@@ -1265,8 +1269,9 @@
             ! drop the dependent constraint and leave the remaining mutable ones inactive
             id = drop_singular_last(work)
             do j = i+1, work%m
-                if (.not. has(work%sense(j),daqp_immutable)) &
-                    work%sense(j) = iand(work%sense(j), not(daqp_active))
+                if (.not. has(work%sense(j),daqp_immutable)) then
+                  work%sense(j) = iand(work%sense(j), not(daqp_active))
+                end if
             end do
             return
         end if
@@ -1415,8 +1420,9 @@
         end if
         work%xldl(i) = Mu - d
         ! a nonzero soft slack adds a diagonal term to the CSP system
-        if (has(work%sense(id),daqp_soft) .and. .not. has(work%sense(id),daqp_slack_fixed)) &
-            work%xldl(i) = work%xldl(i) - soft_residual(work, id, work%lam_star(i))
+        if (has(work%sense(id),daqp_soft) .and. .not. has(work%sense(id),daqp_slack_fixed)) then
+          work%xldl(i) = work%xldl(i) - soft_residual(work, id, work%lam_star(i))
+        end if
     end do
 
     call solve_working_set(work) ! xldl = dlam
@@ -2278,8 +2284,9 @@
         ! diagonal regularization has no retry loop, so reproduce its
         ! scale-based floor directly
         eps = abs(work%settings%eps_prox)
-        if (work%qp%problem_type /= daqp_problem_factored) &
-            eps = prox_reg_scaled(work, hessian_scale_of(n, work%qp%Hc))
+        if (work%qp%problem_type /= daqp_problem_factored) then
+          eps = prox_reg_scaled(work, hessian_scale_of(n, work%qp%Hc))
+        end if
         return
     end if
 
@@ -2561,8 +2568,9 @@
             return
         else if (diff < work%settings%zero_tol .and. .not. has(work%sense(i),daqp_soft)) then
             ! unmarked equality constraint (blower == bupper)
-            if (.not. has(work%sense(i),daqp_auto_equality) .or. .not. has(work%sense(i),daqp_active)) &
-                do_activate = 1
+            if (.not. has(work%sense(i),daqp_auto_equality) .or. .not. has(work%sense(i),daqp_active)) then
+              do_activate = 1
+            end if
             work%sense(i) = ior(work%sense(i), daqp_active + daqp_immutable + daqp_auto_equality)
         else if (has(work%sense(i),daqp_auto_equality)) then
             work%sense(i) = iand(work%sense(i), not(daqp_active + daqp_immutable + daqp_auto_equality))
@@ -2998,8 +3006,9 @@
     ! the LDP of the problem was not formed while its equalities were eliminated
     if (was_reduced) then
         mask = ior(mask, daqp_update_m + daqp_update_d)
-        if (work%qp%has_H .or. work%qp%problem_type == daqp_problem_factored) &
-            mask = ior(mask, daqp_update_rinv)
+        if (work%qp%has_H .or. work%qp%problem_type == daqp_problem_factored) then
+          mask = ior(mask, daqp_update_rinv)
+        end if
         if (work%qp%has_f) mask = ior(mask, daqp_update_v)
     end if
     flag = update_ldp_core(mask, work)
@@ -3469,8 +3478,9 @@
     ! a negative eta selects an automatic tolerance
     if (.not. all_pd .and. eta < 0.0_wp) then
         eta = auto_eta_cap
-        if (work%settings%dual_tol /= daqp_default_dual_tol .and. 0.1_wp*work%settings%dual_tol < eta) &
-            eta = 0.1_wp*work%settings%dual_tol
+        if (work%settings%dual_tol /= daqp_default_dual_tol .and. 0.1_wp*work%settings%dual_tol < eta) then
+          eta = 0.1_wp*work%settings%dual_tol
+        end if
     end if
 
     do while (total_iter < work%settings%iter_limit)
@@ -4369,8 +4379,9 @@
             qp%sense(i) = iand(qp%sense(i), not(daqp_lower))
         else
             slack = ax - qp%blower(i)
-            if (slack < tol .and. slack > -tol) &
-                qp%sense(i) = ior(qp%sense(i), daqp_active+daqp_lower)
+            if (slack < tol .and. slack > -tol) then
+              qp%sense(i) = ior(qp%sense(i), daqp_active+daqp_lower)
+            end if
         end if
     end do
 
@@ -4985,9 +4996,10 @@
         end if
         avi%kkt_buffer(roff+i+1) = -s
         ! soft constraints -> the diagonal of S is regularized
-        if (has(work%sense(row_idx),daqp_soft)) &
-            avi%kkt_buffer(i*(nAS+1)+1) = avi%kkt_buffer(i*(nAS+1)+1) + &
+        if (has(work%sense(row_idx),daqp_soft)) then
+          avi%kkt_buffer(i*(nAS+1)+1) = avi%kkt_buffer(i*(nAS+1)+1) + &
                 work%settings%rho_soft/(work%scaling(row_idx)*work%scaling(row_idx))
+        end if
     end do
 
     ! lambda: S * lambda = rhs
@@ -5195,8 +5207,9 @@
 
     ! immutable after mutable => only activate the immutable constraints
     do i = 1, work%n_active
-        if (.not. has(work%sense(work%WS(i)),daqp_immutable)) &
-            work%sense(work%WS(i)) = iand(work%sense(work%WS(i)), not(daqp_active))
+        if (.not. has(work%sense(work%WS(i)),daqp_immutable)) then
+          work%sense(work%WS(i)) = iand(work%sense(work%WS(i)), not(daqp_active))
+        end if
     end do
     call daqp_reset_workspace(work)
     flag = daqp_activate_constraints(work)
@@ -5286,8 +5299,9 @@
 
     ! warm start the root with the root working set of the previous solve
     ! (unless a warm start has been provided)
-    if (work%n_active == work%bnb%neq) &
-        call bnb_load_ws(work, work%bnb%root_ws, work%bnb%n_root_ws)
+    if (work%n_active == work%bnb%neq) then
+      call bnb_load_ws(work, work%bnb%root_ws, work%bnb%n_root_ws)
+    end if
 
     ! modify the upper bound based on the absolute/relative suboptimality tolerance
     fval_bound0 = work%settings%fval_bound
@@ -5320,8 +5334,9 @@
         bnb%n_nodes = bnb%n_nodes - 1
         node = bnb%n_nodes + 1
         exitflag = process_node(work, node) ! solve the relaxation
-        if (bnb%tree(node)%depth < 0 .and. exitflag > 0) &
+        if (bnb%tree(node)%depth < 0 .and. exitflag > 0) then
             bnb%n_root_ws = bnb_store_ws(work, bnb%root_ws)
+        end if
         ! individual relaxations are often too short to reach the timer check in
         ! daqp_ldp, so also enforce the limit across the tree
         if (work%timer_on .and. iand(bnb%nodecount, 31_ip) == 0) then

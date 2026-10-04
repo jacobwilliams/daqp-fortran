@@ -20,7 +20,7 @@
     module daqp_types
 
     use daqp_kinds, only: wp => daqp_wp, ip => daqp_ip
-    use iso_fortran_env, only: int64
+    use, intrinsic :: iso_fortran_env, only: int64
 
     implicit none
 

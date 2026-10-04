@@ -8,7 +8,7 @@
 
     module daqp_kinds
 
-    use iso_fortran_env, only: real32, real64, real128, int32
+    use, intrinsic :: iso_fortran_env, only: real32, real64, real128, int32
 
     implicit none
 

@@ -1086,8 +1086,9 @@
                 end do
             end if
         end if
-        if (.not. eq%metric .and. qp%problem_type == daqp_problem_avi) &
+        if (.not. eq%metric .and. qp%problem_type == daqp_problem_avi) then
             symmetric = eq_is_symmetric(qp, zero_tol)
+        end if
     end if
 
     call eq_build_qr(work, zero_tol)

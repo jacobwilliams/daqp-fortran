@@ -10,8 +10,8 @@
 
     program compare
 
-    use iso_c_binding
-    use iso_fortran_env, only: int64, real128, output_unit
+    use, intrinsic :: iso_c_binding
+    use, intrinsic :: iso_fortran_env, only: int64, real128, output_unit
     use daqp_kinds, only: wp => daqp_wp, ip => daqp_ip
     use daqp_types
     use daqp_core
@@ -109,7 +109,8 @@
         ' break points, problem type, primal and dual starts, soft weights).'
     write(output_unit,'(A,ES8.1,A)') 'Pass criteria: `|x_F - x_C|_inf <= c n eps kappa (1 + |x_C|_inf)`'// &
         ' (kappa: the larger of cond(H) and the condition number of the final working set''s Gram'// &
-        ' matrix, estimated by 1/min pivot of its LDL'' factors, and 1/rho_soft with soft constraints), the same for the multipliers and'// &
+        ' matrix, estimated by 1/min pivot of its LDL'' factors, and 1/rho_soft with soft constraints),'//&
+        ' the same for the multipliers and'// &
         ' `|f_F - f_C| <= c n eps kappa (1 + |f_C|)`, with c = ', c_tol, &
         '; the KKT residuals of the port (computed in quadruple precision) at most c times those'// &
         ' of the C code (or below the solver''s primal tolerance; QPs and LPs only).'
@@ -267,8 +268,9 @@
                                problem_type=p%problem_type, &
                                primal_start=p%primal_start, dual_start=p%dual_start)
         end if
-        if (fflag > 0 .and. allocated(p%rho_l)) &
-            ok = daqp_set_soft_weights(work, p%rho_l, p%rho_u, p%w_l, p%w_u)
+        if (fflag > 0 .and. allocated(p%rho_l)) then
+          ok = daqp_set_soft_weights(work, p%rho_l, p%rho_u, p%w_l, p%w_u)
+        end if
 
         call c_problem(p, cqp)
         if (allocated(p%dual_start)) then
@@ -827,6 +829,8 @@
                     p%n = n; p%m = m; p%ms = ms; p%kappa = 1.0e2_wp
                     neq = make_equalities(ms, n, xref, p%A, p%bu, p%bl)
                     write(label,'("determined x, ",I0," equalities (on) ",I0)') neq, k
+                case default
+                    error stop "Unexpected case in select"
                 end select
                 call run_problem(p, trim(label), nsolve=2)
             end do
