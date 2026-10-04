@@ -27,7 +27,7 @@ EXACT="-O2 -ffp-contract=off"
 run() { # $1: C flags, $2: Fortran flags, $3: mode of the driver, $4: output
     CFLAGS="$1" "$ROOT/tools/build_upstream.sh" > /dev/null
     cp "$ROOT/build/upstream/build_info.txt" "$4.info"
-    (cd "$ROOT/compare" && fpm run --flag "$2" --link-flag "-L../build/upstream -ldaqp" -- "$3") > "$4"
+    (cd "$ROOT/compare" && fpm run --flag "$2" --link-flag "-L../build/upstream" -- "$3") > "$4"
 }
 
 env_table() { # $1: build_info.txt, $2: Fortran flags

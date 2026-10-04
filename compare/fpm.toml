@@ -4,12 +4,16 @@
 # directory:
 #
 #   ../tools/build_upstream.sh
-#   fpm run --profile release --link-flag "-L../build/upstream -ldaqp"
+#   fpm run --profile release --link-flag "-L../build/upstream"
+#
+# (libdaqp is listed in [build] link, so that fpm links it after the objects:
+# GNU ld only takes from a static library what the objects before it need)
 #
 name = "daqp-compare"
 version = "0.1.0"
 
 [build]
+link = ["daqp"]
 auto-executables = true
 auto-tests = false
 auto-examples = false

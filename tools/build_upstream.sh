@@ -43,7 +43,7 @@ ar rcs "$OUT/libdaqp.a" "$OUT"/obj/*.o
 
 {
     echo "upstream commit: $(git -C "$SRC" rev-parse HEAD) ($(git -C "$SRC" describe --tags 2>/dev/null || echo untagged))"
-    echo "compiler: $("$CC" --version | head -1)"
+    echo "compiler: $("$CC" --version | head -1) ($(command -v "$CC"))"
     echo "flags: $CFLAGS -DPROFILING"
 } > "$OUT/build_info.txt"
 cat "$OUT/build_info.txt"
