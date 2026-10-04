@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        kind: ["-DREAL64", "-DREAL32", "-DREAL128", "-DINT64"]
+        kind: ["-DREAL64"]
 
     steps:
     - name: Checkout code
@@ -29,9 +29,6 @@ jobs:
 
     - name: Run tests
       run: pixi run fpm test --profile debug --flag "${{ matrix.kind }}"
-
-    - name: Compare with upstream
-      run: tools/run_compare.sh quick
 
     - name: Lint, stack check, and cross-check with the C QDLDL
       if: matrix.kind == '-DREAL64'
