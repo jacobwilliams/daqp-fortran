@@ -1,0 +1,3 @@
+[submodule "upstream/daqp"]
+	path = upstream/daqp
+	url = https://github.com/darnstrom/daqp

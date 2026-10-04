@@ -1,0 +1,17 @@
+[workspace]
+authors = ["Jacob Williams <jacobwilliams@users.noreply.github.com>"]
+channels = ["conda-forge"]
+name = "daqp-fortran"
+platforms = ["osx-arm64", "linux-64", "win-64"]
+version = "0.1.0"
+
+[dependencies]
+gfortran = "15.*"
+fpm = ">=0.13.0,<0.14"
+ford = ">=7.0.13,<8"
+graphviz = ">=14.1.2,<15"
+c-compiler = "*"
+lcov = ">=2.5,<3"
+
+[pypi-dependencies]
+fortitude-lint = ">=0.9.2, <0.10"
