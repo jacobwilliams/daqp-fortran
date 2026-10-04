@@ -16,7 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        submodules: recursive   # reference/qdldl, for the cross-check with the C QDLDL
+        submodules: recursive   # for submodule
 
     # installs pixi and creates the environment from pixi.toml/pixi.lock
     # (gfortran, fpm, ford, fortitude, a C compiler), the same one used locally
@@ -30,7 +30,7 @@ jobs:
     - name: Run tests
       run: pixi run fpm test --profile debug --flag "${{ matrix.kind }}"
 
-    - name: Lint, stack check, and cross-check with the C QDLDL
+    - name: Lint, stack check, and cross-check with upstream DAQP
       if: matrix.kind == '-DREAL64'
       run: |
         pixi run fortitude check

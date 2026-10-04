@@ -4,7 +4,7 @@ summary: Modern Fortran port of DAQP, a dual active-set solver for dense convex 
 author: Jacob Williams
 github: https://github.com/jacobwilliams
 project_github: https://github.com/jacobwilliams/daqp-fortran
-license: by
+license: MIT
 src_dir: ./src
 output_dir: ./doc
 preprocess: true
