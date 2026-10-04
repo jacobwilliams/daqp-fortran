@@ -34,8 +34,7 @@ jobs:
       if: matrix.kind == '-DREAL64'
       run: |
         pixi run fortitude check
-        pixi run stack-check
-        pixi run crosscheck
+        pixi run compare-quick
 
     - name: Build documentation
       if: matrix.kind == '-DREAL64'
