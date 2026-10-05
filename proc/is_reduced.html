@@ -1,0 +1,534 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>is_reduced &ndash; daqp-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>is_reduced
+      <small>Function</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.1% of total for procedures.">5 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_types.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_types.f90.html'>daqp_types.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/daqp_types.html'>daqp_types</a></li>
+            <li class="breadcrumb-item active" aria-current="page">is_reduced</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/is_reduced.html#src">is_reduced</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public pure function is_reduced(work)  
+</h2>
+    
+
+    <p>Whether the equality constraints of the workspace are eliminated
+(upstream's <code>DAQP_IS_REDUCED</code>).</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~124"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-is_reduced"></span>
+          logical
+        </small>
+      </h3>
+      
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~is_reduced~~CalledByGraph Pages: 1 -->
+<svg id="procis_reducedCalledByGraph" width="641pt" height="150pt"
+ viewBox="0.00 0.00 641.00 150.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~is_reduced~~CalledByGraph" class="graph" transform="scale(0.950193 0.950193) rotate(0) translate(4 154.27)">
+<title>proc~~is_reduced~~CalledByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-154.27 670.6,-154.27 670.6,4 -4,4"/>
+<!-- proc~is_reduced -->
+<g id="proc~~is_reduced~~CalledByGraph_node1" class="node">
+<title>proc~is_reduced</title>
+<polygon fill="none" stroke="black" points="666.6,-108.27 598.08,-108.27 598.08,-84 666.6,-84 666.6,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="632.34" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50">is_reduced</text>
+</g>
+<!-- proc~daqp_set_working_set -->
+<g id="proc~~is_reduced~~CalledByGraph_node2" class="node">
+<title>proc~daqp_set_working_set</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node2"><a xlink:href="../proc/daqp_set_working_set.html" xlink:title="daqp_set_working_set">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="562.08,-149.27 434.31,-149.27 434.31,-125 562.08,-125 562.08,-149.27"/>
+<text xml:space="preserve" text-anchor="middle" x="498.19" y="-133.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_set_working_set</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_set_working_set&#45;&gt;proc~is_reduced -->
+<g id="proc~~is_reduced~~CalledByGraph_edge1" class="edge">
+<title>proc~daqp_set_working_set&#45;&gt;proc~is_reduced</title>
+<path fill="none" stroke="#000000" d="M539.56,-124.61C554.59,-119.95 571.71,-114.64 587.07,-109.87"/>
+<polygon fill="#000000" stroke="#000000" points="587.92,-113.27 596.44,-106.96 585.85,-106.58 587.92,-113.27"/>
+</g>
+<!-- proc~daqp_solve -->
+<g id="proc~~is_reduced~~CalledByGraph_node3" class="node">
+<title>proc~daqp_solve</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node3"><a xlink:href="../proc/daqp_solve.html" xlink:title="daqp_solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="353.68,-108.27 282.16,-108.27 282.16,-84 353.68,-84 353.68,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="317.92" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_solve</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~is_reduced -->
+<g id="proc~~is_reduced~~CalledByGraph_edge2" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~is_reduced</title>
+<path fill="none" stroke="#000000" d="M354.16,-96.14C411.12,-96.14 523.41,-96.14 586.17,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="586.15,-99.64 596.15,-96.14 586.15,-92.64 586.15,-99.64"/>
+</g>
+<!-- proc~daqp_update_ldp -->
+<g id="proc~~is_reduced~~CalledByGraph_node4" class="node">
+<title>proc~daqp_update_ldp</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node4"><a xlink:href="../proc/daqp_update_ldp.html" xlink:title="daqp_update_ldp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="549.7,-67.27 446.68,-67.27 446.68,-43 549.7,-43 549.7,-67.27"/>
+<text xml:space="preserve" text-anchor="middle" x="498.19" y="-51.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_update_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~is_reduced~~CalledByGraph_edge8" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M354.15,-88.03C377.33,-82.7 408.32,-75.58 435.52,-69.32"/>
+<polygon fill="#000000" stroke="#000000" points="436.08,-72.78 445.04,-67.13 434.51,-65.96 436.08,-72.78"/>
+</g>
+<!-- proc~daqp_update_ldp&#45;&gt;proc~is_reduced -->
+<g id="proc~~is_reduced~~CalledByGraph_edge3" class="edge">
+<title>proc~daqp_update_ldp&#45;&gt;proc~is_reduced</title>
+<path fill="none" stroke="#000000" d="M539.56,-67.66C554.59,-72.32 571.71,-77.63 587.07,-82.4"/>
+<polygon fill="#000000" stroke="#000000" points="585.85,-85.69 596.44,-85.31 587.92,-79 585.85,-85.69"/>
+</g>
+<!-- proc~daqp_quadprog -->
+<g id="proc~~is_reduced~~CalledByGraph_node5" class="node">
+<title>proc~daqp_quadprog</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node5"><a xlink:href="../proc/daqp_quadprog.html" xlink:title="daqp_quadprog">
+<polygon fill="#d9534f" stroke="#d9534f" points="195.91,-108.27 101.14,-108.27 101.14,-84 195.91,-84 195.91,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_quadprog</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_solve -->
+<g id="proc~~is_reduced~~CalledByGraph_edge5" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M196.16,-96.14C219.33,-96.14 247.25,-96.14 270.41,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="270.18,-99.64 280.18,-96.14 270.18,-92.64 270.18,-99.64"/>
+</g>
+<!-- proc~daqp_setup -->
+<g id="proc~~is_reduced~~CalledByGraph_node6" class="node">
+<title>proc~daqp_setup</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node6"><a xlink:href="../proc/daqp_setup.html" xlink:title="daqp_setup">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="354.43,-66.27 281.41,-66.27 281.41,-42 354.43,-42 354.43,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="317.92" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_setup</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_setup -->
+<g id="proc~~is_reduced~~CalledByGraph_edge11" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M196.16,-84.44C219.27,-78.64 247.11,-71.65 270.23,-65.85"/>
+<polygon fill="#000000" stroke="#000000" points="270.84,-69.31 279.69,-63.48 269.14,-62.52 270.84,-69.31"/>
+</g>
+<!-- proc~daqp_setup&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~is_reduced~~CalledByGraph_edge7" class="edge">
+<title>proc~daqp_setup&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M354.57,-54.33C377.6,-54.46 408.18,-54.64 435.12,-54.79"/>
+<polygon fill="#000000" stroke="#000000" points="434.88,-58.29 444.9,-54.84 434.92,-51.29 434.88,-58.29"/>
+</g>
+<!-- proc~set_working_set -->
+<g id="proc~~is_reduced~~CalledByGraph_node7" class="node">
+<title>proc~set_working_set</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node7"><a xlink:href="../proc/set_working_set.html" xlink:title="daqp_type%set_working_set">
+<polygon fill="#d9534f" stroke="#d9534f" points="398.31,-150.27 237.54,-150.27 237.54,-126 398.31,-126 398.31,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="317.92" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%set_working_set</text>
+</a>
+</g>
+</g>
+<!-- proc~set_working_set&#45;&gt;proc~daqp_set_working_set -->
+<g id="proc~~is_reduced~~CalledByGraph_edge4" class="edge">
+<title>proc~set_working_set&#45;&gt;proc~daqp_set_working_set</title>
+<path fill="none" stroke="#000000" d="M398.67,-137.69C406.58,-137.64 414.6,-137.6 422.45,-137.55"/>
+<polygon fill="#000000" stroke="#000000" points="422.33,-141.06 432.31,-137.5 422.29,-134.06 422.33,-141.06"/>
+</g>
+<!-- proc~solve -->
+<g id="proc~~is_reduced~~CalledByGraph_node8" class="node">
+<title>proc~solve</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node8"><a xlink:href="../proc/solve.html" xlink:title="daqp_type%solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="200.79,-150.27 96.27,-150.27 96.27,-126 200.79,-126 200.79,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%solve</text>
+</a>
+</g>
+</g>
+<!-- proc~solve&#45;&gt;proc~daqp_solve -->
+<g id="proc~~is_reduced~~CalledByGraph_edge6" class="edge">
+<title>proc~solve&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M199.75,-125.53C222.31,-119.88 248.74,-113.24 270.79,-107.71"/>
+<polygon fill="#000000" stroke="#000000" points="271.56,-111.13 280.41,-105.3 269.85,-104.34 271.56,-111.13"/>
+</g>
+<!-- proc~solve&#45;&gt;proc~set_working_set -->
+<g id="proc~~is_reduced~~CalledByGraph_edge13" class="edge">
+<title>proc~solve&#45;&gt;proc~set_working_set</title>
+<path fill="none" stroke="#000000" d="M201.12,-138.13C208.98,-138.13 217.28,-138.13 225.69,-138.13"/>
+<polygon fill="#000000" stroke="#000000" points="225.67,-141.64 235.67,-138.14 225.67,-134.64 225.67,-141.64"/>
+</g>
+<!-- proc~update -->
+<g id="proc~~is_reduced~~CalledByGraph_node9" class="node">
+<title>proc~update</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node9"><a xlink:href="../proc/update.html" xlink:title="daqp_type%update">
+<polygon fill="#d9534f" stroke="#d9534f" points="375.06,-24.27 260.79,-24.27 260.79,0 375.06,0 375.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="317.92" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%update</text>
+</a>
+</g>
+</g>
+<!-- proc~update&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~is_reduced~~CalledByGraph_edge9" class="edge">
+<title>proc~update&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M370.97,-24.69C391.09,-29.54 414.28,-35.14 435.26,-40.19"/>
+<polygon fill="#000000" stroke="#000000" points="434.3,-43.57 444.85,-42.51 435.95,-36.76 434.3,-43.57"/>
+</g>
+<!-- proc~daqp_avi -->
+<g id="proc~~is_reduced~~CalledByGraph_node10" class="node">
+<title>proc~daqp_avi</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node10"><a xlink:href="../proc/daqp_avi.html" xlink:title="daqp_avi">
+<polygon fill="#d9534f" stroke="#d9534f" points="59.52,-108.27 0,-108.27 0,-84 59.52,-84 59.52,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="29.76" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_avi</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_avi&#45;&gt;proc~daqp_quadprog -->
+<g id="proc~~is_reduced~~CalledByGraph_edge10" class="edge">
+<title>proc~daqp_avi&#45;&gt;proc~daqp_quadprog</title>
+<path fill="none" stroke="#000000" d="M59.92,-96.14C69.05,-96.14 79.46,-96.14 89.85,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="89.53,-99.64 99.53,-96.14 89.53,-92.64 89.53,-99.64"/>
+</g>
+<!-- proc~setup -->
+<g id="proc~~is_reduced~~CalledByGraph_node11" class="node">
+<title>proc~setup</title>
+<g id="a_proc~~is_reduced~~CalledByGraph_node11"><a xlink:href="../proc/setup.html" xlink:title="daqp_type%setup">
+<polygon fill="#d9534f" stroke="#d9534f" points="201.54,-66.27 95.52,-66.27 95.52,-42 201.54,-42 201.54,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%setup</text>
+</a>
+</g>
+</g>
+<!-- proc~setup&#45;&gt;proc~daqp_setup -->
+<g id="proc~~is_reduced~~CalledByGraph_edge12" class="edge">
+<title>proc~setup&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M202.04,-54.13C223.72,-54.13 248.66,-54.13 269.75,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="269.51,-57.64 279.51,-54.14 269.51,-50.64 269.51,-57.64"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocis_reducedCalledByGraph = svgPanZoom('#procis_reducedCalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">pure </span><span class="kt">logical </span><span class="k">function </span><span class="n">is_reduced</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_workspace</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">work</span><span class="w"> </span><span class="c">!! workspace</span>
+
+<span class="w">    </span><span class="n">is_reduced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">allocated</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">))</span><span class="w"> </span><span class="n">is_reduced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">active</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">end function </span><span class="n">is_reduced</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

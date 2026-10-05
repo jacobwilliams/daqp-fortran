@@ -1,0 +1,6562 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>daqp_types &ndash; daqp-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>daqp_types
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-author"><i class="fa fa-pencil"></i> Jacob Williams</li>
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 6.2% of total for modules and submodules.">410 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_types.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_types.f90.html'>daqp_types.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">daqp_types</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_optimal_inexact">daqp_exit_optimal_inexact</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_no_freedom">daqp_exit_no_freedom</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_soft_optimal">daqp_exit_soft_optimal</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_optimal">daqp_exit_optimal</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_infeasible">daqp_exit_infeasible</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_cycle">daqp_exit_cycle</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_unbounded">daqp_exit_unbounded</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_iterlimit">daqp_exit_iterlimit</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_nonconvex">daqp_exit_nonconvex</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_overdetermined_initial">daqp_exit_overdetermined_initial</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_timelimit">daqp_exit_timelimit</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_unsupported">daqp_exit_unsupported</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_invalid_input">daqp_exit_invalid_input</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_out_of_memory">daqp_exit_out_of_memory</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_exit_not_setup">daqp_exit_not_setup</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_active">daqp_active</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_lower">daqp_lower</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_immutable">daqp_immutable</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_soft">daqp_soft</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_binary">daqp_binary</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_slack_fixed">daqp_slack_fixed</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_set_aside">daqp_set_aside</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_auto_equality">daqp_auto_equality</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_equality">daqp_equality</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_rinv">daqp_update_rinv</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_m">daqp_update_m</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_v">daqp_update_v</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_d">daqp_update_d</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_sense">daqp_update_sense</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_hierarchy">daqp_update_hierarchy</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_unconstrained">daqp_update_unconstrained</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_update_eliminate">daqp_update_eliminate</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-state_pending">state_pending</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-state_unconstrained">state_unconstrained</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-state_rinv_normalized">state_rinv_normalized</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-state_incumbent">state_incumbent</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-state_ill_conditioned">state_ill_conditioned</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-state_cholesky_pending">state_cholesky_pending</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-state_noise_floor">state_noise_floor</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_eq_reduction_off">daqp_eq_reduction_off</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_eq_reduction_auto">daqp_eq_reduction_auto</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_eq_reduction_on">daqp_eq_reduction_on</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_problem_qp">daqp_problem_qp</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_problem_avi">daqp_problem_avi</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_problem_factored">daqp_problem_factored</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-empty_ind">empty_ind</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-unconstrained_optimal">unconstrained_optimal</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_not_reduced">eq_not_reduced</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_inf">daqp_inf</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_prim_tol">daqp_default_prim_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_dual_tol">daqp_default_dual_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_zero_tol">daqp_default_zero_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_prog_tol">daqp_default_prog_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_pivot_tol">daqp_default_pivot_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_cycle_tol">daqp_default_cycle_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_eta">daqp_default_eta</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_iter_limit">daqp_default_iter_limit</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_rho_soft">daqp_default_rho_soft</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_w_soft">daqp_default_w_soft</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_sing_tol">daqp_default_sing_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_refactor_tol">daqp_default_refactor_tol</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-daqp_default_eps_prox">daqp_default_eps_prox</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-auto_eta_cap">auto_eta_cap</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-refine_min_iter">refine_min_iter</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-refine_cond">refine_cond</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-refine_gain">refine_gain</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-refine_pivot">refine_pivot</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-add_noise_gain">add_noise_gain</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-prox_eps_max">prox_eps_max</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-hessian_cond_max">hessian_cond_max</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-hessian_cond_eps">hessian_cond_eps</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-cond_defer_margin">cond_defer_margin</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-prox_face_start">prox_face_start</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-prox_face_steps">prox_face_steps</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-avi_pivot_trigger">avi_pivot_trigger</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-avi_retry_rho_reduction">avi_retry_rho_reduction</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_path_ldp">eq_path_ldp</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_path_qp">eq_path_qp</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_path_lp">eq_path_lp</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_min_count">eq_min_count</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_min_ratio">eq_min_ratio</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_min_dim">eq_min_dim</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-eq_diag_min_ratio">eq_diag_min_ratio</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-bnb_lower_bit">bnb_lower_bit</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-rinv_none">rinv_none</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-rinv_dense">rinv_dense</a>
+            <a class="list-group-item" href="../module/daqp_types.html#variable-rinv_diag">rinv_diag</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#types-0"
+         aria-expanded="false" aria-controls="types-0">
+         <h4 class="card-header bg-primary text-white">Derived Types</h4>
+      </a>
+      <div id="types-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_settings">daqp_settings</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_result">daqp_result</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_problem">daqp_problem</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_ldp_data">daqp_ldp_data</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_node">daqp_node</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_bnb_data">daqp_bnb_data</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_avi_data">daqp_avi_data</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_vec">daqp_vec</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_eq_data">daqp_eq_data</a>
+            <a class="list-group-item" href="../module/daqp_types.html#type-daqp_workspace">daqp_workspace</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/daqp_types.html#proc-ridx~2">ridx</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-lidx~2">lidx</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-has~2">has</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-is_hierarchical">is_hierarchical</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-is_reduced">is_reduced</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-is_avi_nonsym">is_avi_nonsym</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/daqp_types.html#proc-daqp_reset_workspace">daqp_reset_workspace</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-resize1">resize1</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-resize2">resize2</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-resize1i">resize1i</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-resize1l">resize1l</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-swap_r1">swap_r1</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-swap_r2">swap_r2</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-swap_i1">swap_i1</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-swap_int">swap_int</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-swap_log">swap_log</a>
+            <a class="list-group-item" href="../module/daqp_types.html#proc-swap_problem">swap_problem</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      <p>Constants, derived types, and small helpers of the Fortran port of
+  <a href="https://github.com/darnstrom/daqp">DAQP</a> v0.10.3
+  (Copyright (c) 2022 Daniel Arnström, MIT licence): upstream's
+  <code>constants.h</code> and <code>types.h</code>, translated to Fortran (changed from the
+  original: 1-based indexing, allocatable components instead of pointers).</p>
+<h3>Storage</h3>
+<p>Matrices are kept in upstream's memory order: a C row-major matrix <code>X[r][c]</code>
+  is the Fortran array <code>X(c,r)</code>. So <code>Hc(j,i)</code> is <code>H(i,j)</code>, <code>At(:,k)</code> is the
+  k-th row of <code>A</code>, and <code>Mr(:,k)</code> the k-th general constraint row of the LDP.
+  Triangular factors are packed by rows (see <a href="../proc/ridx~2.html">ridx</a> and <a href="../proc/lidx~2.html">lidx</a>).</p>
+<p>Constraint indices and working set positions are 1-based; <code>empty_ind</code> (0)
+  marks an empty index (upstream's -1).</p>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='daqp_kinds.html'>daqp_kinds</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: module~~daqp_types~~UsesGraph Pages: 1 -->
+<svg id="moduledaqp_typesUsesGraph" width="317pt" height="52pt"
+ viewBox="0.00 0.00 317.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~daqp_types~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48.27)">
+<title>module~~daqp_types~~UsesGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-48.27 313.06,-48.27 313.06,4 -4,4"/>
+<!-- module~daqp_types -->
+<g id="module~~daqp_types~~UsesGraph_node1" class="node">
+<title>module~daqp_types</title>
+<polygon fill="none" stroke="black" points="309.06,-44.27 236.79,-44.27 236.79,-20 309.06,-20 309.06,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="272.93" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_types</text>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~daqp_types~~UsesGraph_node2" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~daqp_types~~UsesGraph_node2"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-44.27 0,-44.27 0,-20 93.27,-20 93.27,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_types&#45;&gt;iso_fortran_env -->
+<g id="module~~daqp_types~~UsesGraph_edge1" class="edge">
+<title>module~daqp_types&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M236.47,-32.73C225.07,-32.9 212.4,-33.05 200.79,-33.13 169,-33.36 161.06,-33.33 129.27,-33.13 121.37,-33.09 113.04,-33.01 104.84,-32.92"/>
+<polygon fill="#000000" stroke="#000000" points="104.95,-29.43 94.91,-32.81 104.87,-36.43 104.95,-29.43"/>
+</g>
+<!-- module~daqp_kinds -->
+<g id="module~~daqp_types~~UsesGraph_node3" class="node">
+<title>module~daqp_kinds</title>
+<g id="a_module~~daqp_types~~UsesGraph_node3"><a xlink:href="../module/daqp_kinds.html" xlink:title="daqp_kinds">
+<polygon fill="#337ab7" stroke="#337ab7" points="200.79,-24.27 129.27,-24.27 129.27,0 200.79,0 200.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="165.03" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_kinds</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_types&#45;&gt;module~daqp_kinds -->
+<g id="module~~daqp_types~~UsesGraph_edge2" class="edge">
+<title>module~daqp_types&#45;&gt;module~daqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M236.37,-25.42C228.61,-23.95 220.29,-22.38 212.19,-20.85"/>
+<polygon fill="#000000" stroke="#000000" points="212.92,-17.43 202.44,-19.01 211.62,-24.31 212.92,-17.43"/>
+</g>
+<!-- module~daqp_kinds&#45;&gt;iso_fortran_env -->
+<g id="module~~daqp_types~~UsesGraph_edge3" class="edge">
+<title>module~daqp_kinds&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M128.79,-18.19C121.16,-19.5 112.89,-20.92 104.66,-22.34"/>
+<polygon fill="#000000" stroke="#000000" points="104.27,-18.85 95.01,-24 105.45,-25.75 104.27,-18.85"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+          <div class="card">
+      <h3 class="card-header card-title bg-light">Used by</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: module~~daqp_types~~UsedByGraph Pages: 1 -->
+<svg id="moduledaqp_typesUsedByGraph" width="425pt" height="60pt"
+ viewBox="0.00 0.00 425.00 60.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~daqp_types~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 56.16)">
+<title>module~~daqp_types~~UsedByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-56.16 421.33,-56.16 421.33,4 -4,4"/>
+<!-- module~daqp_types -->
+<g id="module~~daqp_types~~UsedByGraph_node1" class="node">
+<title>module~daqp_types</title>
+<polygon fill="none" stroke="black" points="72.27,-44.27 0,-44.27 0,-20 72.27,-20 72.27,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_types</text>
+</g>
+<!-- module~daqp_core -->
+<g id="module~~daqp_types~~UsedByGraph_node2" class="node">
+<title>module~daqp_core</title>
+<g id="a_module~~daqp_types~~UsedByGraph_node2"><a xlink:href="../module/daqp_core.html" xlink:title="daqp_core">
+<polygon fill="#337ab7" stroke="#337ab7" points="297.06,-24.27 230.04,-24.27 230.04,0 297.06,0 297.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="263.55" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_core</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;module~daqp_types -->
+<g id="module~~daqp_types~~UsedByGraph_edge1" class="edge">
+<title>module~daqp_core&#45;&gt;module~daqp_types</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M241.38,-24.76C219.74,-36.46 184.77,-52.07 152.16,-52.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M150.16,-52.13C128.15,-52.18 104.1,-48.46 83.86,-44.22"/>
+<polygon fill="#000000" stroke="#000000" points="84.73,-40.83 74.21,-42.09 83.22,-47.67 84.73,-40.83"/>
+</g>
+<!-- module~daqp_eq_elim -->
+<g id="module~~daqp_types~~UsedByGraph_node3" class="node">
+<title>module~daqp_eq_elim</title>
+<g id="a_module~~daqp_types~~UsedByGraph_node3"><a xlink:href="../module/daqp_eq_elim.html" xlink:title="daqp_eq_elim">
+<polygon fill="#337ab7" stroke="#337ab7" points="194.04,-24.27 108.27,-24.27 108.27,0 194.04,0 194.04,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="151.16" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_elim</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;module~daqp_eq_elim -->
+<g id="module~~daqp_types~~UsedByGraph_edge5" class="edge">
+<title>module~daqp_core&#45;&gt;module~daqp_eq_elim</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M229.73,-12.13C222.21,-12.13 214.03,-12.13 205.89,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="205.99,-8.64 195.99,-12.14 205.99,-15.64 205.99,-8.64"/>
+</g>
+<!-- module~daqp_eq_elim&#45;&gt;module~daqp_types -->
+<g id="module~~daqp_types~~UsedByGraph_edge2" class="edge">
+<title>module~daqp_eq_elim&#45;&gt;module~daqp_types</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M108.07,-19.58C100.14,-20.99 91.8,-22.46 83.73,-23.89"/>
+<polygon fill="#000000" stroke="#000000" points="83.32,-20.41 74.08,-25.6 84.54,-27.3 83.32,-20.41"/>
+</g>
+<!-- module~daqp_module -->
+<g id="module~~daqp_types~~UsedByGraph_node4" class="node">
+<title>module~daqp_module</title>
+<g id="a_module~~daqp_types~~UsedByGraph_node4"><a xlink:href="../module/daqp_module.html" xlink:title="daqp_module">
+<polygon fill="#337ab7" stroke="#337ab7" points="417.33,-44.27 333.06,-44.27 333.06,-20 417.33,-20 417.33,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="375.19" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_module</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_module&#45;&gt;module~daqp_types -->
+<g id="module~~daqp_types~~UsedByGraph_edge3" class="edge">
+<title>module~daqp_module&#45;&gt;module~daqp_types</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M332.96,-38.03C288.46,-43.89 215.44,-52.01 152.16,-52.13"/>
+</g>
+<!-- module~daqp_module&#45;&gt;module~daqp_core -->
+<g id="module~~daqp_types~~UsedByGraph_edge4" class="edge">
+<title>module~daqp_module&#45;&gt;module~daqp_core</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M332.74,-24.57C324.92,-23.15 316.71,-21.65 308.8,-20.21"/>
+<polygon fill="#000000" stroke="#000000" points="309.48,-16.77 299.01,-18.42 308.22,-23.66 309.48,-16.77"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsedByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsedByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      <br>
+
+
+        <section>
+          <h2>Variables</h2>
+            <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_optimal_inexact"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_optimal_inexact</strong></td>
+<td> =</td>
+                <td>4</td>
+            <td>
+                <p>optimal, found with the noise floor; violates a constraint by more than <code>primal_tol</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_no_freedom"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_no_freedom</strong></td>
+<td> =</td>
+                <td>3</td>
+            <td>
+                <p>(hierarchical QP) a level failed: the solution of the levels before</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_soft_optimal"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_soft_optimal</strong></td>
+<td> =</td>
+                <td>2</td>
+            <td>
+                <p>optimal, with a soft constraint violated</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_optimal"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_optimal</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>optimal</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_infeasible"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_infeasible</strong></td>
+<td> =</td>
+                <td>-1</td>
+            <td>
+                <p>primal infeasible</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_cycle"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_cycle</strong></td>
+<td> =</td>
+                <td>-2</td>
+            <td>
+                <p>cycling detected</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_unbounded"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_unbounded</strong></td>
+<td> =</td>
+                <td>-3</td>
+            <td>
+                <p>unbounded (LP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_iterlimit"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_iterlimit</strong></td>
+<td> =</td>
+                <td>-4</td>
+            <td>
+                <p>iteration limit reached</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_nonconvex"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_nonconvex</strong></td>
+<td> =</td>
+                <td>-5</td>
+            <td>
+                <p>the Hessian could not be factored</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_overdetermined_initial"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_overdetermined_initial</strong></td>
+<td> =</td>
+                <td>-6</td>
+            <td>
+                <p>inconsistent equalities in the initial working set</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_timelimit"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_timelimit</strong></td>
+<td> =</td>
+                <td>-7</td>
+            <td>
+                <p>time limit reached</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_unsupported"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_unsupported</strong></td>
+<td> =</td>
+                <td>-8</td>
+            <td>
+                <p>unsupported combination (e.g., hierarchy with a proximal term)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_invalid_input"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_invalid_input</strong></td>
+<td> =</td>
+                <td>-101</td>
+            <td>
+                <p>invalid input (Fortran interface)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_out_of_memory"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_out_of_memory</strong></td>
+<td> =</td>
+                <td>-102</td>
+            <td>
+                <p>an allocation failed (Fortran interface)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_exit_not_setup"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_exit_not_setup</strong></td>
+<td> =</td>
+                <td>-103</td>
+            <td>
+                <p>the solver was not set up (Fortran interface)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_active"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_active</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>the constraint is in the working set</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_lower"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_lower</strong></td>
+<td> =</td>
+                <td>2</td>
+            <td>
+                <p>the active bound is the lower one</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_immutable"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_immutable</strong></td>
+<td> =</td>
+                <td>4</td>
+            <td>
+                <p>the constraint never leaves (or enters) the working set</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_soft"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_soft</strong></td>
+<td> =</td>
+                <td>8</td>
+            <td>
+                <p>the constraint may be violated, at a penalty</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_binary"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_binary</strong></td>
+<td> =</td>
+                <td>16</td>
+            <td>
+                <p>the constraint is active at one of its bounds (branch and bound)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_slack_fixed"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_slack_fixed</strong></td>
+<td> =</td>
+                <td>32</td>
+            <td>
+                <p>the slack of the soft constraint is zero</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_set_aside"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_set_aside</strong></td>
+<td> =</td>
+                <td>64</td>
+            <td>
+                <p>temporarily set aside (proximal step)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_auto_equality"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_auto_equality</strong></td>
+<td> =</td>
+                <td>128</td>
+            <td>
+                <p>active and immutable set by the detection of equal bounds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_equality"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_equality</strong></td>
+<td> =</td>
+                <td>daqp_active+daqp_immutable</td>
+            <td>
+                <p>an equality constraint</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_rinv"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_rinv</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_m"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_m</strong></td>
+<td> =</td>
+                <td>2</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_v"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_v</strong></td>
+<td> =</td>
+                <td>4</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_d"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_d</strong></td>
+<td> =</td>
+                <td>8</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_sense"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_sense</strong></td>
+<td> =</td>
+                <td>16</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_hierarchy"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_hierarchy</strong></td>
+<td> =</td>
+                <td>32</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_unconstrained"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_unconstrained</strong></td>
+<td> =</td>
+                <td>64</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_update_eliminate"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_update_eliminate</strong></td>
+<td> =</td>
+                <td>128</td>
+            <td>
+                <p>lets <code>eq_reduction = auto</code> eliminate the equalities</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state_pending"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>state_pending</strong></td>
+<td> =</td>
+                <td>daqp_update_rinv+daqp_update_m+daqp_update_v+daqp_update_d+daqp_update_sense+daqp_update_hierarchy</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state_unconstrained"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>state_unconstrained</strong></td>
+<td> =</td>
+                <td>256</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state_rinv_normalized"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>state_rinv_normalized</strong></td>
+<td> =</td>
+                <td>512</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state_incumbent"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>state_incumbent</strong></td>
+<td> =</td>
+                <td>1024</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state_ill_conditioned"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>state_ill_conditioned</strong></td>
+<td> =</td>
+                <td>2048</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state_cholesky_pending"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>state_cholesky_pending</strong></td>
+<td> =</td>
+                <td>4096</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state_noise_floor"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>state_noise_floor</strong></td>
+<td> =</td>
+                <td>8192</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_eq_reduction_off"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_eq_reduction_off</strong></td>
+<td> =</td>
+                <td>-1</td>
+            <td>
+                <p>never eliminate</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_eq_reduction_auto"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_eq_reduction_auto</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>eliminate for a solve from scratch, if worthwhile</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_eq_reduction_on"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_eq_reduction_on</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>always eliminate (also for warm-started workspaces)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_problem_qp"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_problem_qp</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>a QP (or LP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_problem_avi"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_problem_avi</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>an affine variational inequality (nonsymmetric <code>H</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_problem_factored"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_problem_factored</strong></td>
+<td> =</td>
+                <td>2</td>
+            <td>
+                <p>a QP whose <code>H</code> is given by its Cholesky factor</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-empty_ind"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>empty_ind</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>an empty index (upstream's -1)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-unconstrained_optimal"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>unconstrained_optimal</strong></td>
+<td> =</td>
+                <td>-2</td>
+            <td>
+                <p>return value of <code>check_unconstrained</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_not_reduced"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_not_reduced</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>return value of <code>daqp_eq_update</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_inf"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_inf</strong></td>
+<td> =</td>
+                <td>1.0e30_wp</td>
+            <td>
+                <p>"infinite" bound</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_prim_tol"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_prim_tol</strong></td>
+<td> =</td>
+                <td>max(1.0e-6_wp, 100.0_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_dual_tol"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_dual_tol</strong></td>
+<td> =</td>
+                <td>max(1.0e-12_wp, 10.0_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_zero_tol"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_zero_tol</strong></td>
+<td> =</td>
+                <td>max(1.0e-11_wp, 10.0_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_prog_tol"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_prog_tol</strong></td>
+<td> =</td>
+                <td>max(1.0e-14_wp, 10.0_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_pivot_tol"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_pivot_tol</strong></td>
+<td> =</td>
+                <td>1.0e-8_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_cycle_tol"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_cycle_tol</strong></td>
+<td> =</td>
+                <td>10</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_eta"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_eta</strong></td>
+<td> =</td>
+                <td>-1.0_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_iter_limit"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_iter_limit</strong></td>
+<td> =</td>
+                <td>10000</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_rho_soft"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_rho_soft</strong></td>
+<td> =</td>
+                <td>max(1.0e-6_wp, 1.0e4_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_w_soft"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_w_soft</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_sing_tol"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_sing_tol</strong></td>
+<td> =</td>
+                <td>max(3.7e-11_wp, 1000.0_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_refactor_tol"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_refactor_tol</strong></td>
+<td> =</td>
+                <td>1.0e-9_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daqp_default_eps_prox"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>daqp_default_eps_prox</strong></td>
+<td> =</td>
+                <td>-max(1.0e-6_wp, 100.0_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-auto_eta_cap"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>auto_eta_cap</strong></td>
+<td> =</td>
+                <td>max(1.0e-6_wp, 1000.0_wp*epsilon(1.0_wp))</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-refine_min_iter"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>refine_min_iter</strong></td>
+<td> =</td>
+                <td>5</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-refine_cond"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>refine_cond</strong></td>
+<td> =</td>
+                <td>1.0e6_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-refine_gain"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>refine_gain</strong></td>
+<td> =</td>
+                <td>1.0e3_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-refine_pivot"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>refine_pivot</strong></td>
+<td> =</td>
+                <td>1.0e-6_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-add_noise_gain"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>add_noise_gain</strong></td>
+<td> =</td>
+                <td>10.0_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-prox_eps_max"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>prox_eps_max</strong></td>
+<td> =</td>
+                <td>1.0e-3_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hessian_cond_max"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>hessian_cond_max</strong></td>
+<td> =</td>
+                <td>1.0e8_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hessian_cond_eps"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>hessian_cond_eps</strong></td>
+<td> =</td>
+                <td>0.1_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cond_defer_margin"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>cond_defer_margin</strong></td>
+<td> =</td>
+                <td>100.0_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-prox_face_start"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>prox_face_start</strong></td>
+<td> =</td>
+                <td>16</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-prox_face_steps"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>prox_face_steps</strong></td>
+<td> =</td>
+                <td>3</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-avi_pivot_trigger"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>avi_pivot_trigger</strong></td>
+<td> =</td>
+                <td>0.05_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-avi_retry_rho_reduction"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>avi_retry_rho_reduction</strong></td>
+<td> =</td>
+                <td>16.0_wp</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_path_ldp"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_path_ldp</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>reduced problem: identity Hessian, no linear term</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_path_qp"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_path_qp</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>reduced problem: reduced Hessian W'HW</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_path_lp"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_path_lp</strong></td>
+<td> =</td>
+                <td>2</td>
+            <td>
+                <p>reduced problem: no Hessian</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_min_count"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_min_count</strong></td>
+<td> =</td>
+                <td>5</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_min_ratio"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_min_ratio</strong></td>
+<td> =</td>
+                <td>10</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_min_dim"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_min_dim</strong></td>
+<td> =</td>
+                <td>12</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_diag_min_ratio"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>eq_diag_min_ratio</strong></td>
+<td> =</td>
+                <td>4</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bnb_lower_bit"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>bnb_lower_bit</strong></td>
+<td> =</td>
+                <td>16</td>
+            <td>
+                <p>the bit that marks a lower bound in a BnB constraint id</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rinv_none"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>rinv_none</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>no Hessian (LP): <code>R = I</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rinv_dense"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>rinv_dense</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>dense packed <code>R</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rinv_diag"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+parameter               
+            </td>
+            <td>::</td>
+            <td><strong>rinv_diag</strong></td>
+<td> =</td>
+                <td>2</td>
+            <td>
+                <p>diagonal Hessian: <code>R(1:n)</code> holds the diagonal of <code>R^{-1}</code></p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+        </section>
+        <br>
+
+
+
+
+        <section>
+          <h2>Derived Types</h2>
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_settings"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_settings.html'>daqp_settings</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Solver settings (upstream's <code>DAQPSettings</code>, with its defaults).</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-primal_tol~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>primal_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_prim_tol</td>
+            <td>
+<p>tolerance for primal feasibility</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dual_tol~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dual_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_dual_tol</td>
+            <td>
+<p>tolerance for dual feasibility</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zero_tol~10"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zero_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_zero_tol</td>
+            <td>
+<p>values below are regarded as zero</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pivot_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>pivot_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_pivot_tol</td>
+            <td>
+<p>pivots of the <code>LDL'</code> below are reordered</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-progress_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>progress_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_prog_tol</td>
+            <td>
+<p>minimum objective progress (cycle guard)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cycle_tol~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cycle_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_cycle_tol</td>
+            <td>
+<p>iterations without progress before cycling is assumed</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iter_limit~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iter_limit</strong></td>
+<td> =</td>
+                <td>daqp_default_iter_limit</td>
+            <td>
+<p>maximum number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fval_bound~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fval_bound</strong></td>
+<td> =</td>
+                <td>daqp_inf</td>
+            <td>
+<p>upper bound of the objective (infeasible above)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eps_prox~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eps_prox</strong></td>
+<td> =</td>
+                <td>daqp_default_eps_prox</td>
+            <td>
+<p>proximal regularization (negative: automatic, only if needed)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eta_prox~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eta_prox</strong></td>
+<td> =</td>
+                <td>daqp_default_eta</td>
+            <td>
+<p>tolerance of the proximal outer loop (negative: automatic)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_soft~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rho_soft</strong></td>
+<td> =</td>
+                <td>daqp_default_rho_soft</td>
+            <td>
+<p>reciprocal quadratic weight of the soft constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rel_subopt~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rel_subopt</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>relative suboptimality tolerance (branch and bound)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-abs_subopt~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>abs_subopt</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>absolute suboptimality tolerance (branch and bound)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sing_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sing_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_sing_tol</td>
+            <td>
+<p>pivots of the <code>LDL'</code> below mark a singular working set</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-refactor_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>refactor_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_refactor_tol</td>
+            <td>
+<p>pivots below trigger a refactorization at a solution</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-time_limit~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>time_limit</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>time limit of a solve in seconds (0: none)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_soft~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>w_soft</strong></td>
+<td> =</td>
+                <td>daqp_default_w_soft</td>
+            <td>
+<p>linear weight of the soft constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_reduction~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq_reduction</strong></td>
+<td> =</td>
+                <td>daqp_eq_reduction_auto</td>
+            <td>
+<p>equality-reduction policy (<code>daqp_eq_reduction_*</code>)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_result"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_result.html'>daqp_result</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Result of a solve (upstream's <code>DAQPResult</code>).</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fval~7"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fval</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>objective function value</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-soft_slack~4"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>soft_slack</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>largest violation of a soft constraint</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-exitflag~9"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>exitflag</strong></td>
+<td> =</td>
+                <td>daqp_exit_not_setup</td>
+            <td>
+<p>exit flag</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iter~4"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iter</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nodes"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nodes</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>nodes (branch and bound), or outer iterations (proximal, AVI)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-solve_time~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>solve_time</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>time of the solve [s]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-setup_time~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>setup_time</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>time of the setup [s]</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_problem"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_problem.html'>daqp_problem</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>A problem (upstream's <code>DAQPProblem</code>), in upstream's memory order.</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~65"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~16"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of constraints (including the simple bounds)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ms~17"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ms</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of simple bounds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_h"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_H</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>a Hessian is given (else an LP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_f"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_f</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>a linear term is given</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_sense"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_sense</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>constraint flags are given</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-problem_type~3"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>problem_type</strong></td>
+<td> =</td>
+                <td>daqp_problem_qp</td>
+            <td>
+<p><code>daqp_problem_*</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hc"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Hc</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p><code>Hc(j,i) = H(i,j)</code> (not for <code>daqp_problem_factored</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rf~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Rf</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the Cholesky factor of <code>H</code>, packed by rows (<code>daqp_problem_factored</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f~6"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>f</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>linear term</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-at~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>At</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p><code>At(:,k)</code> is the k-th row of <code>A</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bupper~6"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>bupper</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>upper bounds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-blower~6"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>blower</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>lower bounds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sense~6"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>sense</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>constraint flags</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nh"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nh</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+<p>number of levels (hierarchical QP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-break_points~4"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>break_points</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the last constraint of each level (hierarchical QP)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_ldp_data"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_ldp_data.html'>daqp_ldp_data</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>The parts of the workspace that describe the LDP that is solved
+(upstream's <code>DAQPLDPData</code>): an equality elimination swaps those of its
+reduced problem into the workspace.</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp~7"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~66"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~17"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ms~18"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ms</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mr"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Mr</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dupper"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dupper</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlower"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dlower</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>R</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>v</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-scaling"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>scaling</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mu~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Mu</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rmode"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rmode</strong></td>
+<td> =</td>
+                <td>rinv_none</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_v"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_v</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sense~7"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>sense</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_weights"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_weights</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_ls"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>rho_ls</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_us"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>rho_us</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_ls"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>w_ls</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_us"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>w_us</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>state</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_prox"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_prox</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bin_ids"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>bin_ids</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nb~7"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nb</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_node"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_node.html'>daqp_node</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>A node of the branch-and-bound tree (upstream's <code>DAQPNode</code>).</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bin_id"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>bin_id</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>binary constraint that is fixed (with the lower-bound bit)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-depth~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>depth</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>depth in the tree (-1: the root)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ws_start~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ws_start</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>start of the node's warm start in <code>tree_ws</code> (0-based)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ws_end~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ws_end</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>end of the node's warm start in <code>tree_ws</code> (0-based, exclusive)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_bnb_data"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_bnb_data.html'>daqp_bnb_data</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Branch and bound (upstream's <code>DAQPBnB</code>).</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bin_ids~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>bin_ids</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the binary constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nb~8"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nb</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of binary constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-neq~6"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>neq</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>length of the fixed (immutable) prefix of the working set</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tree"></span>
+              type(<a href='../type/daqp_node.html'>daqp_node</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>tree</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the stack of nodes</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_nodes"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_nodes</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tree_ws"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>tree_ws</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>warm starts of the nodes</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nws"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nws</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_clean~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_clean</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fixed_ids"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>fixed_ids</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nodecount"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nodecount</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-itercount"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>itercount</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-root_ws"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>root_ws</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>working set of the latest root relaxation</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_root_ws"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_root_ws</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_avi_data"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_avi_data.html'>daqp_avi_data</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Affine variational inequality (upstream's <code>DAQPAVI</code>). The <code>n x n</code>
+matrices are in upstream's (row-major) memory order.</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-is_symmetric"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>is_symmetric</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-retry_rho_needed"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>retry_rho_needed</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hsym"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Hsym</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hs_rho"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Hs_rho</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-h_rho"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>H_rho</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lu_h"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>LU_H</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p_h2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>P_H2</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p_h"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>P_H</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p_s"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>P_S</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-kkt_buffer"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>kkt_buffer</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xtemp"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xtemp</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hx"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Hx</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~19"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~8"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>y</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rho</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_vec"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_vec.html'>daqp_vec</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~4"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>v</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_eq_data"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_eq_data.html'>daqp_eq_data</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Elimination of equality constraints (upstream's <code>DAQPEqElim</code>).</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~67"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>dimensions of the original problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~18"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>dimensions of the original problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ms~19"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ms</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>dimensions of the original problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-neq~7"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>neq</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of eliminated equalities</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nz~10"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nz</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of variables of the reduced problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mr~7"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mr</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of constraints of the reduced problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ndrop"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ndrop</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of constraints that the equalities imply</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncand"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncand</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of equality candidates</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-path"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>path</strong></td>
+<td> =</td>
+                <td>eq_path_ldp</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-metric~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>metric</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>diagonal Hessian (QR in the metric of H)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-active~5"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>active</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>a reduction is formed</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-error"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>error</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>exit flag if the latest right-hand side is infeasible</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-installed~5"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>installed</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>the reduced problem is in the workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-allocated_dims"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>allocated_dims</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_ids"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>eq_ids</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cand_ids"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>cand_ids</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-keep"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>keep</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-drop_ids"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>drop_ids</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~4"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>V</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>Householder vectors (columns 1:neq), then Z</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~6"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s_eq"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>s_eq</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>R</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>triangular factor, packed (row k: <code>R(arsum(k)+1:...)</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dsq"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dsq</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>H^{-1/2} for a diagonal Hessian</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>W</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>null-space basis: <code>W(:,i)</code> is row i (<code>nz x n</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xp"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xp</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>particular solution</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fp"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fp</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>objective at xp</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tmp~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>tmp</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>scratch (3n)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cols"></span>
+              type(<a href='../type/daqp_vec.html'>daqp_vec</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>cols</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>responses to the equalities' right-hand sides</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ncols"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ncols</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xf"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xf</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gf"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>gf</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-df"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>df</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sh"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>sh</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f_valid"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f_valid</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_r"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>rho_r</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>soft weights of the reduced constraints (4 mr)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-other"></span>
+              type(<a href='../type/daqp_ldp_data.html'>daqp_ldp_data</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>other</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the LDP (with its problem) that is not in the workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum">
+      <span class="anchor" id="type-daqp_workspace"></span>
+      <h3>
+        type, public&nbsp;::&nbsp;
+        <a href='../type/daqp_workspace.html'>daqp_workspace</a>
+        
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>The workspace of the solver (upstream's <code>DAQPWorkspace</code>).
+All arrays are allocated in <code>daqp_setup</code>, so a solve allocates nothing
+(except the lazily formed caches of the equality elimination).</p>
+
+        <h4>Components</h4>
+          <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-settings~5"></span>
+              type(<a href='../type/daqp_settings.html'>daqp_settings</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>settings</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the settings</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp~8"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the problem (the reduced one while an elimination is installed)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_qp"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_qp</strong></td>
+<td> =</td>
+                <td>.true.</td>
+            <td>
+<p>(false for <code>daqp_minrep</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~68"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~19"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of constraints (including the simple bounds)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ms~20"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ms</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of simple bounds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rmode~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rmode</strong></td>
+<td> =</td>
+                <td>rinv_none</td>
+            <td>
+<p>what <code>R</code> holds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~4"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>R</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>packed upper triangular <code>R^{-1}</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mr~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Mr</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p><code>Mr(:,k)</code>: the k-th general constraint of the LDP</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dupper~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dupper</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>upper bounds of the LDP</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlower~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dlower</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>lower bounds of the LDP</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-scaling~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>scaling</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>normalization of the constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mu~4"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Mu</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p><code>M'u</code> of the latest feasibility scan</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_v~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_v</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p><code>v</code> is used</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>v</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p><code>v = R'\f</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sense~8"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>sense</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>constraint flags</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~20"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the primal iterate (also <code>u</code> of the LDP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xold"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xold</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the previous primal iterate</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lam~18"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>lam</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>dual iterate</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lam_star"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>lam_star</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>constrained stationary point</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fval~8"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fval</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p><code>||u||^2</code> (plus soft penalties)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>L</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>packed unit lower triangle</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>D</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>pivots</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xldl"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xldl</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>work array of the forward substitution</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zldl"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>zldl</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>work array (<code>xldl/D</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-reuse_ind"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>reuse_ind</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of rows of the forward substitution that can be reused</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ws"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>WS</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>the working set (constraint indices)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_active~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_active</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of active constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iterations~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iterations</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of iterations of the latest solve</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sing_ind"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sing_ind</strong></td>
+<td> =</td>
+                <td>empty_ind</td>
+            <td>
+<p>position of the constraint that made the working set singular</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-prox_mask"></span>
+              logical,
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>prox_mask</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+<p>directions with a proximal regularization</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_prox~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_prox</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>number of regularized directions</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-soft_slack~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>soft_slack</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+<p>largest violation of a soft constraint</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bnb"></span>
+              type(<a href='../type/daqp_bnb_data.html'>daqp_bnb_data</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>bnb</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>branch and bound (allocated if there are binary constraints)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nh~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nh</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+<p>levels (hierarchical QP), or a counter of outer iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_bp"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_bp</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>break points are given (hierarchical QP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-break_points~5"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>break_points</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-avi~3"></span>
+              type(<a href='../type/daqp_avi_data.html'>daqp_avi_data</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>avi</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>AVI (allocated for <code>daqp_problem_avi</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq~6"></span>
+              type(<a href='../type/daqp_eq_data.html'>daqp_eq_data</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+<p>equality elimination (allocated while used)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-timer_on"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>timer_on</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>the time limit is checked</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-timer_start"></span>
+              integer(kind=int64),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>timer_start</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>start of the solve (<code>system_clock</code> count)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_weights~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_weights</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_ls~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>rho_ls</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_us~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>rho_us</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_ls~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>w_ls</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_us~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>w_us</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>state</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+<p>state mask</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-is_setup"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>is_setup</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+<p>set up successfully</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-ridx~2"></span> <h3>public pure function <a href='../proc/ridx~2.html'>ridx</a>(i, j, n)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Position of element <code>(i,j)</code>, <code>i&lt;=j</code>, of an <code>n x n</code> upper triangle packed by rows.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~100"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+            <td>
+<p>row</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~63"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+            <td>
+<p>column</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~69"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>dimension</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-lidx~2"></span> <h3>public pure function <a href='../proc/lidx~2.html'>lidx</a>(i, j)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Position of element <code>(i,j)</code>, <code>j&lt;=i</code>, of a lower triangle packed by rows.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~101"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+            <td>
+<p>row</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~64"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+            <td>
+<p>column</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-has~2"></span> <h3>public pure function <a href='../proc/has~2.html'>has</a>(s, flag)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether <code>flag</code> is set in <code>s</code>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-s~26"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>s</strong></td>
+            <td>
+<p>flags</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-flag~23"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>flag</strong></td>
+            <td>
+<p>flag to test</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-is_hierarchical"></span> <h3>public pure function <a href='../proc/is_hierarchical.html'>is_hierarchical</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether the workspace holds a hierarchical QP (upstream's <code>DAQP_IS_HIERARCHICAL</code>).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~123"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-is_reduced"></span> <h3>public pure function <a href='../proc/is_reduced.html'>is_reduced</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether the equality constraints of the workspace are eliminated
+(upstream's <code>DAQP_IS_REDUCED</code>).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~124"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-is_avi_nonsym"></span> <h3>public pure function <a href='../proc/is_avi_nonsym.html'>is_avi_nonsym</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether the workspace holds a nonsymmetric AVI.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~125"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_reset_workspace"></span> <h3>public  subroutine <a href='../proc/daqp_reset_workspace.html'>daqp_reset_workspace</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Reset the working set (upstream's <code>reset_daqp_workspace</code>).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~126"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-resize1"></span> <h3>public  subroutine <a href='../proc/resize1.html'>resize1</a>(a, n, istat)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Allocate <code>a(n)</code>, unless it already has that size. A nonzero <code>istat</code> is kept.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~4"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:)</td>
+            <td>
+<p>array</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~70"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>size</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-istat~12"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>istat</strong></td>
+            <td>
+<p>status (nonzero if an allocation failed)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-resize2"></span> <h3>public  subroutine <a href='../proc/resize2.html'>resize2</a>(a, n1, n2, istat)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Allocate <code>a(n1,n2)</code>, unless it already has that shape. A nonzero <code>istat</code> is kept.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:,:)</td>
+            <td>
+<p>array</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n1"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n1</strong></td>
+            <td>
+<p>number of rows</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n2</strong></td>
+            <td>
+<p>number of columns</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-istat~13"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>istat</strong></td>
+            <td>
+<p>status (nonzero if an allocation failed)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-resize1i"></span> <h3>public  subroutine <a href='../proc/resize1i.html'>resize1i</a>(a, n, istat)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Allocate <code>a(n)</code>, unless it already has that size. A nonzero <code>istat</code> is kept.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~6"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:)</td>
+            <td>
+<p>array</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~71"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>size</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-istat~14"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>istat</strong></td>
+            <td>
+<p>status (nonzero if an allocation failed)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-resize1l"></span> <h3>public  subroutine <a href='../proc/resize1l.html'>resize1l</a>(a, n, istat)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Allocate <code>a(n)</code>, unless it already has that size. A nonzero <code>istat</code> is kept.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~7"></span>
+              logical,
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:)</td>
+            <td>
+<p>array</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~72"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>size</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-istat~15"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>istat</strong></td>
+            <td>
+<p>status (nonzero if an allocation failed)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-swap_r1"></span> <h3>public  subroutine <a href='../proc/swap_r1.html'>swap_r1</a>(a, b)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Exchange two real vectors (no copy).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~8"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:)</td>
+            <td>
+<p>first</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~8"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>b</strong>(:)</td>
+            <td>
+<p>second</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-swap_r2"></span> <h3>public  subroutine <a href='../proc/swap_r2.html'>swap_r2</a>(a, b)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Exchange two real matrices (no copy).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~9"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:,:)</td>
+            <td>
+<p>first</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~9"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>b</strong>(:,:)</td>
+            <td>
+<p>second</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-swap_i1"></span> <h3>public  subroutine <a href='../proc/swap_i1.html'>swap_i1</a>(a, b)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Exchange two integer vectors (no copy).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~10"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:)</td>
+            <td>
+<p>first</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~10"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout),</td>
+              <td></td>            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>b</strong>(:)</td>
+            <td>
+<p>second</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-swap_int"></span> <h3>public pure subroutine <a href='../proc/swap_int.html'>swap_int</a>(a, b)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Exchange two integers.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~11"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+<p>first</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~11"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+<p>second</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-swap_log"></span> <h3>public pure subroutine <a href='../proc/swap_log.html'>swap_log</a>(a, b)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Exchange two logicals.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~12"></span>
+              logical,
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+<p>first</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~12"></span>
+              logical,
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+<p>second</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-swap_problem"></span> <h3>public  subroutine <a href='../proc/swap_problem.html'>swap_problem</a>(a, b)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Exchange two problems (no copy of the arrays).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~13"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+<p>first</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b~13"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong></td>
+            <td>
+<p>second</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

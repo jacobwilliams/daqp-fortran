@@ -1,0 +1,3298 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>daqp_eq_elim &ndash; daqp-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>daqp_eq_elim
+      <small>Module</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-author"><i class="fa fa-pencil"></i> Jacob Williams</li>
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="23.9% of total for modules and submodules.">1579 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_eq_elim.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_eq_elim.f90.html'>daqp_eq_elim.f90</a></li>
+            <li class="breadcrumb-item active" aria-current="page">daqp_eq_elim</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+        <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#absints-0"
+         aria-expanded="false" aria-controls="absints-0">
+         <h4 class="card-header bg-primary text-white">Abstract Interfaces</h4>
+      </a>
+      <div id="absints-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#interface-update_ldp_proc">update_ldp_proc</a>
+        </div>
+      </div>
+    </div>
+
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_chol">eq_chol</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_dot">eq_dot</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_is_candidate">eq_is_candidate</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_count_candidates">eq_count_candidates</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_is_diagonal">eq_is_diagonal</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_is_worthwhile">eq_is_worthwhile</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-daqp_eq_wanted">daqp_eq_wanted</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_same_candidates">eq_same_candidates</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_is_symmetric">eq_is_symmetric</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_split_flat">eq_split_flat</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_build_reduction">eq_build_reduction</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_value">eq_value</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_reduce_rhs">eq_reduce_rhs</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-daqp_eq_install">daqp_eq_install</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-daqp_eq_update">daqp_eq_update</a>
+        </div>
+      </div>
+    </div>
+
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#subs-0"
+         aria-expanded="false" aria-controls="subs-0">
+         <h4 class="card-header bg-primary text-white">Subroutines</h4>
+      </a>
+      <div id="subs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_reflect">eq_reflect</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_apply_qt_many">eq_apply_QT_many</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_accumulate_z">eq_accumulate_Z</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_gemm_tn">eq_gemm_tn</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_twoside">eq_twoside</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_trsm_rows">eq_trsm_rows</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_rows_times_w">eq_rows_times_W</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_hess_times">eq_hess_times</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_free_reduced_ldp">eq_free_reduced_ldp</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_allocate_reduced_ldp">eq_allocate_reduced_ldp</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_free_rhs_cache">eq_free_rhs_cache</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_free_reduction">eq_free_reduction</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_allocate_reduction">eq_allocate_reduction</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_build_qr">eq_build_qr</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_rhs_column">eq_rhs_column</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_rhs_f">eq_rhs_f</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_swap_ldp">eq_swap_ldp</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-daqp_eq_restore">daqp_eq_restore</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-daqp_eq_deactivate">daqp_eq_deactivate</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-eq_compute_lam_eq">eq_compute_lam_eq</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-daqp_eq_expand">daqp_eq_expand</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-daqp_eq_set_primal_start">daqp_eq_set_primal_start</a>
+            <a class="list-group-item" href="../module/daqp_eq_elim.html#proc-free_daqp_eq">free_daqp_eq</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+
+    <div class="col-md-9" id='text'>
+      <p>Elimination of equality constraints, before the QP is turned into an LDP:
+a translation of <code>eq_elim.c</code> of <a href="https://github.com/darnstrom/daqp">DAQP</a>
+v0.10.3 (Copyright (c) 2022 Daniel Arnström, MIT licence). Changed from the
+original: translated to Fortran, 1-based indexing.</p>
+<p>The equality constraints <code>A_E x = b_E</code> are eliminated through
+<code>x = xp + W w</code>, where the columns of <code>W</code> span the null space of <code>A_E</code>
+(from the QR factorization <code>A_E' = Q [R; 0]</code> of the normalized rows) and
+<code>xp</code> is a particular solution. With <code>x = xp + W w</code> the remaining constraints
+become constraints on <code>w</code> (the simple bounds turning into general
+constraints), and the reduced problem is posed in one of three ways
+(<code>eq%path</code>):</p>
+<ul>
+<li><code>eq_path_ldp</code>: if <code>Z'HZ = L L'</code> is positive definite, <code>W = Z L^{-T}</code> gives
+  <code>W'HW = I</code>, and <code>xp</code> is the minimizer over the equality constraints, so
+  that the reduced problem is <code>min 0.5||w||^2</code>. For a diagonal (positive)
+  Hessian, the QR is formed in the metric of <code>H</code> instead.</li>
+<li><code>eq_path_qp</code>: otherwise, <code>W = Z</code> and the reduced problem keeps the
+  Hessian <code>Z'HZ</code> and the linear term <code>Z'(H xp + f)</code>.</li>
+<li><code>eq_path_lp</code>: for an LP, <code>W = Z</code> and the linear term is <code>Z'f</code>.</li>
+</ul>
+<p>The reduced problem is an ordinary problem, whose LDP is formed and solved
+by the usual routines: it is swapped into the workspace (installed) while
+it is formed or solved, and the workspace describes the original problem
+otherwise. Matrices are in upstream's (row-major) memory order: <code>V(:,k)</code> is
+the k-th Householder vector (then <code>Z</code>), <code>W(:,i)</code> is the i-th row of <code>W</code>.</p>
+<br>          <div class="card mb-4">
+      <h3 class="card-header card-title bg-light">Uses</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <ul class="list-inline">
+                  <li class="list-inline-item"><a href='daqp_types.html'>daqp_types</a></li>
+                  <li class="list-inline-item"><a href='daqp_kinds.html'>daqp_kinds</a></li>
+              </ul>
+            </li>
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: module~~daqp_eq_elim~~UsesGraph Pages: 1 -->
+<svg id="moduledaqp_eq_elimUsesGraph" width="439pt" height="72pt"
+ viewBox="0.00 0.00 439.00 72.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~daqp_eq_elim~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 68.27)">
+<title>module~~daqp_eq_elim~~UsesGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-68.27 434.83,-68.27 434.83,4 -4,4"/>
+<!-- module~daqp_eq_elim -->
+<g id="module~~daqp_eq_elim~~UsesGraph_node1" class="node">
+<title>module~daqp_eq_elim</title>
+<polygon fill="none" stroke="black" points="430.83,-44.27 345.06,-44.27 345.06,-20 430.83,-20 430.83,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="387.94" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_eq_elim</text>
+</g>
+<!-- module~daqp_kinds -->
+<g id="module~~daqp_eq_elim~~UsesGraph_node2" class="node">
+<title>module~daqp_kinds</title>
+<g id="a_module~~daqp_eq_elim~~UsesGraph_node2"><a xlink:href="../module/daqp_kinds.html" xlink:title="daqp_kinds">
+<polygon fill="#337ab7" stroke="#337ab7" points="200.79,-64.27 129.27,-64.27 129.27,-40 200.79,-40 200.79,-64.27"/>
+<text xml:space="preserve" text-anchor="middle" x="165.03" y="-48.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_kinds</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_eq_elim&#45;&gt;module~daqp_kinds -->
+<g id="module~~daqp_eq_elim~~UsesGraph_edge1" class="edge">
+<title>module~daqp_eq_elim&#45;&gt;module~daqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M344.61,-35.97C306.72,-39.4 251.28,-44.42 212.25,-47.95"/>
+<polygon fill="#000000" stroke="#000000" points="212.1,-44.45 202.46,-48.84 212.73,-51.42 212.1,-44.45"/>
+</g>
+<!-- module~daqp_types -->
+<g id="module~~daqp_eq_elim~~UsesGraph_node3" class="node">
+<title>module~daqp_types</title>
+<g id="a_module~~daqp_eq_elim~~UsesGraph_node3"><a xlink:href="../module/daqp_types.html" xlink:title="daqp_types">
+<polygon fill="#337ab7" stroke="#337ab7" points="309.06,-24.27 236.79,-24.27 236.79,0 309.06,0 309.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="272.93" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_types</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_eq_elim&#45;&gt;module~daqp_types -->
+<g id="module~~daqp_eq_elim~~UsesGraph_edge2" class="edge">
+<title>module~daqp_eq_elim&#45;&gt;module~daqp_types</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M344.86,-24.69C336.93,-23.28 328.59,-21.81 320.52,-20.38"/>
+<polygon fill="#000000" stroke="#000000" points="321.33,-16.97 310.87,-18.67 320.11,-23.86 321.33,-16.97"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~daqp_eq_elim~~UsesGraph_node4" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~daqp_eq_elim~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-44.27 0,-44.27 0,-20 93.27,-20 93.27,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_kinds&#45;&gt;iso_fortran_env -->
+<g id="module~~daqp_eq_elim~~UsesGraph_edge3" class="edge">
+<title>module~daqp_kinds&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M128.79,-46.08C121.16,-44.77 112.89,-43.35 104.66,-41.93"/>
+<polygon fill="#000000" stroke="#000000" points="105.45,-38.52 95.01,-40.27 104.27,-45.42 105.45,-38.52"/>
+</g>
+<!-- module~daqp_types&#45;&gt;module~daqp_kinds -->
+<g id="module~~daqp_eq_elim~~UsesGraph_edge5" class="edge">
+<title>module~daqp_types&#45;&gt;module~daqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M238.71,-24.68C229.54,-28.14 219.46,-31.95 209.79,-35.61"/>
+<polygon fill="#000000" stroke="#000000" points="208.66,-32.29 200.54,-39.1 211.13,-38.84 208.66,-32.29"/>
+</g>
+<!-- module~daqp_types&#45;&gt;iso_fortran_env -->
+<g id="module~~daqp_eq_elim~~UsesGraph_edge4" class="edge">
+<title>module~daqp_types&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M236.39,-15.3C201.05,-18.46 146.26,-23.34 104.8,-27.04"/>
+<polygon fill="#000000" stroke="#000000" points="104.65,-23.54 95,-27.91 105.27,-30.51 104.65,-23.54"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsesGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsesGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+          <div class="card">
+      <h3 class="card-header card-title bg-light">Used by</h3>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: module~~daqp_eq_elim~~UsedByGraph Pages: 1 -->
+<svg id="moduledaqp_eq_elimUsedByGraph" width="317pt" height="32pt"
+ viewBox="0.00 0.00 317.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~daqp_eq_elim~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>module~~daqp_eq_elim~~UsedByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 313.06,-28.27 313.06,4 -4,4"/>
+<!-- module~daqp_eq_elim -->
+<g id="module~~daqp_eq_elim~~UsedByGraph_node1" class="node">
+<title>module~daqp_eq_elim</title>
+<polygon fill="none" stroke="black" points="85.77,-24.27 0,-24.27 0,0 85.77,0 85.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="42.88" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_eq_elim</text>
+</g>
+<!-- module~daqp_core -->
+<g id="module~~daqp_eq_elim~~UsedByGraph_node2" class="node">
+<title>module~daqp_core</title>
+<g id="a_module~~daqp_eq_elim~~UsedByGraph_node2"><a xlink:href="../module/daqp_core.html" xlink:title="daqp_core">
+<polygon fill="#337ab7" stroke="#337ab7" points="188.79,-24.27 121.77,-24.27 121.77,0 188.79,0 188.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="155.28" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_core</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;module~daqp_eq_elim -->
+<g id="module~~daqp_eq_elim~~UsedByGraph_edge1" class="edge">
+<title>module~daqp_core&#45;&gt;module~daqp_eq_elim</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M121.46,-12.13C113.94,-12.13 105.76,-12.13 97.62,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="97.72,-8.64 87.72,-12.14 97.72,-15.64 97.72,-8.64"/>
+</g>
+<!-- module~daqp_module -->
+<g id="module~~daqp_eq_elim~~UsedByGraph_node3" class="node">
+<title>module~daqp_module</title>
+<g id="a_module~~daqp_eq_elim~~UsedByGraph_node3"><a xlink:href="../module/daqp_module.html" xlink:title="daqp_module">
+<polygon fill="#337ab7" stroke="#337ab7" points="309.06,-24.27 224.79,-24.27 224.79,0 309.06,0 309.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="266.93" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_module</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_module&#45;&gt;module~daqp_core -->
+<g id="module~~daqp_eq_elim~~UsedByGraph_edge2" class="edge">
+<title>module~daqp_module&#45;&gt;module~daqp_core</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M224.47,-12.13C216.65,-12.13 208.44,-12.13 200.53,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="200.77,-8.64 190.76,-12.14 200.76,-15.64 200.77,-8.64"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#UsedByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="UsedByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+
+      <br>
+
+
+
+
+
+        <section>
+          <h2>Abstract Interfaces</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="interface-update_ldp_proc"></span><h3>abstract interface
+        
+    </h3></div>
+    <ul class="list-group">
+      <li class="list-group-item">
+            <h3>
+    public  function update_ldp_proc(mask, work)  
+
+    </h3>
+  <p>Forms the LDP of the problem in the workspace.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mask"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mask</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+      </li>
+    </ul>
+  </div>
+
+        </section>
+        <br>
+
+
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_chol"></span> <h3>private  function <a href='../proc/eq_chol.html'>eq_chol</a>(A, n, zero_tol)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Cholesky factorization <code>A = L L'</code> (lower, row major: <code>A(j,i)</code>, <code>j &lt;= i</code>, in
+place), with the rows in blocks of four. Returns false if <code>A</code> is not
+positive definite (a pivot below <code>zero_tol</code>, or relative to the largest pivot).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>A</strong>(:,:)</td>
+            <td>
+<p>matrix; factor on output</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~6"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>dimension</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zero_tol"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zero_tol</strong></td>
+            <td>
+<p>tolerance</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_dot"></span> <h3>private pure function <a href='../proc/eq_dot.html'>eq_dot</a>(a, b, n)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Dot product, summed in order.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong>(:)</td>
+            <td>
+<p>first vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b</strong>(:)</td>
+            <td>
+<p>second vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~8"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>length</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=wp)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_is_candidate"></span> <h3>private pure function <a href='../proc/eq_is_candidate.html'>eq_is_candidate</a>(work, i)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether the general constraint <code>i</code> is an equality that can be eliminated
+(the same criteria as the detection of equal bounds).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~2"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~11"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+            <td>
+<p>constraint</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_count_candidates"></span> <h3>private pure function <a href='../proc/eq_count_candidates.html'>eq_count_candidates</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Number of equality candidates.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~3"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_is_diagonal"></span> <h3>private pure function <a href='../proc/eq_is_diagonal.html'>eq_is_diagonal</a>(qp, zero_tol)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether <code>H</code> is diagonal.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp~2"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+            <td>
+<p>the problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zero_tol~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zero_tol</strong></td>
+            <td>
+<p>tolerance</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_is_worthwhile"></span> <h3>private pure function <a href='../proc/eq_is_worthwhile.html'>eq_is_worthwhile</a>(work, n_eq)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether eliminating <code>n_eq</code> equalities is expected to pay off.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~4"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_eq"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_eq</strong></td>
+            <td>
+<p>number of equality candidates</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_eq_wanted"></span> <h3>public  function <a href='../proc/daqp_eq_wanted.html'>daqp_eq_wanted</a>(work, mask)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether the problem in the workspace is to be reduced for an update with
+<code>mask</code> (<code>settings%eq_reduction</code>; <code>auto</code> only with <code>daqp_update_eliminate</code>).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~5"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mask~2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mask</strong></td>
+            <td>
+<p>update mask</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_same_candidates"></span> <h3>private  function <a href='../proc/eq_same_candidates.html'>eq_same_candidates</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether the equality candidates are the ones that the reduction was formed for.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~6"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_is_symmetric"></span> <h3>private pure function <a href='../proc/eq_is_symmetric.html'>eq_is_symmetric</a>(qp, zero_tol)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Whether <code>H</code> is symmetric (for an AVI).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp~3"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+            <td>
+<p>the problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zero_tol~4"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zero_tol</strong></td>
+            <td>
+<p>tolerance</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_split_flat"></span> <h3>private  function <a href='../proc/eq_split_flat.html'>eq_split_flat</a>(qp, Z, n, nz, cid, nc, zero_tol, Hr) result(r)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Split <code>Z</code> (<code>n x nz</code>) into <code>[Z1 Z2]</code>, with <code>Z2</code> zero in the rows <code>cid</code> (the
+variables with curvature), so that <code>H*Z2 = 0</code> exactly. Forms
+<code>Hr = blockdiag(Z1'HZ1, 0)</code> and returns the dimension of <code>Z1</code>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp~4"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+            <td>
+<p>the problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Z</strong>(:,:)</td>
+            <td>
+<p>null-space basis (columns)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~13"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>number of variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nz~4"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nz</strong></td>
+            <td>
+<p>dimension of the null space</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cid"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cid</strong>(:)</td>
+            <td>
+<p>variables with curvature</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+            <td>
+<p>number of them</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zero_tol~5"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zero_tol</strong></td>
+            <td>
+<p>tolerance</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-hr"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Hr</strong>(:,:)</td>
+            <td>
+<p>reduced Hessian</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_build_reduction"></span> <h3>private  function <a href='../proc/eq_build_reduction.html'>eq_build_reduction</a>(work) result(flag)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Form the reduction of the problem in the workspace: the factorizations, the
+reduced constraints and the storage of the reduced problem. Returns 0 if
+nothing can be eliminated, or if a soft constraint would be left out.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~8"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_value"></span> <h3>private pure function <a href='../proc/eq_value.html'>eq_value</a>(work, id)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Value of equality <code>id</code> (the upper bound, unless it is active at its lower one).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~9"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-id~2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>id</strong></td>
+            <td>
+<p>constraint</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=wp)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_reduce_rhs"></span> <h3>private  function <a href='../proc/eq_reduce_rhs.html'>eq_reduce_rhs</a>(work, warm) result(flag)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>The part that depends on <code>b</code> and <code>f</code>: the particular solution <code>xp</code>, the
+linear term of the reduced problem (<code>eq_path_qp</code>, <code>eq_path_lp</code>), and the
+shifted bounds. With <code>warm</code>, the responses to <code>b_E</code> and <code>f</code> are used if
+few equalities have a nonzero right-hand side.
+Returns 1, or a negative exit flag if the implied constraints are violated.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~12"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-warm"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>warm</strong></td>
+            <td>
+<p>the reduction was not formed anew</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_eq_install"></span> <h3>public  function <a href='../proc/daqp_eq_install.html'>daqp_eq_install</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Swap the reduced problem into the workspace. Returns whether it is installed
+(by this call).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~14"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>logical</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_eq_update"></span> <h3>public  function <a href='../proc/daqp_eq_update.html'>daqp_eq_update</a>(work, mask, update_ldp) result(flag)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Form or update the reduction of the problem in the workspace, and the LDP
+of the reduced problem (with <code>update_ldp</code>). Returns <code>eq_not_reduced</code> if
+nothing can be eliminated, a negative exit flag if the equality constraints
+cannot be satisfied, and the return value of <code>update_ldp</code> otherwise.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~17"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mask~3"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mask</strong></td>
+            <td>
+<p>update mask</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-update_ldp"></span>
+              procedure(<a href='../interface/update_ldp_proc.html'>update_ldp_proc</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>update_ldp</strong></td>
+            <td>
+<p>forms the LDP of the installed problem</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>integer(kind=ip)</small>
+    </h4>
+    
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+        <section>
+          <h2>Subroutines</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_reflect"></span> <h3>private pure subroutine <a href='../proc/eq_reflect.html'>eq_reflect</a>(v, tau, k, n, y)  
+</h3></div>
+    <div class="card-body">
+          
+  <p><code>y &lt;-- (I - tau v v') y</code> on the indices <code>&gt;= k</code> (<code>v(k) = 1</code> implicitly).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong>(:)</td>
+            <td>
+<p>Householder vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong></td>
+            <td>
+<p>Householder scalar</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+<p>first index</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>length</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y</strong>(:)</td>
+            <td>
+<p>vector</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_apply_qt_many"></span> <h3>private  subroutine <a href='../proc/eq_apply_qt_many.html'>eq_apply_QT_many</a>(V, tau, nr, n, Y, cnt)  
+</h3></div>
+    <div class="card-body">
+          
+  <p><code>Y &lt;-- Q'Y</code> for the <code>cnt</code> columns of <code>Y</code> (length <code>n</code>), with the reflectors
+<code>1..nr</code> (four vectors per pass over a reflector).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong>(:,:)</td>
+            <td>
+<p>Householder vectors (columns)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong>(:)</td>
+            <td>
+<p>Householder scalars</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nr"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nr</strong></td>
+            <td>
+<p>number of reflectors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>length of the vectors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Y</strong>(:,:)</td>
+            <td>
+<p>vectors (columns)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cnt"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cnt</strong></td>
+            <td>
+<p>number of vectors</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_accumulate_z"></span> <h3>private  subroutine <a href='../proc/eq_accumulate_z.html'>eq_accumulate_Z</a>(V, tau, nr, n)  
+</h3></div>
+    <div class="card-body">
+          
+  <p><code>Z = Q(:,nr+1:n)</code>, accumulated in the columns <code>nr+1..n</code> of <code>V</code> (four at a time).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong>(:,:)</td>
+            <td>
+<p>Householder vectors; Z on output</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong>(:)</td>
+            <td>
+<p>Householder scalars</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nr~2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nr</strong></td>
+            <td>
+<p>number of reflectors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~3"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>dimension</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_gemm_tn"></span> <h3>private  subroutine <a href='../proc/eq_gemm_tn.html'>eq_gemm_tn</a>(n, p, q, X, Y, C, upper)  
+</h3></div>
+    <div class="card-body">
+          
+  <p><code>C(j,i) = X(:,i).Y(:,j)</code> for vectors of length <code>n</code>. With <code>upper</code>, only
+<code>j &gt;= i</code> is computed, and then mirrored.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~4"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>length of the vectors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>p</strong></td>
+            <td>
+<p>number of vectors in X</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-q"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>q</strong></td>
+            <td>
+<p>number of vectors in Y</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:,:)</td>
+            <td>
+<p>vectors (columns)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Y</strong>(:,:)</td>
+            <td>
+<p>vectors (columns)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>C</strong>(:,:)</td>
+            <td>
+<p>products</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-upper"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>upper</strong></td>
+            <td>
+<p>only the upper triangle (mirrored)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_twoside"></span> <h3>private  subroutine <a href='../proc/eq_twoside.html'>eq_twoside</a>(B, n, V, tau, nr, p)  
+</h3></div>
+    <div class="card-body">
+          
+  <p><code>B &lt;-- P_k B P_k</code> for <code>k = 1..nr</code>, for a symmetric <code>B</code> (lower triangle,
+row major: <code>B(j,i)</code>, <code>j &lt;= i</code>). Only the trailing blocks are updated.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>B</strong>(:,:)</td>
+            <td>
+<p>symmetric matrix (lower triangle)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~5"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>dimension</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>V</strong>(:,:)</td>
+            <td>
+<p>Householder vectors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tau~4"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tau</strong>(:)</td>
+            <td>
+<p>Householder scalars</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nr~3"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nr</strong></td>
+            <td>
+<p>number of reflectors</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>p</strong>(:)</td>
+            <td>
+<p>scratch (n)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_trsm_rows"></span> <h3>private  subroutine <a href='../proc/eq_trsm_rows.html'>eq_trsm_rows</a>(L, nz, X, cnt)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Rows <code>X(:,r) &lt;-- X(:,r) L^{-T}</code> (solves <code>L x' = x'</code>), for <code>cnt</code> rows
+(<code>L</code> lower, row major: <code>L(k,j)</code>, <code>k &lt;= j</code>).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>L</strong>(:,:)</td>
+            <td>
+<p>Cholesky factor</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nz"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nz</strong></td>
+            <td>
+<p>dimension</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>X</strong>(:,:)</td>
+            <td>
+<p>rows (columns of X)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cnt~2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cnt</strong></td>
+            <td>
+<p>number of rows</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_rows_times_w"></span> <h3>private  subroutine <a href='../proc/eq_rows_times_w.html'>eq_rows_times_W</a>(At, ids, ms, cnt, n, W, nz, C)  
+</h3></div>
+    <div class="card-body">
+          
+  <p><code>C(:,i) = W' a_{ids(i)}</code> for the general constraints <code>ids</code> (the rows of
+<code>A</code> times <code>W</code>, with <code>W(:,k)</code> the k-th row of <code>W</code>).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-at"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>At</strong>(:,:)</td>
+            <td>
+<p>rows of A (columns)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ids"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ids</strong>(:)</td>
+            <td>
+<p>constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ms"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ms</strong></td>
+            <td>
+<p>number of simple bounds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cnt~3"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cnt</strong></td>
+            <td>
+<p>number of constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~7"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>number of variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>W</strong>(:,:)</td>
+            <td>
+<p>null-space basis (rows as columns)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nz~2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nz</strong></td>
+            <td>
+<p>number of reduced variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-c~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>C</strong>(:,:)</td>
+            <td>
+<p>products (columns)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_hess_times"></span> <h3>private  subroutine <a href='../proc/eq_hess_times.html'>eq_hess_times</a>(qp, metric, x, y)  
+</h3></div>
+    <div class="card-body">
+          
+  <p><code>y &lt;-- H x</code> (dense, or diagonal if <code>metric</code>).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+            <td>
+<p>the problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-metric"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>metric</strong></td>
+            <td>
+<p>H is diagonal</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+            <td>
+<p>vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y</strong>(:)</td>
+            <td>
+<p>H x</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_free_reduced_ldp"></span> <h3>private  subroutine <a href='../proc/eq_free_reduced_ldp.html'>eq_free_reduced_ldp</a>(eq)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Free the LDP of the reduced problem (not the reduced problem itself).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq"></span>
+              type(<a href='../type/daqp_eq_data.html'>daqp_eq_data</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+            <td>
+<p>elimination</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_allocate_reduced_ldp"></span> <h3>private  subroutine <a href='../proc/eq_allocate_reduced_ldp.html'>eq_allocate_reduced_ldp</a>(eq, nb)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Storage of the LDP of the reduced problem (which has no simple bounds).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq~2"></span>
+              type(<a href='../type/daqp_eq_data.html'>daqp_eq_data</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+            <td>
+<p>elimination</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nb"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nb</strong></td>
+            <td>
+<p>number of binary constraints</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_free_rhs_cache"></span> <h3>private  subroutine <a href='../proc/eq_free_rhs_cache.html'>eq_free_rhs_cache</a>(eq)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Free the cached responses to the right-hand side.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq~3"></span>
+              type(<a href='../type/daqp_eq_data.html'>daqp_eq_data</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+            <td>
+<p>elimination</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_free_reduction"></span> <h3>private  subroutine <a href='../proc/eq_free_reduction.html'>eq_free_reduction</a>(eq)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Free the reduction (and the reduced problem).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq~4"></span>
+              type(<a href='../type/daqp_eq_data.html'>daqp_eq_data</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+            <td>
+<p>elimination</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_allocate_reduction"></span> <h3>private  subroutine <a href='../proc/eq_allocate_reduction.html'>eq_allocate_reduction</a>(eq, n, m, ms)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Storage that only depends on the dimensions of the original problem.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq~5"></span>
+              type(<a href='../type/daqp_eq_data.html'>daqp_eq_data</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+            <td>
+<p>elimination</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~11"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+            <td>
+<p>dimensions of the original problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+            <td>
+<p>dimensions of the original problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ms~2"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ms</strong></td>
+            <td>
+<p>dimensions of the original problem</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_build_qr"></span> <h3>private  subroutine <a href='../proc/eq_build_qr.html'>eq_build_qr</a>(work, zero_tol)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Householder QR of <code>A_E'</code> (<code>A_E H^{-1/2}</code> if <code>metric</code>), left-looking in
+panels of four candidates. Candidates that are (numerically) linearly
+dependent on the ones before are not eliminated.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~7"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zero_tol~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zero_tol</strong></td>
+            <td>
+<p>tolerance</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_rhs_column"></span> <h3>private  subroutine <a href='../proc/eq_rhs_column.html'>eq_rhs_column</a>(work, k)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Response of <code>xp</code> to a unit right-hand side of eliminated equality <code>k</code> (in
+<code>eq_path_ldp</code>), stored in <code>eq%cols(k)%v = [xp_k, H xp_k, shifts]</code>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~10"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~12"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+<p>eliminated equality</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_rhs_f"></span> <h3>private  subroutine <a href='../proc/eq_rhs_f.html'>eq_rhs_f</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Response of <code>xp</code> to <code>f</code> (<code>eq_path_ldp</code>): <code>xf = -W W'f</code>, <code>gf = H xf + f</code>,
+<code>df = -A xf</code>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~11"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_swap_ldp"></span> <h3>private  subroutine <a href='../proc/eq_swap_ldp.html'>eq_swap_ldp</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Exchange the LDP of the workspace with <code>work%eq%other</code> (no copy).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~13"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_eq_restore"></span> <h3>public  subroutine <a href='../proc/daqp_eq_restore.html'>daqp_eq_restore</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Swap the original problem back into the workspace.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~15"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_eq_deactivate"></span> <h3>public  subroutine <a href='../proc/daqp_eq_deactivate.html'>daqp_eq_deactivate</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Give up the reduction (the LDP of the original problem then has to be formed).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~16"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-eq_compute_lam_eq"></span> <h3>private  subroutine <a href='../proc/eq_compute_lam_eq.html'>eq_compute_lam_eq</a>(work, x, lam)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Multipliers of the eliminated equalities, from the stationarity condition
+<code>A_E' lam_E = -(H x + f + A_K' lam_K)</code>.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~18"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace (with the reduced problem installed)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+            <td>
+<p>solution of the original problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lam"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lam</strong>(:)</td>
+            <td>
+<p>multipliers</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_eq_expand"></span> <h3>public  subroutine <a href='../proc/daqp_eq_expand.html'>daqp_eq_expand</a>(work, x, fval, lam)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Turn the result of the installed reduced problem into the result of the
+original problem, and carry its working set over to the original constraints.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~19"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace (with the reduced problem installed)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+            <td>
+<p>solution (of size n of the original problem)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fval"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fval</strong></td>
+            <td>
+<p>objective (of the reduced problem on input)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lam~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>lam</strong>(:)</td>
+            <td>
+<p>multipliers (of the reduced problem on input)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-daqp_eq_set_primal_start"></span> <h3>public  subroutine <a href='../proc/daqp_eq_set_primal_start.html'>daqp_eq_set_primal_start</a>(work, x)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Set the starting iterate of the reduced problem from <code>x</code> of the original one.</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~20"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~4"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+            <td>
+<p>iterate of the original problem</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-free_daqp_eq"></span> <h3>public  subroutine <a href='../proc/free_daqp_eq.html'>free_daqp_eq</a>(work)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Free the elimination (restoring the original problem first).</p>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~21"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+<p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+        </section>
+        <br>
+
+
+
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

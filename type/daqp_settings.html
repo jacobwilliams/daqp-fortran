@@ -1,0 +1,679 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>daqp_settings &ndash; daqp-fortran </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>daqp_settings
+      <small>Derived Type</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="<p> 9.4% of total for derived types.</p>Including implementation: 20 statements,  3.0% of total for derived types.">20 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_types.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_types.f90.html'>daqp_types.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/daqp_types.html'>daqp_types</a></li>
+            <li class="breadcrumb-item active" aria-current="page">daqp_settings</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-primal_tol~5">primal_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-dual_tol~3">dual_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-zero_tol~10">zero_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-pivot_tol~2">pivot_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-progress_tol~2">progress_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-cycle_tol~2">cycle_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-iter_limit~2">iter_limit</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-fval_bound~3">fval_bound</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-eps_prox~2">eps_prox</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-eta_prox~2">eta_prox</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-rho_soft~2">rho_soft</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-rel_subopt~2">rel_subopt</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-abs_subopt~2">abs_subopt</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-sing_tol~2">sing_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-refactor_tol~2">refactor_tol</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-time_limit~2">time_limit</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-w_soft~2">w_soft</a>
+            <a class="list-group-item" href="../type/daqp_settings.html#variable-eq_reduction~2">eq_reduction</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../type/daqp_settings.html#src">daqp_settings</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+      <h2 id="type-def-statement">
+        type, public :: daqp_settings</h2>
+    <p>Solver settings (upstream's <code>DAQPSettings</code>, with its defaults).</p>
+<br>      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Inherited by</h3>
+        </div>
+        <div class="card-body">
+          <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: type~~daqp_settings~~InheritedByGraph Pages: 1 -->
+<svg id="typedaqp_settingsInheritedByGraph" width="394pt" height="32pt"
+ viewBox="0.00 0.00 394.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~daqp_settings~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>type~~daqp_settings~~InheritedByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 390.31,-28.27 390.31,4 -4,4"/>
+<!-- type~daqp_settings -->
+<g id="type~~daqp_settings~~InheritedByGraph_node1" class="node">
+<title>type~daqp_settings</title>
+<polygon fill="none" stroke="black" points="85.02,-24.27 0,-24.27 0,0 85.02,0 85.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="42.51" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_settings</text>
+</g>
+<!-- type~daqp_workspace -->
+<g id="type~~daqp_settings~~InheritedByGraph_node2" class="node">
+<title>type~daqp_workspace</title>
+<g id="a_type~~daqp_settings~~InheritedByGraph_node2"><a xlink:href="../type/daqp_workspace.html" xlink:title="daqp_workspace">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="260.79,-24.27 160.02,-24.27 160.02,0 260.79,0 260.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="210.4" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_workspace</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_workspace&#45;&gt;type~daqp_settings -->
+<g id="type~~daqp_settings~~InheritedByGraph_edge1" class="edge">
+<title>type~daqp_workspace&#45;&gt;type~daqp_settings</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M159.63,-12.13C139.85,-12.13 117.04,-12.13 96.91,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="96.93,-8.64 86.93,-12.14 96.93,-15.64 96.93,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="122.52" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">settings</text>
+</g>
+<!-- type~daqp_type -->
+<g id="type~~daqp_settings~~InheritedByGraph_node3" class="node">
+<title>type~daqp_type</title>
+<g id="a_type~~daqp_settings~~InheritedByGraph_node3"><a xlink:href="../type/daqp_type.html" xlink:title="daqp_type">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="386.31,-24.27 319.29,-24.27 319.29,0 386.31,0 386.31,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="352.8" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_type&#45;&gt;type~daqp_workspace -->
+<g id="type~~daqp_settings~~InheritedByGraph_edge2" class="edge">
+<title>type~daqp_type&#45;&gt;type~daqp_workspace</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M318.88,-12.13C305.06,-12.13 288.51,-12.13 272.6,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="272.68,-8.64 262.68,-12.14 272.68,-15.64 272.68,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="290.04" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">work</text>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#InheritedByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="InheritedByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
+<!-- Type -->
+<g id="node1" class="node">
+<title>Type</title>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a derived type to the parent type which it
+extends. Dashed arrows point from a derived type to the other
+types it contains as a components, with a label listing the name(s) of
+said component(s).
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    <br>
+
+    <section>
+    <h2>Components</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-primal_tol~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>primal_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_prim_tol</td>
+            <td>
+                <p>tolerance for primal feasibility</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dual_tol~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dual_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_dual_tol</td>
+            <td>
+                <p>tolerance for dual feasibility</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zero_tol~10"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zero_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_zero_tol</td>
+            <td>
+                <p>values below are regarded as zero</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pivot_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>pivot_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_pivot_tol</td>
+            <td>
+                <p>pivots of the <code>LDL'</code> below are reordered</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-progress_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>progress_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_prog_tol</td>
+            <td>
+                <p>minimum objective progress (cycle guard)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-cycle_tol~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>cycle_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_cycle_tol</td>
+            <td>
+                <p>iterations without progress before cycling is assumed</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iter_limit~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iter_limit</strong></td>
+<td> =</td>
+                <td>daqp_default_iter_limit</td>
+            <td>
+                <p>maximum number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fval_bound~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fval_bound</strong></td>
+<td> =</td>
+                <td>daqp_inf</td>
+            <td>
+                <p>upper bound of the objective (infeasible above)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eps_prox~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eps_prox</strong></td>
+<td> =</td>
+                <td>daqp_default_eps_prox</td>
+            <td>
+                <p>proximal regularization (negative: automatic, only if needed)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eta_prox~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eta_prox</strong></td>
+<td> =</td>
+                <td>daqp_default_eta</td>
+            <td>
+                <p>tolerance of the proximal outer loop (negative: automatic)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_soft~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rho_soft</strong></td>
+<td> =</td>
+                <td>daqp_default_rho_soft</td>
+            <td>
+                <p>reciprocal quadratic weight of the soft constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rel_subopt~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rel_subopt</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+                <p>relative suboptimality tolerance (branch and bound)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-abs_subopt~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>abs_subopt</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+                <p>absolute suboptimality tolerance (branch and bound)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sing_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sing_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_sing_tol</td>
+            <td>
+                <p>pivots of the <code>LDL'</code> below mark a singular working set</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-refactor_tol~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>refactor_tol</strong></td>
+<td> =</td>
+                <td>daqp_default_refactor_tol</td>
+            <td>
+                <p>pivots below trigger a refactorization at a solution</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-time_limit~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>time_limit</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+                <p>time limit of a solve in seconds (0: none)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_soft~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>w_soft</strong></td>
+<td> =</td>
+                <td>daqp_default_w_soft</td>
+            <td>
+                <p>linear weight of the soft constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq_reduction~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>eq_reduction</strong></td>
+<td> =</td>
+                <td>daqp_eq_reduction_auto</td>
+            <td>
+                <p>equality-reduction policy (<code>daqp_eq_reduction_*</code>)</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+
+
+
+    <section>
+    <h3><span class="anchor" id="src"></span>Source Code</h3>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">daqp_settings</span><span class="w"></span>
+<span class="w">        </span><span class="c">!! Solver settings (upstream&#39;s `DAQPSettings`, with its defaults).</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">primal_tol</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_prim_tol</span><span class="w">     </span><span class="c">!! tolerance for primal feasibility</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">dual_tol</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_dual_tol</span><span class="w">     </span><span class="c">!! tolerance for dual feasibility</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">zero_tol</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_zero_tol</span><span class="w">     </span><span class="c">!! values below are regarded as zero</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">pivot_tol</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_pivot_tol</span><span class="w">    </span><span class="c">!! pivots of the `LDL&#39;` below are reordered</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">progress_tol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_prog_tol</span><span class="w">     </span><span class="c">!! minimum objective progress (cycle guard)</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cycle_tol</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_cycle_tol</span><span class="w">    </span><span class="c">!! iterations without progress before cycling is assumed</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iter_limit</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_iter_limit</span><span class="w">   </span><span class="c">!! maximum number of iterations</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">fval_bound</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_inf</span><span class="w">                  </span><span class="c">!! upper bound of the objective (infeasible above)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">eps_prox</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_eps_prox</span><span class="w">     </span><span class="c">!! proximal regularization (negative: automatic, only if needed)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">eta_prox</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_eta</span><span class="w">          </span><span class="c">!! tolerance of the proximal outer loop (negative: automatic)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">rho_soft</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_rho_soft</span><span class="w">     </span><span class="c">!! reciprocal quadratic weight of the soft constraints</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">rel_subopt</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w">                    </span><span class="c">!! relative suboptimality tolerance (branch and bound)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">abs_subopt</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w">                    </span><span class="c">!! absolute suboptimality tolerance (branch and bound)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">sing_tol</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_sing_tol</span><span class="w">     </span><span class="c">!! pivots of the `LDL&#39;` below mark a singular working set</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">refactor_tol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_refactor_tol</span><span class="w"> </span><span class="c">!! pivots below trigger a refactorization at a solution</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">time_limit</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w">                    </span><span class="c">!! time limit of a solve in seconds (0: none)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w">    </span><span class="kd">::</span><span class="w"> </span><span class="n">w_soft</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_default_w_soft</span><span class="w">       </span><span class="c">!! linear weight of the soft constraints</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eq_reduction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_eq_reduction_auto</span><span class="w">    </span><span class="c">!! equality-reduction policy (`daqp_eq_reduction_*`)</span>
+<span class="w">    </span><span class="k">end type </span><span class="n">daqp_settings</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,823 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>eq_hess_times &ndash; daqp-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>eq_hess_times
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.3% of total for procedures.">21 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_eq_elim.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_eq_elim.f90.html'>daqp_eq_elim.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/daqp_eq_elim.html'>daqp_eq_elim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">eq_hess_times</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/eq_hess_times.html#src">eq_hess_times</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private  subroutine eq_hess_times(qp, metric, x, y)  
+</h2>
+    
+
+    <p><code>y &lt;-- H x</code> (dense, or diagonal if <code>metric</code>).</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp"></span>
+              type(<a href='../type/daqp_problem.html'>daqp_problem</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+            <td>
+                <p>the problem</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-metric"></span>
+              logical,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>metric</strong></td>
+            <td>
+                <p>H is diagonal</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+            <td>
+                <p>vector</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y</strong>(:)</td>
+            <td>
+                <p>H x</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~eq_hess_times~~CallsGraph Pages: 1 -->
+<svg id="proceq_hess_timesCallsGraph" width="187pt" height="32pt"
+ viewBox="0.00 0.00 187.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~eq_hess_times~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>proc~~eq_hess_times~~CallsGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 182.77,-28.27 182.77,4 -4,4"/>
+<!-- proc~eq_hess_times -->
+<g id="proc~~eq_hess_times~~CallsGraph_node1" class="node">
+<title>proc~eq_hess_times</title>
+<polygon fill="none" stroke="black" points="88.77,-24.27 0,-24.27 0,0 88.77,0 88.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="44.38" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">eq_hess_times</text>
+</g>
+<!-- proc~eq_dot -->
+<g id="proc~~eq_hess_times~~CallsGraph_node2" class="node">
+<title>proc~eq_dot</title>
+<g id="a_proc~~eq_hess_times~~CallsGraph_node2"><a xlink:href="../proc/eq_dot.html" xlink:title="eq_dot">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="178.77,-24.27 124.77,-24.27 124.77,0 178.77,0 178.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="151.77" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_dot</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_hess_times&#45;&gt;proc~eq_dot -->
+<g id="proc~~eq_hess_times~~CallsGraph_edge1" class="edge">
+<title>proc~eq_hess_times&#45;&gt;proc~eq_dot</title>
+<path fill="none" stroke="#000000" d="M89.16,-12.13C97.12,-12.13 105.36,-12.13 113.13,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="112.94,-15.64 122.94,-12.14 112.94,-8.64 112.94,-15.64"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~eq_hess_times~~CalledByGraph Pages: 1 -->
+<svg id="proceq_hess_timesCalledByGraph" width="641pt" height="105pt"
+ viewBox="0.00 0.00 641.00 105.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~eq_hess_times~~CalledByGraph" class="graph" transform="scale(0.550139 0.550139) rotate(0) translate(4 186.95)">
+<title>proc~~eq_hess_times~~CalledByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-186.95 1161.16,-186.95 1161.16,4 -4,4"/>
+<!-- proc~eq_hess_times -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node1" class="node">
+<title>proc~eq_hess_times</title>
+<polygon fill="none" stroke="black" points="1157.16,-103.95 1068.39,-103.95 1068.39,-79.68 1157.16,-79.68 1157.16,-103.95"/>
+<text xml:space="preserve" text-anchor="middle" x="1112.77" y="-88.22" font-family="Helvetica,sans-Serif" font-size="10.50">eq_hess_times</text>
+</g>
+<!-- proc~daqp_eq_set_primal_start -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node2" class="node">
+<title>proc~daqp_eq_set_primal_start</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node2"><a xlink:href="../proc/daqp_eq_set_primal_start.html" xlink:title="daqp_eq_set_primal_start">
+<polygon fill="#d9534f" stroke="#d9534f" points="904.62,-181.95 757.35,-181.95 757.35,-157.68 904.62,-157.68 904.62,-181.95"/>
+<text xml:space="preserve" text-anchor="middle" x="830.98" y="-166.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_set_primal_start</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_set_primal_start&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge1" class="edge">
+<title>proc~daqp_eq_set_primal_start&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M904.94,-159.13C943.42,-152.43 991.08,-142.46 1032.39,-128.82 1048.04,-123.65 1064.66,-116.22 1078.64,-109.38"/>
+<polygon fill="#000000" stroke="#000000" points="1080.02,-112.6 1087.39,-104.99 1076.88,-106.35 1080.02,-112.6"/>
+</g>
+<!-- proc~eq_compute_lam_eq -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node3" class="node">
+<title>proc~eq_compute_lam_eq</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node3"><a xlink:href="../proc/eq_compute_lam_eq.html" xlink:title="eq_compute_lam_eq">
+<polygon fill="#d9534f" stroke="#d9534f" points="721.35,-29.95 599.58,-29.95 599.58,-5.68 721.35,-5.68 721.35,-29.95"/>
+<text xml:space="preserve" text-anchor="middle" x="660.46" y="-14.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_compute_lam_eq</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_compute_lam_eq&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge2" class="edge">
+<title>proc~eq_compute_lam_eq&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M721.77,-8.27C797.03,1.12 928.46,9.15 1032.39,-28.82 1056.15,-37.5 1078.26,-56.3 1093.08,-71.12"/>
+<polygon fill="#000000" stroke="#000000" points="1090.42,-73.4 1099.88,-78.18 1095.47,-68.55 1090.42,-73.4"/>
+</g>
+<!-- proc~eq_reduce_rhs -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node4" class="node">
+<title>proc~eq_reduce_rhs</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node4"><a xlink:href="../proc/eq_reduce_rhs.html" xlink:title="eq_reduce_rhs">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="875.37,-100.95 786.6,-100.95 786.6,-76.68 875.37,-76.68 875.37,-100.95"/>
+<text xml:space="preserve" text-anchor="middle" x="830.98" y="-85.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_reduce_rhs</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge3" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M875.76,-100.76C895.42,-105.54 919.02,-110.46 940.62,-112.82 981.17,-117.24 991.94,-118.08 1032.39,-112.82 1041.84,-111.59 1051.77,-109.57 1061.28,-107.26"/>
+<polygon fill="#000000" stroke="#000000" points="1061.93,-110.7 1070.73,-104.81 1060.18,-103.93 1061.93,-110.7"/>
+</g>
+<!-- proc~eq_rhs_column -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node5" class="node">
+<title>proc~eq_rhs_column</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node5"><a xlink:href="../proc/eq_rhs_column.html" xlink:title="eq_rhs_column">
+<polygon fill="#d9534f" stroke="#d9534f" points="1032.39,-103.95 940.62,-103.95 940.62,-79.68 1032.39,-79.68 1032.39,-103.95"/>
+<text xml:space="preserve" text-anchor="middle" x="986.5" y="-88.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_rhs_column</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_column -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge9" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_column</title>
+<path fill="none" stroke="#000000" d="M875.57,-89.67C892.15,-89.99 911.28,-90.37 928.9,-90.71"/>
+<polygon fill="#000000" stroke="#000000" points="928.63,-94.21 938.7,-90.9 928.77,-87.21 928.63,-94.21"/>
+</g>
+<!-- proc~eq_rhs_f -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node6" class="node">
+<title>proc~eq_rhs_f</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node6"><a xlink:href="../proc/eq_rhs_f.html" xlink:title="eq_rhs_f">
+<polygon fill="#d9534f" stroke="#d9534f" points="1014.39,-61.95 958.62,-61.95 958.62,-37.68 1014.39,-37.68 1014.39,-61.95"/>
+<text xml:space="preserve" text-anchor="middle" x="986.5" y="-46.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_rhs_f</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_f -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge10" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_f</title>
+<path fill="none" stroke="#000000" d="M875.57,-77.74C898.11,-72.02 925.38,-65.09 947.12,-59.57"/>
+<polygon fill="#000000" stroke="#000000" points="947.95,-62.97 956.78,-57.11 946.23,-56.18 947.95,-62.97"/>
+</g>
+<!-- proc~eq_rhs_column&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge4" class="edge">
+<title>proc~eq_rhs_column&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M1032.72,-91.82C1040.46,-91.82 1048.58,-91.82 1056.55,-91.82"/>
+<polygon fill="#000000" stroke="#000000" points="1056.53,-95.32 1066.53,-91.82 1056.53,-88.32 1056.53,-95.32"/>
+</g>
+<!-- proc~eq_rhs_f&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge5" class="edge">
+<title>proc~eq_rhs_f&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M1014.78,-59.03C1029.19,-63.91 1047.32,-70.03 1063.98,-75.66"/>
+<polygon fill="#000000" stroke="#000000" points="1062.64,-78.9 1073.23,-78.79 1064.88,-72.27 1062.64,-78.9"/>
+</g>
+<!-- proc~daqp_eq_expand -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node7" class="node">
+<title>proc~daqp_eq_expand</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node7"><a xlink:href="../proc/daqp_eq_expand.html" xlink:title="daqp_eq_expand">
+<polygon fill="#d9534f" stroke="#d9534f" points="550.08,-46.95 448.56,-46.95 448.56,-22.68 550.08,-22.68 550.08,-46.95"/>
+<text xml:space="preserve" text-anchor="middle" x="499.32" y="-31.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_expand</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_expand&#45;&gt;proc~eq_compute_lam_eq -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge7" class="edge">
+<title>proc~daqp_eq_expand&#45;&gt;proc~eq_compute_lam_eq</title>
+<path fill="none" stroke="#000000" d="M550.24,-29.48C562.22,-28.2 575.26,-26.81 588.01,-25.45"/>
+<polygon fill="#000000" stroke="#000000" points="588.03,-28.97 597.6,-24.42 587.29,-22.01 588.03,-28.97"/>
+</g>
+<!-- proc~daqp_eq_update -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node8" class="node">
+<title>proc~daqp_eq_update</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node8"><a xlink:href="../proc/daqp_eq_update.html" xlink:title="daqp_eq_update">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="710.47,-99.95 610.45,-99.95 610.45,-75.68 710.47,-75.68 710.47,-99.95"/>
+<text xml:space="preserve" text-anchor="middle" x="660.46" y="-84.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_update</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~eq_reduce_rhs -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge8" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~eq_reduce_rhs</title>
+<path fill="none" stroke="#000000" d="M710.66,-88.11C730.73,-88.23 754.03,-88.37 774.69,-88.49"/>
+<polygon fill="#000000" stroke="#000000" points="774.65,-91.99 784.67,-88.55 774.69,-84.99 774.65,-91.99"/>
+</g>
+<!-- proc~daqp_set_primal_start -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node9" class="node">
+<title>proc~daqp_set_primal_start</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node9"><a xlink:href="../proc/daqp_set_primal_start.html" xlink:title="daqp_set_primal_start">
+<polygon fill="#d9534f" stroke="#d9534f" points="563.58,-181.95 435.06,-181.95 435.06,-157.68 563.58,-157.68 563.58,-181.95"/>
+<text xml:space="preserve" text-anchor="middle" x="499.32" y="-166.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_set_primal_start</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_set_primal_start&#45;&gt;proc~daqp_eq_set_primal_start -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge6" class="edge">
+<title>proc~daqp_set_primal_start&#45;&gt;proc~daqp_eq_set_primal_start</title>
+<path fill="none" stroke="#000000" d="M563.88,-169.82C615.61,-169.82 689.06,-169.82 745.69,-169.82"/>
+<polygon fill="#000000" stroke="#000000" points="745.63,-173.32 755.63,-169.82 745.63,-166.32 745.63,-173.32"/>
+</g>
+<!-- proc~daqp_setup -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node10" class="node">
+<title>proc~daqp_setup</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node10"><a xlink:href="../proc/daqp_setup.html" xlink:title="daqp_setup">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="354.81,-140.95 281.79,-140.95 281.79,-116.68 354.81,-116.68 354.81,-140.95"/>
+<text xml:space="preserve" text-anchor="middle" x="318.3" y="-125.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_setup</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_setup&#45;&gt;proc~daqp_set_primal_start -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge13" class="edge">
+<title>proc~daqp_setup&#45;&gt;proc~daqp_set_primal_start</title>
+<path fill="none" stroke="#000000" d="M355.1,-137.01C377.15,-142.06 406.1,-148.7 432.21,-154.67"/>
+<polygon fill="#000000" stroke="#000000" points="431.18,-158.03 441.71,-156.85 432.75,-151.21 431.18,-158.03"/>
+</g>
+<!-- proc~daqp_update_ldp -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node12" class="node">
+<title>proc~daqp_update_ldp</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node12"><a xlink:href="../proc/daqp_update_ldp.html" xlink:title="daqp_update_ldp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="550.83,-99.95 447.81,-99.95 447.81,-75.68 550.83,-75.68 550.83,-99.95"/>
+<text xml:space="preserve" text-anchor="middle" x="499.32" y="-84.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_update_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_setup&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge19" class="edge">
+<title>proc~daqp_setup&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M355.1,-120.62C378.32,-115.3 409.21,-108.22 436.35,-102.01"/>
+<polygon fill="#000000" stroke="#000000" points="436.88,-105.48 445.85,-99.83 435.32,-98.65 436.88,-105.48"/>
+</g>
+<!-- proc~daqp_solve -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node11" class="node">
+<title>proc~daqp_solve</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node11"><a xlink:href="../proc/daqp_solve.html" xlink:title="daqp_solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="354.06,-56.95 282.54,-56.95 282.54,-32.68 354.06,-32.68 354.06,-56.95"/>
+<text xml:space="preserve" text-anchor="middle" x="318.3" y="-41.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_solve</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_eq_expand -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge11" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_eq_expand</title>
+<path fill="none" stroke="#000000" d="M354.24,-42.86C377.76,-41.55 409.41,-39.78 437.06,-38.24"/>
+<polygon fill="#000000" stroke="#000000" points="436.92,-41.75 446.71,-37.7 436.53,-34.76 436.92,-41.75"/>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge20" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M354.24,-53.21C377.58,-58.82 408.93,-66.35 436.43,-72.95"/>
+<polygon fill="#000000" stroke="#000000" points="435.53,-76.33 446.07,-75.26 437.16,-69.53 435.53,-76.33"/>
+</g>
+<!-- proc~daqp_update_ldp&#45;&gt;proc~daqp_eq_update -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge12" class="edge">
+<title>proc~daqp_update_ldp&#45;&gt;proc~daqp_eq_update</title>
+<path fill="none" stroke="#000000" d="M551.11,-87.82C566.26,-87.82 583.03,-87.82 598.75,-87.82"/>
+<polygon fill="#000000" stroke="#000000" points="598.46,-91.32 608.46,-87.82 598.46,-84.32 598.46,-91.32"/>
+</g>
+<!-- proc~set_primal_start -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node13" class="node">
+<title>proc~set_primal_start</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node13"><a xlink:href="../proc/set_primal_start.html" xlink:title="daqp_type%set_primal_start">
+<polygon fill="#d9534f" stroke="#d9534f" points="399.06,-182.95 237.54,-182.95 237.54,-158.68 399.06,-158.68 399.06,-182.95"/>
+<text xml:space="preserve" text-anchor="middle" x="318.3" y="-167.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%set_primal_start</text>
+</a>
+</g>
+</g>
+<!-- proc~set_primal_start&#45;&gt;proc~daqp_set_primal_start -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge14" class="edge">
+<title>proc~set_primal_start&#45;&gt;proc~daqp_set_primal_start</title>
+<path fill="none" stroke="#000000" d="M399.39,-170.37C407.33,-170.32 415.37,-170.28 423.26,-170.24"/>
+<polygon fill="#000000" stroke="#000000" points="423.19,-173.74 433.17,-170.18 423.15,-166.74 423.19,-173.74"/>
+</g>
+<!-- proc~daqp_quadprog -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node14" class="node">
+<title>proc~daqp_quadprog</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node14"><a xlink:href="../proc/daqp_quadprog.html" xlink:title="daqp_quadprog">
+<polygon fill="#d9534f" stroke="#d9534f" points="195.91,-98.95 101.14,-98.95 101.14,-74.68 195.91,-74.68 195.91,-98.95"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-83.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_quadprog</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_setup -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge15" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M196.26,-98.52C219.43,-104.31 247.33,-111.3 270.5,-117.1"/>
+<polygon fill="#000000" stroke="#000000" points="269.43,-120.44 279.99,-119.47 271.13,-113.65 269.43,-120.44"/>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_solve -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge17" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M196.26,-75.12C219.68,-69.26 247.93,-62.18 271.25,-56.34"/>
+<polygon fill="#000000" stroke="#000000" points="271.94,-59.78 280.79,-53.96 270.24,-52.99 271.94,-59.78"/>
+</g>
+<!-- proc~setup -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node15" class="node">
+<title>proc~setup</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node15"><a xlink:href="../proc/setup.html" xlink:title="daqp_type%setup">
+<polygon fill="#d9534f" stroke="#d9534f" points="201.54,-140.95 95.52,-140.95 95.52,-116.68 201.54,-116.68 201.54,-140.95"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-125.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%setup</text>
+</a>
+</g>
+</g>
+<!-- proc~setup&#45;&gt;proc~daqp_setup -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge16" class="edge">
+<title>proc~setup&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M201.69,-128.82C223.53,-128.82 248.72,-128.82 270,-128.82"/>
+<polygon fill="#000000" stroke="#000000" points="269.87,-132.32 279.87,-128.82 269.87,-125.32 269.87,-132.32"/>
+</g>
+<!-- proc~solve -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node16" class="node">
+<title>proc~solve</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node16"><a xlink:href="../proc/solve.html" xlink:title="daqp_type%solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="200.79,-56.95 96.27,-56.95 96.27,-32.68 200.79,-32.68 200.79,-56.95"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-41.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%solve</text>
+</a>
+</g>
+</g>
+<!-- proc~solve&#45;&gt;proc~daqp_solve -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge18" class="edge">
+<title>proc~solve&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M201.24,-44.82C223.52,-44.82 249.37,-44.82 271.01,-44.82"/>
+<polygon fill="#000000" stroke="#000000" points="270.71,-48.32 280.71,-44.82 270.71,-41.32 270.71,-48.32"/>
+</g>
+<!-- proc~update -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node17" class="node">
+<title>proc~update</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node17"><a xlink:href="../proc/update.html" xlink:title="daqp_type%update">
+<polygon fill="#d9534f" stroke="#d9534f" points="375.43,-98.95 261.16,-98.95 261.16,-74.68 375.43,-74.68 375.43,-98.95"/>
+<text xml:space="preserve" text-anchor="middle" x="318.3" y="-83.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%update</text>
+</a>
+</g>
+</g>
+<!-- proc~update&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge21" class="edge">
+<title>proc~update&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M375.45,-87.13C394.74,-87.24 416.44,-87.36 436.17,-87.47"/>
+<polygon fill="#000000" stroke="#000000" points="436,-90.97 446.02,-87.52 436.04,-83.97 436,-90.97"/>
+</g>
+<!-- proc~daqp_avi -->
+<g id="proc~~eq_hess_times~~CalledByGraph_node18" class="node">
+<title>proc~daqp_avi</title>
+<g id="a_proc~~eq_hess_times~~CalledByGraph_node18"><a xlink:href="../proc/daqp_avi.html" xlink:title="daqp_avi">
+<polygon fill="#d9534f" stroke="#d9534f" points="59.52,-98.95 0,-98.95 0,-74.68 59.52,-74.68 59.52,-98.95"/>
+<text xml:space="preserve" text-anchor="middle" x="29.76" y="-83.22" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_avi</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_avi&#45;&gt;proc~daqp_quadprog -->
+<g id="proc~~eq_hess_times~~CalledByGraph_edge22" class="edge">
+<title>proc~daqp_avi&#45;&gt;proc~daqp_quadprog</title>
+<path fill="none" stroke="#000000" d="M59.92,-86.82C69.05,-86.82 79.46,-86.82 89.85,-86.82"/>
+<polygon fill="#000000" stroke="#000000" points="89.53,-90.32 99.53,-86.82 89.53,-83.32 89.53,-90.32"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panproceq_hess_timesCalledByGraph = svgPanZoom('#proceq_hess_timesCalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">eq_hess_times</span><span class="p">(</span><span class="n">qp</span><span class="p">,</span><span class="w"> </span><span class="n">metric</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_problem</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">qp</span><span class="w"> </span><span class="c">!! the problem</span>
+<span class="w">    </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">metric</span><span class="w">        </span><span class="c">!! H is diagonal</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(:)</span><span class="w">         </span><span class="c">!! vector</span>
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">y</span><span class="p">(:)</span><span class="w">      </span><span class="c">!! H x</span>
+
+<span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">qp</span><span class="p">%</span><span class="n">n</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">qp</span><span class="p">%</span><span class="n">has_H</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">y</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="n">metric</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
+<span class="w">            </span><span class="n">y</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">qp</span><span class="p">%</span><span class="n">Hc</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">end do</span>
+<span class="k">        return</span>
+<span class="k">    end if</span>
+<span class="k">    do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"></span>
+<span class="w">        </span><span class="n">y</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eq_dot</span><span class="p">(</span><span class="n">qp</span><span class="p">%</span><span class="n">Hc</span><span class="p">(:,</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">end do</span>
+
+<span class="k">    end subroutine </span><span class="n">eq_hess_times</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

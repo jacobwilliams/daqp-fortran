@@ -1,0 +1,1314 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>soft_w &ndash; daqp-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>soft_w
+      <small>Function</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.3% of total for procedures.">17 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_core.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_core.f90.html'>daqp_core.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/daqp_core.html'>daqp_core</a></li>
+            <li class="breadcrumb-item active" aria-current="page">soft_w</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/soft_w.html#src">soft_w</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private pure function soft_w(work, id)  
+</h2>
+    
+
+    <p>Linear weight of the active side of soft constraint <code>id</code>, i.e. what the
+multiplier has to exceed for the slack to become nonzero (a zero individual
+weight selects <code>settings%w_soft</code>).</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~29"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-id~11"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>id</strong></td>
+            <td>
+                <p>constraint</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-soft_w"></span>
+          real(kind=wp)
+        </small>
+      </h3>
+      
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~soft_w~~CallsGraph Pages: 1 -->
+<svg id="procsoft_wCallsGraph" width="152pt" height="32pt"
+ viewBox="0.00 0.00 152.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~soft_w~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>proc~~soft_w~~CallsGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 148,-28.27 148,4 -4,4"/>
+<!-- proc~soft_w -->
+<g id="proc~~soft_w~~CallsGraph_node1" class="node">
+<title>proc~soft_w</title>
+<polygon fill="none" stroke="black" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">soft_w</text>
+</g>
+<!-- proc~has~2 -->
+<g id="proc~~soft_w~~CallsGraph_node2" class="node">
+<title>proc~has~2</title>
+<g id="a_proc~~soft_w~~CallsGraph_node2"><a xlink:href="../proc/has~2.html" xlink:title="has">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="144,-24.27 90,-24.27 90,0 144,0 144,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="117" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has</text>
+</a>
+</g>
+</g>
+<!-- proc~soft_w&#45;&gt;proc~has~2 -->
+<g id="proc~~soft_w~~CallsGraph_edge1" class="edge">
+<title>proc~soft_w&#45;&gt;proc~has~2</title>
+<path fill="none" stroke="#000000" d="M54.4,-12.13C61.89,-12.13 70.18,-12.13 78.2,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="78.1,-15.64 88.1,-12.14 78.1,-8.64 78.1,-15.64"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~soft_w~~CalledByGraph Pages: 1 -->
+<svg id="procsoft_wCalledByGraph" width="641pt" height="281pt"
+ viewBox="0.00 0.00 641.00 281.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~soft_w~~CalledByGraph" class="graph" transform="scale(0.405458 0.405458) rotate(0) translate(4 690.26)">
+<title>proc~~soft_w~~CalledByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-690.26 1576.93,-690.26 1576.93,4 -4,4"/>
+<!-- proc~soft_w -->
+<g id="proc~~soft_w~~CalledByGraph_node1" class="node">
+<title>proc~soft_w</title>
+<polygon fill="none" stroke="black" points="1572.93,-324.27 1518.93,-324.27 1518.93,-300 1572.93,-300 1572.93,-324.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1545.93" y="-308.53" font-family="Helvetica,sans-Serif" font-size="10.50">soft_w</text>
+</g>
+<!-- proc~activate_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_node2" class="node">
+<title>proc~activate_constraint</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node2"><a xlink:href="../proc/activate_constraint.html" xlink:title="activate_constraint">
+<polygon fill="#d9534f" stroke="#d9534f" points="1321.78,-134.27 1209.01,-134.27 1209.01,-110 1321.78,-110 1321.78,-134.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1265.4" y="-118.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">activate_constraint</text>
+</a>
+</g>
+</g>
+<!-- proc~activate_constraint&#45;&gt;proc~soft_w -->
+<g id="proc~~soft_w~~CalledByGraph_edge1" class="edge">
+<title>proc~activate_constraint&#45;&gt;proc~soft_w</title>
+<path fill="none" stroke="#000000" d="M1321.88,-134.61C1369.36,-147.67 1437.11,-172.25 1482.93,-214.13 1506.34,-235.53 1524.42,-267.71 1534.86,-289.29"/>
+<polygon fill="#000000" stroke="#000000" points="1531.58,-290.54 1538.97,-298.13 1537.93,-287.59 1531.58,-290.54"/>
+</g>
+<!-- proc~add_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_node3" class="node">
+<title>proc~add_constraint</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node3"><a xlink:href="../proc/add_constraint.html" xlink:title="add_constraint">
+<polygon fill="#d9534f" stroke="#d9534f" points="1476.93,-437.27 1386.66,-437.27 1386.66,-413 1476.93,-413 1476.93,-437.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1431.79" y="-421.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">add_constraint</text>
+</a>
+</g>
+</g>
+<!-- proc~activate_constraint&#45;&gt;proc~add_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_edge8" class="edge">
+<title>proc~activate_constraint&#45;&gt;proc~add_constraint</title>
+<path fill="none" stroke="#000000" d="M1321.98,-128.31C1330.58,-131.55 1338.61,-136.28 1344.66,-143.13 1421.59,-230.25 1311.31,-308.88 1380.66,-402.13 1381.53,-403.3 1382.47,-404.41 1383.47,-405.47"/>
+<polygon fill="#000000" stroke="#000000" points="1381.03,-407.99 1391,-411.57 1385.44,-402.55 1381.03,-407.99"/>
+</g>
+<!-- proc~add_constraint&#45;&gt;proc~soft_w -->
+<g id="proc~~soft_w~~CalledByGraph_edge2" class="edge">
+<title>proc~add_constraint&#45;&gt;proc~soft_w</title>
+<path fill="none" stroke="#000000" d="M1466.92,-412.52C1472.59,-409.59 1478.16,-406.14 1482.93,-402.13 1505.36,-383.29 1523.29,-354.43 1533.98,-334.5"/>
+<polygon fill="#000000" stroke="#000000" points="1536.99,-336.3 1538.47,-325.81 1530.77,-333.09 1536.99,-336.3"/>
+</g>
+<!-- proc~compute_singular_direction -->
+<g id="proc~~soft_w~~CalledByGraph_node4" class="node">
+<title>proc~compute_singular_direction</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node4"><a xlink:href="../proc/compute_singular_direction.html" xlink:title="compute_singular_direction">
+<polygon fill="#d9534f" stroke="#d9534f" points="1344.66,-176.27 1186.14,-176.27 1186.14,-152 1344.66,-152 1344.66,-176.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1265.4" y="-160.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">compute_singular_direction</text>
+</a>
+</g>
+</g>
+<!-- proc~compute_singular_direction&#45;&gt;proc~soft_w -->
+<g id="proc~~soft_w~~CalledByGraph_edge3" class="edge">
+<title>proc~compute_singular_direction&#45;&gt;proc~soft_w</title>
+<path fill="none" stroke="#000000" d="M1294.69,-176.69C1336.62,-195.62 1417.38,-233.29 1482.93,-271.13 1494.65,-277.9 1507.18,-286.01 1517.88,-293.22"/>
+<polygon fill="#000000" stroke="#000000" points="1515.64,-295.92 1525.87,-298.67 1519.58,-290.14 1515.64,-295.92"/>
+</g>
+<!-- proc~remove_blocking -->
+<g id="proc~~soft_w~~CalledByGraph_node5" class="node">
+<title>proc~remove_blocking</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node5"><a xlink:href="../proc/remove_blocking.html" xlink:title="remove_blocking">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1482.93,-393.27 1380.66,-393.27 1380.66,-369 1482.93,-369 1482.93,-393.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1431.79" y="-377.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">remove_blocking</text>
+</a>
+</g>
+</g>
+<!-- proc~remove_blocking&#45;&gt;proc~soft_w -->
+<g id="proc~~soft_w~~CalledByGraph_edge4" class="edge">
+<title>proc~remove_blocking&#45;&gt;proc~soft_w</title>
+<path fill="none" stroke="#000000" d="M1454.9,-368.66C1463.68,-363.62 1473.84,-357.69 1482.93,-352.13 1494.03,-345.35 1506.08,-337.65 1516.58,-330.84"/>
+<polygon fill="#000000" stroke="#000000" points="1518.36,-333.85 1524.82,-325.46 1514.53,-327.99 1518.36,-333.85"/>
+</g>
+<!-- proc~soft_penalty -->
+<g id="proc~~soft_w~~CalledByGraph_node6" class="node">
+<title>proc~soft_penalty</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node6"><a xlink:href="../proc/soft_penalty.html" xlink:title="soft_penalty">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1303.41,-355.27 1227.39,-355.27 1227.39,-331 1303.41,-331 1303.41,-355.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1265.4" y="-339.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">soft_penalty</text>
+</a>
+</g>
+</g>
+<!-- proc~soft_penalty&#45;&gt;proc~soft_w -->
+<g id="proc~~soft_w~~CalledByGraph_edge5" class="edge">
+<title>proc~soft_penalty&#45;&gt;proc~soft_w</title>
+<path fill="none" stroke="#000000" d="M1303.67,-338.99C1356.87,-333.07 1454.02,-322.25 1507.37,-316.32"/>
+<polygon fill="#000000" stroke="#000000" points="1507.63,-319.81 1517.18,-315.22 1506.85,-312.85 1507.63,-319.81"/>
+</g>
+<!-- proc~soft_residual -->
+<g id="proc~~soft_w~~CalledByGraph_node7" class="node">
+<title>proc~soft_residual</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node7"><a xlink:href="../proc/soft_residual.html" xlink:title="soft_residual">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1470.93,-304.27 1392.66,-304.27 1392.66,-280 1470.93,-280 1470.93,-304.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1431.79" y="-288.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">soft_residual</text>
+</a>
+</g>
+</g>
+<!-- proc~soft_residual&#45;&gt;proc~soft_w -->
+<g id="proc~~soft_w~~CalledByGraph_edge6" class="edge">
+<title>proc~soft_residual&#45;&gt;proc~soft_w</title>
+<path fill="none" stroke="#000000" d="M1471.39,-299.02C1483.07,-301.1 1495.89,-303.39 1507.5,-305.46"/>
+<polygon fill="#000000" stroke="#000000" points="1506.67,-308.87 1517.13,-307.18 1507.9,-301.98 1506.67,-308.87"/>
+</g>
+<!-- proc~add_infeasible -->
+<g id="proc~~soft_w~~CalledByGraph_node8" class="node">
+<title>proc~add_infeasible</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node8"><a xlink:href="../proc/add_infeasible.html" xlink:title="add_infeasible">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1309.78,-437.27 1221.01,-437.27 1221.01,-413 1309.78,-413 1309.78,-437.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1265.4" y="-421.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">add_infeasible</text>
+</a>
+</g>
+</g>
+<!-- proc~add_infeasible&#45;&gt;proc~add_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_edge9" class="edge">
+<title>proc~add_infeasible&#45;&gt;proc~add_constraint</title>
+<path fill="none" stroke="#000000" d="M1310.02,-425.13C1329.93,-425.13 1353.73,-425.13 1374.93,-425.13"/>
+<polygon fill="#000000" stroke="#000000" points="1374.88,-428.64 1384.88,-425.14 1374.88,-421.64 1374.88,-428.64"/>
+</g>
+<!-- proc~add_upper_lower -->
+<g id="proc~~soft_w~~CalledByGraph_node9" class="node">
+<title>proc~add_upper_lower</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node9"><a xlink:href="../proc/add_upper_lower.html" xlink:title="add_upper_lower">
+<polygon fill="#d9534f" stroke="#d9534f" points="1316.91,-595.27 1213.89,-595.27 1213.89,-571 1316.91,-571 1316.91,-595.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1265.4" y="-579.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">add_upper_lower</text>
+</a>
+</g>
+</g>
+<!-- proc~add_upper_lower&#45;&gt;proc~add_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_edge10" class="edge">
+<title>proc~add_upper_lower&#45;&gt;proc~add_constraint</title>
+<path fill="none" stroke="#000000" d="M1286.36,-570.5C1302.79,-559.67 1326.29,-543.15 1344.66,-526.13 1371.79,-501.01 1398.74,-467.71 1415.09,-446.35"/>
+<polygon fill="#000000" stroke="#000000" points="1417.66,-448.74 1420.9,-438.65 1412.08,-444.52 1417.66,-448.74"/>
+</g>
+<!-- proc~compute_csp -->
+<g id="proc~~soft_w~~CalledByGraph_node10" class="node">
+<title>proc~compute_csp</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node10"><a xlink:href="../proc/compute_csp.html" xlink:title="compute_CSP">
+<polygon fill="#d9534f" stroke="#d9534f" points="1117.14,-277.27 1032.87,-277.27 1032.87,-253 1117.14,-253 1117.14,-277.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1075" y="-261.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">compute_CSP</text>
+</a>
+</g>
+</g>
+<!-- proc~compute_csp&#45;&gt;proc~soft_residual -->
+<g id="proc~~soft_w~~CalledByGraph_edge19" class="edge">
+<title>proc~compute_csp&#45;&gt;proc~soft_residual</title>
+<path fill="none" stroke="#000000" d="M1117.4,-268.29C1183.02,-273.28 1310.71,-283 1381.15,-288.36"/>
+<polygon fill="#000000" stroke="#000000" points="1380.62,-291.83 1390.85,-289.1 1381.15,-284.85 1380.62,-291.83"/>
+</g>
+<!-- proc~compute_primal_and_fval -->
+<g id="proc~~soft_w~~CalledByGraph_node11" class="node">
+<title>proc~compute_primal_and_fval</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node11"><a xlink:href="../proc/compute_primal_and_fval.html" xlink:title="compute_primal_and_fval">
+<polygon fill="#d9534f" stroke="#d9534f" points="1149.39,-361.27 1000.62,-361.27 1000.62,-337 1149.39,-337 1149.39,-361.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1075" y="-345.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">compute_primal_and_fval</text>
+</a>
+</g>
+</g>
+<!-- proc~compute_primal_and_fval&#45;&gt;proc~soft_penalty -->
+<g id="proc~~soft_w~~CalledByGraph_edge17" class="edge">
+<title>proc~compute_primal_and_fval&#45;&gt;proc~soft_penalty</title>
+<path fill="none" stroke="#000000" d="M1149.65,-346.79C1171.82,-346.08 1195.59,-345.33 1215.71,-344.69"/>
+<polygon fill="#000000" stroke="#000000" points="1215.7,-348.19 1225.59,-344.37 1215.48,-341.19 1215.7,-348.19"/>
+</g>
+<!-- proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_node12" class="node">
+<title>proc~daqp_activate_constraints</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node12"><a xlink:href="../proc/daqp_activate_constraints.html" xlink:title="daqp_activate_constraints">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1150.14,-117.27 999.87,-117.27 999.87,-93 1150.14,-93 1150.14,-117.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1075" y="-101.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_activate_constraints</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_activate_constraints&#45;&gt;proc~activate_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_edge7" class="edge">
+<title>proc~daqp_activate_constraints&#45;&gt;proc~activate_constraint</title>
+<path fill="none" stroke="#000000" d="M1150.46,-111.85C1165.95,-113.25 1182.19,-114.72 1197.39,-116.09"/>
+<polygon fill="#000000" stroke="#000000" points="1197.01,-119.57 1207.28,-116.98 1197.63,-112.6 1197.01,-119.57"/>
+</g>
+<!-- proc~daqp_activate_constraints&#45;&gt;proc~compute_singular_direction -->
+<g id="proc~~soft_w~~CalledByGraph_edge14" class="edge">
+<title>proc~daqp_activate_constraints&#45;&gt;proc~compute_singular_direction</title>
+<path fill="none" stroke="#000000" d="M1111.71,-117.76C1138.19,-127.06 1172.02,-138.81 1186.14,-143.13 1192.02,-144.94 1198.18,-146.74 1204.35,-148.48"/>
+<polygon fill="#000000" stroke="#000000" points="1203.37,-151.84 1213.95,-151.15 1205.25,-145.1 1203.37,-151.84"/>
+</g>
+<!-- proc~daqp_hiqp -->
+<g id="proc~~soft_w~~CalledByGraph_node13" class="node">
+<title>proc~daqp_hiqp</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node13"><a xlink:href="../proc/daqp_hiqp.html" xlink:title="daqp_hiqp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="783.97,-241.27 716.95,-241.27 716.95,-217 783.97,-217 783.97,-241.27"/>
+<text xml:space="preserve" text-anchor="middle" x="750.46" y="-225.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_hiqp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_hiqp&#45;&gt;proc~add_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_edge11" class="edge">
+<title>proc~daqp_hiqp&#45;&gt;proc~add_constraint</title>
+<path fill="none" stroke="#000000" d="M784.39,-239.54C828.27,-254.46 906.99,-284.97 963.87,-328.13 983.45,-343 978.07,-358.78 999.87,-370.13 1068.15,-405.7 1268.76,-391.21 1344.66,-404.13 1354.58,-405.83 1365.06,-408.02 1375.15,-410.36"/>
+<polygon fill="#000000" stroke="#000000" points="1374.33,-413.76 1384.87,-412.68 1375.95,-406.95 1374.33,-413.76"/>
+</g>
+<!-- proc~daqp_hiqp&#45;&gt;proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_edge30" class="edge">
+<title>proc~daqp_hiqp&#45;&gt;proc~daqp_activate_constraints</title>
+<path fill="none" stroke="#000000" d="M784.08,-222.8C835.78,-212.36 933.8,-190.83 963.87,-172.13 984.46,-159.33 979.77,-144.7 999.87,-131.13 1004.89,-127.75 1010.39,-124.76 1016.06,-122.12"/>
+<polygon fill="#000000" stroke="#000000" points="1017.15,-125.46 1024.99,-118.35 1014.42,-119.01 1017.15,-125.46"/>
+</g>
+<!-- proc~daqp_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_node14" class="node">
+<title>proc~daqp_ldp</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node14"><a xlink:href="../proc/daqp_ldp.html" xlink:title="daqp_ldp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="930.12,-361.27 869.85,-361.27 869.85,-337 930.12,-337 930.12,-361.27"/>
+<text xml:space="preserve" text-anchor="middle" x="899.98" y="-345.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_hiqp&#45;&gt;proc~daqp_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge37" class="edge">
+<title>proc~daqp_hiqp&#45;&gt;proc~daqp_ldp</title>
+<path fill="none" stroke="#000000" d="M777.99,-241.66C785.39,-245.59 793.27,-250.2 800.1,-255.13 816.43,-266.93 854.72,-304.56 878.58,-328.47"/>
+<polygon fill="#000000" stroke="#000000" points="876.05,-330.89 885.58,-335.52 881.01,-325.96 876.05,-330.89"/>
+</g>
+<!-- proc~soft_slack -->
+<g id="proc~~soft_w~~CalledByGraph_node18" class="node">
+<title>proc~soft_slack</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node18"><a xlink:href="../proc/soft_slack.html" xlink:title="soft_slack">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1297.03,-235.27 1233.76,-235.27 1233.76,-211 1297.03,-211 1297.03,-235.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1265.4" y="-219.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">soft_slack</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_hiqp&#45;&gt;proc~soft_slack -->
+<g id="proc~~soft_w~~CalledByGraph_edge46" class="edge">
+<title>proc~daqp_hiqp&#45;&gt;proc~soft_slack</title>
+<path fill="none" stroke="#000000" d="M784.22,-225.62C825.94,-221.13 900.27,-213.11 963.87,-206.13 979.87,-204.38 983.8,-203.03 999.87,-202.13 1066.55,-198.44 1083.63,-196.07 1150.14,-202.13 1174.32,-204.34 1201.02,-209.11 1222.53,-213.55"/>
+<polygon fill="#000000" stroke="#000000" points="1221.58,-216.93 1232.09,-215.58 1223.04,-210.08 1221.58,-216.93"/>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~compute_singular_direction -->
+<g id="proc~~soft_w~~CalledByGraph_edge15" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~compute_singular_direction</title>
+<path fill="none" stroke="#000000" d="M930.52,-342.83C942.33,-338.94 955.17,-332.78 963.87,-323.13 1001.45,-281.47 957.4,-238.8 999.87,-202.13 1047.18,-161.29 1117.96,-152.91 1174.4,-154.14"/>
+<polygon fill="#000000" stroke="#000000" points="1174.22,-157.63 1184.33,-154.47 1174.46,-150.64 1174.22,-157.63"/>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~remove_blocking -->
+<g id="proc~~soft_w~~CalledByGraph_edge16" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~remove_blocking</title>
+<path fill="none" stroke="#000000" d="M911.98,-361.66C928.84,-379.89 963.01,-413.19 999.87,-428.13 1070.97,-456.96 1274.95,-478.19 1344.66,-446.13 1367,-435.86 1361.03,-418.94 1380.66,-404.13 1382.97,-402.39 1385.43,-400.74 1387.97,-399.19"/>
+<polygon fill="#000000" stroke="#000000" points="1389.65,-402.26 1396.74,-394.38 1386.29,-396.12 1389.65,-402.26"/>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~add_infeasible -->
+<g id="proc~~soft_w~~CalledByGraph_edge22" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~add_infeasible</title>
+<path fill="none" stroke="#000000" d="M918.56,-361.71C937.59,-374.59 969.33,-393.97 999.87,-403.13 1069.99,-424.17 1154.93,-427.57 1209.31,-427.12"/>
+<polygon fill="#000000" stroke="#000000" points="1209.31,-430.62 1219.26,-426.99 1209.21,-423.62 1209.31,-430.62"/>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~compute_csp -->
+<g id="proc~~soft_w~~CalledByGraph_edge27" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~compute_csp</title>
+<path fill="none" stroke="#000000" d="M930.41,-339.81C941.41,-335.61 953.7,-330.03 963.87,-323.13 982.86,-310.26 980.16,-297.88 999.87,-286.13 1006.59,-282.13 1014.1,-278.86 1021.7,-276.2"/>
+<polygon fill="#000000" stroke="#000000" points="1022.49,-279.62 1030.98,-273.28 1020.39,-272.94 1022.49,-279.62"/>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~compute_primal_and_fval -->
+<g id="proc~~soft_w~~CalledByGraph_edge28" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~compute_primal_and_fval</title>
+<path fill="none" stroke="#000000" d="M930.34,-349.13C946.68,-349.13 967.95,-349.13 989.1,-349.13"/>
+<polygon fill="#000000" stroke="#000000" points="988.94,-352.64 998.94,-349.14 988.94,-345.64 988.94,-352.64"/>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_edge31" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~daqp_activate_constraints</title>
+<path fill="none" stroke="#000000" d="M930.37,-343.46C942.45,-339.67 955.53,-333.41 963.87,-323.13 1018.6,-255.74 943.32,-197.01 999.87,-131.13 1002.19,-128.43 1004.82,-126 1007.65,-123.83"/>
+<polygon fill="#000000" stroke="#000000" points="1009.47,-126.82 1016.06,-118.52 1005.73,-120.9 1009.47,-126.82"/>
+</g>
+<!-- proc~refine_active -->
+<g id="proc~~soft_w~~CalledByGraph_node17" class="node">
+<title>proc~refine_active</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node17"><a xlink:href="../proc/refine_active.html" xlink:title="refine_active">
+<polygon fill="#d9534f" stroke="#d9534f" points="1114.89,-319.27 1035.12,-319.27 1035.12,-295 1114.89,-295 1114.89,-319.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1075" y="-303.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">refine_active</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~refine_active -->
+<g id="proc~~soft_w~~CalledByGraph_edge45" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~refine_active</title>
+<path fill="none" stroke="#000000" d="M930.34,-342.01C955.92,-335.8 993.59,-326.66 1023.93,-319.29"/>
+<polygon fill="#000000" stroke="#000000" points="1024.38,-322.78 1033.28,-317.02 1022.73,-315.98 1024.38,-322.78"/>
+</g>
+<!-- proc~max_soft_slack -->
+<g id="proc~~soft_w~~CalledByGraph_node27" class="node">
+<title>proc~max_soft_slack</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node27"><a xlink:href="../proc/max_soft_slack.html" xlink:title="max_soft_slack">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1120.89,-235.27 1029.12,-235.27 1029.12,-211 1120.89,-211 1120.89,-235.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1075" y="-219.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">max_soft_slack</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_ldp&#45;&gt;proc~max_soft_slack -->
+<g id="proc~~soft_w~~CalledByGraph_edge59" class="edge">
+<title>proc~daqp_ldp&#45;&gt;proc~max_soft_slack</title>
+<path fill="none" stroke="#000000" d="M930.53,-342C942.06,-338.01 954.69,-332 963.87,-323.13 991.63,-296.34 970.6,-269.27 999.87,-244.13 1005.26,-239.5 1011.61,-235.89 1018.29,-233.07"/>
+<polygon fill="#000000" stroke="#000000" points="1019.29,-236.43 1027.54,-229.77 1016.94,-229.83 1019.29,-236.43"/>
+</g>
+<!-- proc~minrep_work -->
+<g id="proc~~soft_w~~CalledByGraph_node15" class="node">
+<title>proc~minrep_work</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node15"><a xlink:href="../proc/minrep_work.html" xlink:title="minrep_work">
+<polygon fill="#d9534f" stroke="#d9534f" points="790.35,-674.27 710.58,-674.27 710.58,-650 790.35,-650 790.35,-674.27"/>
+<text xml:space="preserve" text-anchor="middle" x="750.46" y="-658.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">minrep_work</text>
+</a>
+</g>
+</g>
+<!-- proc~minrep_work&#45;&gt;proc~add_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_edge12" class="edge">
+<title>proc~minrep_work&#45;&gt;proc~add_constraint</title>
+<path fill="none" stroke="#000000" d="M790.74,-673.42C804.91,-676.95 821.1,-680.39 836.1,-682.13 892.5,-688.71 907.18,-685.47 963.87,-682.13 1136.33,-671.99 1212.68,-715.6 1344.66,-604.13 1393.64,-562.77 1416.9,-487.1 1425.97,-448.76"/>
+<polygon fill="#000000" stroke="#000000" points="1429.35,-449.71 1428.1,-439.18 1422.51,-448.18 1429.35,-449.71"/>
+</g>
+<!-- proc~minrep_work&#45;&gt;proc~daqp_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge41" class="edge">
+<title>proc~minrep_work&#45;&gt;proc~daqp_ldp</title>
+<path fill="none" stroke="#000000" d="M763.53,-649.65C774.23,-638.07 789.72,-619.98 800.1,-602.13 846.14,-522.99 879.22,-418.38 892.52,-372.44"/>
+<polygon fill="#000000" stroke="#000000" points="895.82,-373.63 895.19,-363.05 889.09,-371.71 895.82,-373.63"/>
+</g>
+<!-- proc~prox_step -->
+<g id="proc~~soft_w~~CalledByGraph_node16" class="node">
+<title>proc~prox_step</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node16"><a xlink:href="../proc/prox_step.html" xlink:title="prox_step">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="1296.28,-517.27 1234.51,-517.27 1234.51,-493 1296.28,-493 1296.28,-517.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1265.4" y="-501.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">prox_step</text>
+</a>
+</g>
+</g>
+<!-- proc~prox_step&#45;&gt;proc~add_constraint -->
+<g id="proc~~soft_w~~CalledByGraph_edge13" class="edge">
+<title>proc~prox_step&#45;&gt;proc~add_constraint</title>
+<path fill="none" stroke="#000000" d="M1296.78,-496.89C1311.56,-492.42 1329.38,-486.34 1344.66,-479.13 1365.75,-469.2 1388,-455.14 1404.61,-443.86"/>
+<polygon fill="#000000" stroke="#000000" points="1406.2,-447.02 1412.44,-438.45 1402.22,-441.26 1406.2,-447.02"/>
+</g>
+<!-- proc~refine_active&#45;&gt;proc~soft_penalty -->
+<g id="proc~~soft_w~~CalledByGraph_edge18" class="edge">
+<title>proc~refine_active&#45;&gt;proc~soft_penalty</title>
+<path fill="none" stroke="#000000" d="M1115.04,-314.59C1144.32,-320.19 1184.57,-327.88 1215.91,-333.87"/>
+<polygon fill="#000000" stroke="#000000" points="1215.05,-337.27 1225.53,-335.71 1216.37,-330.39 1215.05,-337.27"/>
+</g>
+<!-- proc~refine_active&#45;&gt;proc~soft_residual -->
+<g id="proc~~soft_w~~CalledByGraph_edge20" class="edge">
+<title>proc~refine_active&#45;&gt;proc~soft_residual</title>
+<path fill="none" stroke="#000000" d="M1115.33,-305.47C1180.27,-302.73 1309.83,-297.25 1381.04,-294.24"/>
+<polygon fill="#000000" stroke="#000000" points="1381.02,-297.74 1390.86,-293.82 1380.72,-290.75 1381.02,-297.74"/>
+</g>
+<!-- proc~soft_slack&#45;&gt;proc~soft_residual -->
+<g id="proc~~soft_w~~CalledByGraph_edge21" class="edge">
+<title>proc~soft_slack&#45;&gt;proc~soft_residual</title>
+<path fill="none" stroke="#000000" d="M1297.52,-233.46C1311.99,-238.47 1329.34,-244.77 1344.66,-251.13 1361.81,-258.26 1380.46,-267.01 1396,-274.59"/>
+<polygon fill="#000000" stroke="#000000" points="1394.34,-277.68 1404.86,-278.95 1397.43,-271.4 1394.34,-277.68"/>
+</g>
+<!-- proc~bnb_load_ws -->
+<g id="proc~~soft_w~~CalledByGraph_node19" class="node">
+<title>proc~bnb_load_ws</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node19"><a xlink:href="../proc/bnb_load_ws.html" xlink:title="bnb_load_ws">
+<polygon fill="#d9534f" stroke="#d9534f" points="1114.51,-555.27 1035.49,-555.27 1035.49,-531 1114.51,-531 1114.51,-555.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1075" y="-539.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bnb_load_ws</text>
+</a>
+</g>
+</g>
+<!-- proc~bnb_load_ws&#45;&gt;proc~add_upper_lower -->
+<g id="proc~~soft_w~~CalledByGraph_edge23" class="edge">
+<title>proc~bnb_load_ws&#45;&gt;proc~add_upper_lower</title>
+<path fill="none" stroke="#000000" d="M1114.58,-551.33C1139.98,-556.72 1173.77,-563.89 1202.83,-570.06"/>
+<polygon fill="#000000" stroke="#000000" points="1201.72,-573.4 1212.23,-572.06 1203.17,-566.56 1201.72,-573.4"/>
+</g>
+<!-- proc~bnb_setup_root -->
+<g id="proc~~soft_w~~CalledByGraph_node20" class="node">
+<title>proc~bnb_setup_root</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node20"><a xlink:href="../proc/bnb_setup_root.html" xlink:title="bnb_setup_root">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="946.24,-163.27 853.72,-163.27 853.72,-139 946.24,-139 946.24,-163.27"/>
+<text xml:space="preserve" text-anchor="middle" x="899.98" y="-147.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bnb_setup_root</text>
+</a>
+</g>
+</g>
+<!-- proc~bnb_setup_root&#45;&gt;proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_edge29" class="edge">
+<title>proc~bnb_setup_root&#45;&gt;proc~daqp_activate_constraints</title>
+<path fill="none" stroke="#000000" d="M946.44,-139.05C967.7,-133.4 993.25,-126.6 1015.89,-120.59"/>
+<polygon fill="#000000" stroke="#000000" points="1016.51,-124.04 1025.27,-118.09 1014.71,-117.28 1016.51,-124.04"/>
+</g>
+<!-- proc~daqp_minrep -->
+<g id="proc~~soft_w~~CalledByGraph_node21" class="node">
+<title>proc~daqp_minrep</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node21"><a xlink:href="../proc/daqp_minrep.html" xlink:title="daqp_minrep">
+<polygon fill="#d9534f" stroke="#d9534f" points="653.95,-674.27 572.68,-674.27 572.68,-650 653.95,-650 653.95,-674.27"/>
+<text xml:space="preserve" text-anchor="middle" x="613.32" y="-658.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_minrep</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_minrep&#45;&gt;proc~minrep_work -->
+<g id="proc~~soft_w~~CalledByGraph_edge43" class="edge">
+<title>proc~daqp_minrep&#45;&gt;proc~minrep_work</title>
+<path fill="none" stroke="#000000" d="M654.14,-662.13C668.28,-662.13 684.39,-662.13 699.29,-662.13"/>
+<polygon fill="#000000" stroke="#000000" points="698.88,-665.64 708.88,-662.14 698.88,-658.64 698.88,-665.64"/>
+</g>
+<!-- proc~daqp_prox -->
+<g id="proc~~soft_w~~CalledByGraph_node22" class="node">
+<title>proc~daqp_prox</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node22"><a xlink:href="../proc/daqp_prox.html" xlink:title="daqp_prox">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="783.6,-375.27 717.33,-375.27 717.33,-351 783.6,-351 783.6,-375.27"/>
+<text xml:space="preserve" text-anchor="middle" x="750.46" y="-359.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_prox</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_prox&#45;&gt;proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_edge32" class="edge">
+<title>proc~daqp_prox&#45;&gt;proc~daqp_activate_constraints</title>
+<path fill="none" stroke="#000000" d="M773.37,-350.65C814.3,-326.57 903.68,-270.39 963.87,-206.13 984.1,-184.54 978.68,-170.79 999.87,-150.13 1010.68,-139.6 1024.38,-130.42 1037.06,-123.15"/>
+<polygon fill="#000000" stroke="#000000" points="1038.52,-126.34 1045.61,-118.46 1035.16,-120.2 1038.52,-126.34"/>
+</g>
+<!-- proc~daqp_prox&#45;&gt;proc~daqp_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge38" class="edge">
+<title>proc~daqp_prox&#45;&gt;proc~daqp_ldp</title>
+<path fill="none" stroke="#000000" d="M783.84,-360.06C805.75,-357.98 834.87,-355.22 858.34,-352.99"/>
+<polygon fill="#000000" stroke="#000000" points="858.56,-356.49 868.18,-352.06 857.9,-349.52 858.56,-356.49"/>
+</g>
+<!-- proc~daqp_prox&#45;&gt;proc~prox_step -->
+<g id="proc~~soft_w~~CalledByGraph_edge44" class="edge">
+<title>proc~daqp_prox&#45;&gt;proc~prox_step</title>
+<path fill="none" stroke="#000000" d="M779.59,-375.71C825.05,-395.61 917.89,-434.39 999.87,-457.13 1077.43,-478.65 1170.54,-492.96 1223.05,-500.01"/>
+<polygon fill="#000000" stroke="#000000" points="1222.37,-503.45 1232.75,-501.29 1223.29,-496.51 1222.37,-503.45"/>
+</g>
+<!-- proc~daqp_refresh_soft_weights -->
+<g id="proc~~soft_w~~CalledByGraph_node23" class="node">
+<title>proc~daqp_refresh_soft_weights</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node23"><a xlink:href="../proc/daqp_refresh_soft_weights.html" xlink:title="daqp_refresh_soft_weights">
+<polygon fill="#d9534f" stroke="#d9534f" points="520.93,-108.27 369.91,-108.27 369.91,-84 520.93,-84 520.93,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="445.42" y="-92.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_refresh_soft_weights</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_refresh_soft_weights&#45;&gt;proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_edge33" class="edge">
+<title>proc~daqp_refresh_soft_weights&#45;&gt;proc~daqp_activate_constraints</title>
+<path fill="none" stroke="#000000" d="M521.11,-90.68C621.81,-84.31 806.65,-76.07 963.87,-88.13 972.85,-88.82 982.21,-89.83 991.51,-91"/>
+<polygon fill="#000000" stroke="#000000" points="990.92,-94.45 1001.3,-92.31 991.85,-87.52 990.92,-94.45"/>
+</g>
+<!-- proc~daqp_set_working_set -->
+<g id="proc~~soft_w~~CalledByGraph_node24" class="node">
+<title>proc~daqp_set_working_set</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node24"><a xlink:href="../proc/daqp_set_working_set.html" xlink:title="daqp_set_working_set">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="963.87,-121.27 836.1,-121.27 836.1,-97 963.87,-97 963.87,-121.27"/>
+<text xml:space="preserve" text-anchor="middle" x="899.98" y="-105.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_set_working_set</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_set_working_set&#45;&gt;proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_edge34" class="edge">
+<title>proc~daqp_set_working_set&#45;&gt;proc~daqp_activate_constraints</title>
+<path fill="none" stroke="#000000" d="M963.94,-107.68C971.82,-107.5 979.98,-107.31 988.14,-107.12"/>
+<polygon fill="#000000" stroke="#000000" points="988.2,-110.62 998.12,-106.89 988.04,-103.62 988.2,-110.62"/>
+</g>
+<!-- proc~daqp_solve -->
+<g id="proc~~soft_w~~CalledByGraph_node25" class="node">
+<title>proc~daqp_solve</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node25"><a xlink:href="../proc/daqp_solve.html" xlink:title="daqp_solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="481.18,-262.27 409.66,-262.27 409.66,-238 481.18,-238 481.18,-262.27"/>
+<text xml:space="preserve" text-anchor="middle" x="445.42" y="-246.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_solve</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_hiqp -->
+<g id="proc~~soft_w~~CalledByGraph_edge36" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_hiqp</title>
+<path fill="none" stroke="#000000" d="M481.48,-247.71C536.84,-243.87 644.42,-236.41 705.09,-232.21"/>
+<polygon fill="#000000" stroke="#000000" points="705.32,-235.7 715.05,-231.52 704.84,-228.72 705.32,-235.7"/>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge39" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_ldp</title>
+<path fill="none" stroke="#000000" d="M481.44,-255.17C545.37,-264.75 685.02,-287.4 800.1,-318.13 819.58,-323.34 840.96,-329.93 858.84,-335.69"/>
+<polygon fill="#000000" stroke="#000000" points="857.72,-339.01 868.32,-338.78 859.89,-332.35 857.72,-339.01"/>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_prox -->
+<g id="proc~~soft_w~~CalledByGraph_edge51" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_prox</title>
+<path fill="none" stroke="#000000" d="M456.28,-262.51C474.46,-284.32 515.66,-329.06 561.81,-348.13 608.17,-367.3 666.39,-368.87 705.59,-367.06"/>
+<polygon fill="#000000" stroke="#000000" points="705.57,-370.57 715.35,-366.51 705.17,-363.58 705.57,-370.57"/>
+</g>
+<!-- proc~daqp_solve_avi -->
+<g id="proc~~soft_w~~CalledByGraph_node26" class="node">
+<title>proc~daqp_solve_avi</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node26"><a xlink:href="../proc/daqp_solve_avi.html" xlink:title="daqp_solve_avi">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="659.58,-321.27 567.06,-321.27 567.06,-297 659.58,-297 659.58,-321.27"/>
+<text xml:space="preserve" text-anchor="middle" x="613.32" y="-305.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_solve_avi</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_solve_avi -->
+<g id="proc~~soft_w~~CalledByGraph_edge57" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_solve_avi</title>
+<path fill="none" stroke="#000000" d="M481.61,-262.65C506.27,-271.42 539.47,-283.23 566.24,-292.75"/>
+<polygon fill="#000000" stroke="#000000" points="564.88,-295.98 575.48,-296.03 567.23,-289.38 564.88,-295.98"/>
+</g>
+<!-- proc~daqp_bnb -->
+<g id="proc~~soft_w~~CalledByGraph_node32" class="node">
+<title>proc~daqp_bnb</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node32"><a xlink:href="../proc/daqp_bnb.html" xlink:title="daqp_bnb">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="645.33,-484.27 581.31,-484.27 581.31,-460 645.33,-460 645.33,-484.27"/>
+<text xml:space="preserve" text-anchor="middle" x="613.32" y="-468.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_bnb</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_bnb -->
+<g id="proc~~soft_w~~CalledByGraph_edge64" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_bnb</title>
+<path fill="none" stroke="#000000" d="M455.82,-262.71C483.02,-299.11 562.09,-404.91 596.27,-450.65"/>
+<polygon fill="#000000" stroke="#000000" points="593.33,-452.57 602.12,-458.49 598.94,-448.38 593.33,-452.57"/>
+</g>
+<!-- proc~daqp_update_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_node35" class="node">
+<title>proc~daqp_update_ldp</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node35"><a xlink:href="../proc/daqp_update_ldp.html" xlink:title="daqp_update_ldp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="664.83,-41.27 561.81,-41.27 561.81,-17 664.83,-17 664.83,-41.27"/>
+<text xml:space="preserve" text-anchor="middle" x="613.32" y="-25.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_update_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge68" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M460.59,-237.51C477.27,-222.24 505.29,-195.33 525.81,-169.13 556.27,-130.24 585.05,-80.02 600.52,-51.51"/>
+<polygon fill="#000000" stroke="#000000" points="603.42,-53.52 605.06,-43.06 597.25,-50.21 603.42,-53.52"/>
+</g>
+<!-- proc~daqp_solve_avi&#45;&gt;proc~daqp_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge40" class="edge">
+<title>proc~daqp_solve_avi&#45;&gt;proc~daqp_ldp</title>
+<path fill="none" stroke="#000000" d="M660.06,-315.56C714.85,-323.26 805.8,-336.04 858.27,-343.41"/>
+<polygon fill="#000000" stroke="#000000" points="857.59,-346.85 867.98,-344.78 858.56,-339.92 857.59,-346.85"/>
+</g>
+<!-- proc~daqp_solve_avi&#45;&gt;proc~daqp_solve_avi -->
+<g id="proc~~soft_w~~CalledByGraph_edge58" class="edge">
+<title>proc~daqp_solve_avi&#45;&gt;proc~daqp_solve_avi</title>
+<path fill="none" stroke="#000000" d="M590.37,-321.52C582.9,-330.41 590.55,-339.27 613.32,-339.27 625.77,-339.27 633.7,-336.62 637.11,-332.76"/>
+<polygon fill="#000000" stroke="#000000" points="640.62,-332.74 636.38,-323.03 633.64,-333.26 640.62,-332.74"/>
+</g>
+<!-- proc~max_soft_slack&#45;&gt;proc~soft_slack -->
+<g id="proc~~soft_w~~CalledByGraph_edge47" class="edge">
+<title>proc~max_soft_slack&#45;&gt;proc~soft_slack</title>
+<path fill="none" stroke="#000000" d="M1121.13,-223.13C1151.79,-223.13 1192.06,-223.13 1222.1,-223.13"/>
+<polygon fill="#000000" stroke="#000000" points="1221.96,-226.64 1231.96,-223.14 1221.96,-219.64 1221.96,-226.64"/>
+</g>
+<!-- proc~process_node -->
+<g id="proc~~soft_w~~CalledByGraph_node28" class="node">
+<title>proc~process_node</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node28"><a xlink:href="../proc/process_node.html" xlink:title="process_node">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="792.6,-593.27 708.33,-593.27 708.33,-569 792.6,-569 792.6,-593.27"/>
+<text xml:space="preserve" text-anchor="middle" x="750.46" y="-577.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">process_node</text>
+</a>
+</g>
+</g>
+<!-- proc~process_node&#45;&gt;proc~add_upper_lower -->
+<g id="proc~~soft_w~~CalledByGraph_edge24" class="edge">
+<title>proc~process_node&#45;&gt;proc~add_upper_lower</title>
+<path fill="none" stroke="#000000" d="M792.85,-593.54C806.49,-597.05 821.82,-600.39 836.1,-602.13 974.67,-619.07 1010.91,-606.28 1150.14,-596.13 1167.05,-594.9 1185.31,-593.06 1202.16,-591.14"/>
+<polygon fill="#000000" stroke="#000000" points="1202.55,-594.62 1212.07,-589.99 1201.73,-587.67 1202.55,-594.62"/>
+</g>
+<!-- proc~process_node&#45;&gt;proc~daqp_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge42" class="edge">
+<title>proc~process_node&#45;&gt;proc~daqp_ldp</title>
+<path fill="none" stroke="#000000" d="M759.4,-568.66C783.26,-531.13 854.62,-418.91 885.02,-371.1"/>
+<polygon fill="#000000" stroke="#000000" points="887.79,-373.26 890.2,-362.95 881.88,-369.51 887.79,-373.26"/>
+</g>
+<!-- proc~setup_cold_bnb -->
+<g id="proc~~soft_w~~CalledByGraph_node29" class="node">
+<title>proc~setup_cold_bnb</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node29"><a xlink:href="../proc/setup_cold_bnb.html" xlink:title="setup_cold_bnb">
+<polygon fill="#d9534f" stroke="#d9534f" points="946.99,-673.27 852.97,-673.27 852.97,-649 946.99,-649 946.99,-673.27"/>
+<text xml:space="preserve" text-anchor="middle" x="899.98" y="-657.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">setup_cold_bnb</text>
+</a>
+</g>
+</g>
+<!-- proc~process_node&#45;&gt;proc~setup_cold_bnb -->
+<g id="proc~~soft_w~~CalledByGraph_edge61" class="edge">
+<title>proc~process_node&#45;&gt;proc~setup_cold_bnb</title>
+<path fill="none" stroke="#000000" d="M769.08,-593.67C785.83,-605.27 811.98,-622.58 836.1,-635.13 842.22,-638.32 848.82,-641.41 855.36,-644.27"/>
+<polygon fill="#000000" stroke="#000000" points="853.56,-647.31 864.13,-647.99 856.29,-640.86 853.56,-647.31"/>
+</g>
+<!-- proc~warmstart_node -->
+<g id="proc~~soft_w~~CalledByGraph_node31" class="node">
+<title>proc~warmstart_node</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node31"><a xlink:href="../proc/warmstart_node.html" xlink:title="warmstart_node">
+<polygon fill="#d9534f" stroke="#d9534f" points="948.87,-593.27 851.1,-593.27 851.1,-569 948.87,-569 948.87,-593.27"/>
+<text xml:space="preserve" text-anchor="middle" x="899.98" y="-577.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">warmstart_node</text>
+</a>
+</g>
+</g>
+<!-- proc~process_node&#45;&gt;proc~warmstart_node -->
+<g id="proc~~soft_w~~CalledByGraph_edge63" class="edge">
+<title>proc~process_node&#45;&gt;proc~warmstart_node</title>
+<path fill="none" stroke="#000000" d="M792.95,-581.13C807.42,-581.13 823.95,-581.13 839.59,-581.13"/>
+<polygon fill="#000000" stroke="#000000" points="839.26,-584.64 849.26,-581.14 839.26,-577.64 839.26,-584.64"/>
+</g>
+<!-- proc~setup_cold_bnb&#45;&gt;proc~add_upper_lower -->
+<g id="proc~~soft_w~~CalledByGraph_edge25" class="edge">
+<title>proc~setup_cold_bnb&#45;&gt;proc~add_upper_lower</title>
+<path fill="none" stroke="#000000" d="M947.26,-660.74C997.91,-659.29 1081.1,-653.91 1150.14,-635.13 1179.19,-627.24 1210.15,-612.72 1232.51,-601.03"/>
+<polygon fill="#000000" stroke="#000000" points="1233.94,-604.24 1241.11,-596.44 1230.64,-598.06 1233.94,-604.24"/>
+</g>
+<!-- proc~update_ldp_core -->
+<g id="proc~~soft_w~~CalledByGraph_node30" class="node">
+<title>proc~update_ldp_core</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node30"><a xlink:href="../proc/update_ldp_core.html" xlink:title="update_ldp_core">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="800.1,-41.27 700.83,-41.27 700.83,-17 800.1,-17 800.1,-41.27"/>
+<text xml:space="preserve" text-anchor="middle" x="750.46" y="-25.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">update_ldp_core</text>
+</a>
+</g>
+</g>
+<!-- proc~update_ldp_core&#45;&gt;proc~daqp_activate_constraints -->
+<g id="proc~~soft_w~~CalledByGraph_edge35" class="edge">
+<title>proc~update_ldp_core&#45;&gt;proc~daqp_activate_constraints</title>
+<path fill="none" stroke="#000000" d="M800.37,-30.91C843.97,-33.47 909.15,-39.76 963.87,-55.13 991.19,-62.81 1020.37,-76.32 1041.82,-87.36"/>
+<polygon fill="#000000" stroke="#000000" points="1040.17,-90.45 1050.65,-92.01 1043.42,-84.25 1040.17,-90.45"/>
+</g>
+<!-- proc~warmstart_node&#45;&gt;proc~add_upper_lower -->
+<g id="proc~~soft_w~~CalledByGraph_edge26" class="edge">
+<title>proc~warmstart_node&#45;&gt;proc~add_upper_lower</title>
+<path fill="none" stroke="#000000" d="M949.24,-581.4C1014.49,-581.76 1130.89,-582.4 1202.51,-582.79"/>
+<polygon fill="#000000" stroke="#000000" points="1202.07,-586.29 1212.09,-582.85 1202.11,-579.29 1202.07,-586.29"/>
+</g>
+<!-- proc~warmstart_node&#45;&gt;proc~bnb_load_ws -->
+<g id="proc~~soft_w~~CalledByGraph_edge49" class="edge">
+<title>proc~warmstart_node&#45;&gt;proc~bnb_load_ws</title>
+<path fill="none" stroke="#000000" d="M949.18,-570.55C972.47,-565.44 1000.4,-559.3 1023.93,-554.13"/>
+<polygon fill="#000000" stroke="#000000" points="1024.59,-557.57 1033.6,-552.01 1023.09,-550.73 1024.59,-557.57"/>
+</g>
+<!-- proc~daqp_bnb&#45;&gt;proc~bnb_load_ws -->
+<g id="proc~~soft_w~~CalledByGraph_edge48" class="edge">
+<title>proc~daqp_bnb&#45;&gt;proc~bnb_load_ws</title>
+<path fill="none" stroke="#000000" d="M645.74,-479.45C688.57,-489.21 767.78,-506.49 836.1,-517.13 900.58,-527.18 975.48,-534.68 1023.75,-538.99"/>
+<polygon fill="#000000" stroke="#000000" points="1023.35,-542.46 1033.62,-539.85 1023.96,-535.49 1023.35,-542.46"/>
+</g>
+<!-- proc~daqp_bnb&#45;&gt;proc~bnb_setup_root -->
+<g id="proc~~soft_w~~CalledByGraph_edge50" class="edge">
+<title>proc~daqp_bnb&#45;&gt;proc~bnb_setup_root</title>
+<path fill="none" stroke="#000000" d="M620.05,-459.67C630.08,-437.56 651.04,-389.85 664.83,-348.13 684.99,-287.13 656.22,-254.37 700.83,-208.13 737.53,-170.1 797.81,-156.98 842.26,-152.68"/>
+<polygon fill="#000000" stroke="#000000" points="842.3,-156.19 851.98,-151.88 841.72,-149.22 842.3,-156.19"/>
+</g>
+<!-- proc~daqp_bnb&#45;&gt;proc~process_node -->
+<g id="proc~~soft_w~~CalledByGraph_edge60" class="edge">
+<title>proc~daqp_bnb&#45;&gt;proc~process_node</title>
+<path fill="none" stroke="#000000" d="M625.17,-484.49C640.73,-501.75 670.85,-533.37 700.83,-555.13 704.67,-557.92 708.84,-560.6 713.07,-563.11"/>
+<polygon fill="#000000" stroke="#000000" points="711.17,-566.06 721.61,-567.89 714.6,-559.95 711.17,-566.06"/>
+</g>
+<!-- proc~daqp_quadprog -->
+<g id="proc~~soft_w~~CalledByGraph_node33" class="node">
+<title>proc~daqp_quadprog</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node33"><a xlink:href="../proc/daqp_quadprog.html" xlink:title="daqp_quadprog">
+<polygon fill="#d9534f" stroke="#d9534f" points="311.41,-129.27 216.64,-129.27 216.64,-105 311.41,-105 311.41,-129.27"/>
+<text xml:space="preserve" text-anchor="middle" x="264.03" y="-113.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_quadprog</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_solve -->
+<g id="proc~~soft_w~~CalledByGraph_edge55" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M311.6,-129.62C317.66,-132.04 323.64,-134.87 329.04,-138.13 340.01,-144.77 394.67,-199.57 424.65,-229.98"/>
+<polygon fill="#000000" stroke="#000000" points="421.83,-232.1 431.34,-236.77 426.82,-227.19 421.83,-232.1"/>
+</g>
+<!-- proc~daqp_setup -->
+<g id="proc~~soft_w~~CalledByGraph_node39" class="node">
+<title>proc~daqp_setup</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node39"><a xlink:href="../proc/daqp_setup.html" xlink:title="daqp_setup">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="481.93,-24.27 408.91,-24.27 408.91,0 481.93,0 481.93,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="445.42" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_setup</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_setup -->
+<g id="proc~~soft_w~~CalledByGraph_edge71" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M311.9,-106.29C318.05,-103.61 323.97,-100.28 329.04,-96.13 354.03,-75.75 339.47,-52.78 365.04,-33.13 374.46,-25.89 386.17,-21.14 397.67,-18.03"/>
+<polygon fill="#000000" stroke="#000000" points="398.12,-21.51 407.07,-15.85 396.54,-14.69 398.12,-21.51"/>
+</g>
+<!-- proc~daqp_set_soft_weights -->
+<g id="proc~~soft_w~~CalledByGraph_node34" class="node">
+<title>proc~daqp_set_soft_weights</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node34"><a xlink:href="../proc/daqp_set_soft_weights.html" xlink:title="daqp_set_soft_weights">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="329.04,-87.27 199.02,-87.27 199.02,-63 329.04,-63 329.04,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="264.03" y="-71.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_set_soft_weights</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_set_soft_weights&#45;&gt;proc~daqp_refresh_soft_weights -->
+<g id="proc~~soft_w~~CalledByGraph_edge52" class="edge">
+<title>proc~daqp_set_soft_weights&#45;&gt;proc~daqp_refresh_soft_weights</title>
+<path fill="none" stroke="#000000" d="M329.29,-82.66C338.68,-83.76 348.48,-84.9 358.23,-86.04"/>
+<polygon fill="#000000" stroke="#000000" points="357.77,-89.52 368.11,-87.2 358.59,-82.56 357.77,-89.52"/>
+</g>
+<!-- proc~daqp_update_ldp&#45;&gt;proc~update_ldp_core -->
+<g id="proc~~soft_w~~CalledByGraph_edge62" class="edge">
+<title>proc~daqp_update_ldp&#45;&gt;proc~update_ldp_core</title>
+<path fill="none" stroke="#000000" d="M665.03,-29.13C672.97,-29.13 681.24,-29.13 689.37,-29.13"/>
+<polygon fill="#000000" stroke="#000000" points="689.2,-32.64 699.2,-29.14 689.2,-25.64 689.2,-32.64"/>
+</g>
+<!-- proc~set_working_set -->
+<g id="proc~~soft_w~~CalledByGraph_node36" class="node">
+<title>proc~set_working_set</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node36"><a xlink:href="../proc/set_working_set.html" xlink:title="daqp_type%set_working_set">
+<polygon fill="#d9534f" stroke="#d9534f" points="525.81,-160.27 365.04,-160.27 365.04,-136 525.81,-136 525.81,-160.27"/>
+<text xml:space="preserve" text-anchor="middle" x="445.42" y="-144.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%set_working_set</text>
+</a>
+</g>
+</g>
+<!-- proc~set_working_set&#45;&gt;proc~daqp_set_working_set -->
+<g id="proc~~soft_w~~CalledByGraph_edge54" class="edge">
+<title>proc~set_working_set&#45;&gt;proc~daqp_set_working_set</title>
+<path fill="none" stroke="#000000" d="M526.29,-141.25C610.63,-133.98 742.53,-122.62 824.69,-115.54"/>
+<polygon fill="#000000" stroke="#000000" points="824.78,-119.04 834.44,-114.7 824.18,-112.07 824.78,-119.04"/>
+</g>
+<!-- proc~solve -->
+<g id="proc~~soft_w~~CalledByGraph_node37" class="node">
+<title>proc~solve</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node37"><a xlink:href="../proc/solve.html" xlink:title="daqp_type%solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="316.29,-171.27 211.77,-171.27 211.77,-147 316.29,-147 316.29,-171.27"/>
+<text xml:space="preserve" text-anchor="middle" x="264.03" y="-155.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%solve</text>
+</a>
+</g>
+</g>
+<!-- proc~solve&#45;&gt;proc~daqp_refresh_soft_weights -->
+<g id="proc~~soft_w~~CalledByGraph_edge53" class="edge">
+<title>proc~solve&#45;&gt;proc~daqp_refresh_soft_weights</title>
+<path fill="none" stroke="#000000" d="M304.02,-146.56C312.3,-143.83 320.97,-140.93 329.04,-138.13 352.54,-130 378.59,-120.56 399.98,-112.69"/>
+<polygon fill="#000000" stroke="#000000" points="401.11,-116 409.28,-109.26 398.69,-109.44 401.11,-116"/>
+</g>
+<!-- proc~solve&#45;&gt;proc~daqp_solve -->
+<g id="proc~~soft_w~~CalledByGraph_edge56" class="edge">
+<title>proc~solve&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M289.6,-171.6C320.69,-187.37 374.44,-214.63 409.71,-232.53"/>
+<polygon fill="#000000" stroke="#000000" points="407.73,-235.44 418.23,-236.85 410.89,-229.2 407.73,-235.44"/>
+</g>
+<!-- proc~solve&#45;&gt;proc~set_working_set -->
+<g id="proc~~soft_w~~CalledByGraph_edge70" class="edge">
+<title>proc~solve&#45;&gt;proc~set_working_set</title>
+<path fill="none" stroke="#000000" d="M316.44,-155.98C328.05,-155.27 340.71,-154.49 353.41,-153.72"/>
+<polygon fill="#000000" stroke="#000000" points="353.28,-157.23 363.05,-153.12 352.85,-150.24 353.28,-157.23"/>
+</g>
+<!-- proc~daqp_avi -->
+<g id="proc~~soft_w~~CalledByGraph_node38" class="node">
+<title>proc~daqp_avi</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node38"><a xlink:href="../proc/daqp_avi.html" xlink:title="daqp_avi">
+<polygon fill="#d9534f" stroke="#d9534f" points="111.27,-129.27 51.75,-129.27 51.75,-105 111.27,-105 111.27,-129.27"/>
+<text xml:space="preserve" text-anchor="middle" x="81.51" y="-113.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_avi</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_avi&#45;&gt;proc~daqp_quadprog -->
+<g id="proc~~soft_w~~CalledByGraph_edge65" class="edge">
+<title>proc~daqp_avi&#45;&gt;proc~daqp_quadprog</title>
+<path fill="none" stroke="#000000" d="M111.51,-117.13C136.72,-117.13 174,-117.13 205.27,-117.13"/>
+<polygon fill="#000000" stroke="#000000" points="204.98,-120.64 214.98,-117.14 204.98,-113.64 204.98,-120.64"/>
+</g>
+<!-- proc~daqp_setup&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge67" class="edge">
+<title>proc~daqp_setup&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M482.42,-15.82C502.23,-17.85 527.37,-20.43 550.24,-22.77"/>
+<polygon fill="#000000" stroke="#000000" points="549.79,-26.25 560.1,-23.78 550.51,-19.28 549.79,-26.25"/>
+</g>
+<!-- proc~set_soft_weights -->
+<g id="proc~~soft_w~~CalledByGraph_node40" class="node">
+<title>proc~set_soft_weights</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node40"><a xlink:href="../proc/set_soft_weights.html" xlink:title="daqp_type%set_soft_weights">
+<polygon fill="#d9534f" stroke="#d9534f" points="163.02,-87.27 0,-87.27 0,-63 163.02,-63 163.02,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="81.51" y="-71.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%set_soft_weights</text>
+</a>
+</g>
+</g>
+<!-- proc~set_soft_weights&#45;&gt;proc~daqp_set_soft_weights -->
+<g id="proc~~soft_w~~CalledByGraph_edge66" class="edge">
+<title>proc~set_soft_weights&#45;&gt;proc~daqp_set_soft_weights</title>
+<path fill="none" stroke="#000000" d="M163.27,-75.13C171.21,-75.13 179.26,-75.13 187.16,-75.13"/>
+<polygon fill="#000000" stroke="#000000" points="187.07,-78.64 197.07,-75.14 187.07,-71.64 187.07,-78.64"/>
+</g>
+<!-- proc~update -->
+<g id="proc~~soft_w~~CalledByGraph_node41" class="node">
+<title>proc~update</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node41"><a xlink:href="../proc/update.html" xlink:title="daqp_type%update">
+<polygon fill="#d9534f" stroke="#d9534f" points="502.56,-66.27 388.29,-66.27 388.29,-42 502.56,-42 502.56,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="445.42" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%update</text>
+</a>
+</g>
+</g>
+<!-- proc~update&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~soft_w~~CalledByGraph_edge69" class="edge">
+<title>proc~update&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M503.05,-45.6C518.31,-43.3 534.89,-40.8 550.42,-38.46"/>
+<polygon fill="#000000" stroke="#000000" points="550.65,-41.97 560.01,-37.02 549.6,-35.05 550.65,-41.97"/>
+</g>
+<!-- proc~setup -->
+<g id="proc~~soft_w~~CalledByGraph_node42" class="node">
+<title>proc~setup</title>
+<g id="a_proc~~soft_w~~CalledByGraph_node42"><a xlink:href="../proc/setup.html" xlink:title="daqp_type%setup">
+<polygon fill="#d9534f" stroke="#d9534f" points="317.04,-24.27 211.02,-24.27 211.02,0 317.04,0 317.04,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="264.03" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%setup</text>
+</a>
+</g>
+</g>
+<!-- proc~setup&#45;&gt;proc~daqp_setup -->
+<g id="proc~~soft_w~~CalledByGraph_edge72" class="edge">
+<title>proc~setup&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M317.4,-12.13C342.67,-12.13 372.74,-12.13 397.29,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="396.97,-15.64 406.97,-12.14 396.97,-8.64 396.97,-15.64"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocsoft_wCalledByGraph = svgPanZoom('#procsoft_wCalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">pure </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">soft_w</span><span class="p">(</span><span class="n">work</span><span class="p">,</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_workspace</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">work</span><span class="w"> </span><span class="c">!! workspace</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">id</span><span class="w">            </span><span class="c">!! constraint</span>
+
+<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">has_weights</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">has</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">sense</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="n">daqp_lower</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">w_ls</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">else</span>
+<span class="k">            </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">w_us</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">end if</span>
+<span class="k">        if</span><span class="w"> </span><span class="p">(</span><span class="n">w</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">soft_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="o">/</span><span class="n">work</span><span class="p">%</span><span class="n">scaling</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">        end if</span>
+<span class="k">    end if</span>
+<span class="k">    </span><span class="n">soft_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">settings</span><span class="p">%</span><span class="n">w_soft</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">end function </span><span class="n">soft_w</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

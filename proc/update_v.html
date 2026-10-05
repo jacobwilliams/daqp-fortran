@@ -1,0 +1,690 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>update_v &ndash; daqp-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>update_v
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.1% of total for procedures.">6 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_core.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_core.f90.html'>daqp_core.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/daqp_core.html'>daqp_core</a></li>
+            <li class="breadcrumb-item active" aria-current="page">update_v</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/update_v.html#src">update_v</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private  subroutine update_v(work)  
+</h2>
+    
+
+    <p>Form <code>v = Rinv'*f</code> (upstream's <code>daqp_update_v(qp-&gt;f, work)</code>).</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~70"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>workspace</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~update_v~~CallsGraph Pages: 1 -->
+<svg id="procupdate_vCallsGraph" width="270pt" height="74pt"
+ viewBox="0.00 0.00 270.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~update_v~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
+<title>proc~~update_v~~CallsGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 265.54,-70.27 265.54,4 -4,4"/>
+<!-- proc~update_v -->
+<g id="proc~~update_v~~CallsGraph_node1" class="node">
+<title>proc~update_v</title>
+<polygon fill="none" stroke="black" points="60.27,-45.27 0,-45.27 0,-21 60.27,-21 60.27,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="30.13" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">update_v</text>
+</g>
+<!-- proc~transform_v -->
+<g id="proc~~update_v~~CallsGraph_node2" class="node">
+<title>proc~transform_v</title>
+<g id="a_proc~~update_v~~CallsGraph_node2"><a xlink:href="../proc/transform_v.html" xlink:title="transform_v">
+<polygon fill="#d9534f" stroke="#d9534f" points="171.54,-45.27 96.27,-45.27 96.27,-21 171.54,-21 171.54,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="133.9" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">transform_v</text>
+</a>
+</g>
+</g>
+<!-- proc~update_v&#45;&gt;proc~transform_v -->
+<g id="proc~~update_v~~CallsGraph_edge1" class="edge">
+<title>proc~update_v&#45;&gt;proc~transform_v</title>
+<path fill="none" stroke="#000000" d="M60.57,-33.13C68.07,-33.13 76.33,-33.13 84.51,-33.13"/>
+<polygon fill="#000000" stroke="#000000" points="84.41,-36.64 94.41,-33.14 84.41,-29.64 84.41,-36.64"/>
+</g>
+<!-- proc~has~2 -->
+<g id="proc~~update_v~~CallsGraph_node3" class="node">
+<title>proc~has~2</title>
+<g id="a_proc~~update_v~~CallsGraph_node3"><a xlink:href="../proc/has~2.html" xlink:title="has">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="261.54,-66.27 207.54,-66.27 207.54,-42 261.54,-42 261.54,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="234.54" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has</text>
+</a>
+</g>
+</g>
+<!-- proc~transform_v&#45;&gt;proc~has~2 -->
+<g id="proc~~update_v~~CallsGraph_edge2" class="edge">
+<title>proc~transform_v&#45;&gt;proc~has~2</title>
+<path fill="none" stroke="#000000" d="M171.91,-41.01C179.77,-42.69 188.08,-44.46 195.96,-46.13"/>
+<polygon fill="#000000" stroke="#000000" points="195.11,-49.53 205.62,-48.19 196.57,-42.68 195.11,-49.53"/>
+</g>
+<!-- proc~ridx~2 -->
+<g id="proc~~update_v~~CallsGraph_node4" class="node">
+<title>proc~ridx~2</title>
+<g id="a_proc~~update_v~~CallsGraph_node4"><a xlink:href="../proc/ridx~2.html" xlink:title="ridx">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="261.54,-24.27 207.54,-24.27 207.54,0 261.54,0 261.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="234.54" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ridx</text>
+</a>
+</g>
+</g>
+<!-- proc~transform_v&#45;&gt;proc~ridx~2 -->
+<g id="proc~~update_v~~CallsGraph_edge3" class="edge">
+<title>proc~transform_v&#45;&gt;proc~ridx~2</title>
+<path fill="none" stroke="#000000" d="M171.91,-25.26C179.77,-23.58 188.08,-21.81 195.96,-20.14"/>
+<polygon fill="#000000" stroke="#000000" points="196.57,-23.59 205.62,-18.08 195.11,-16.74 196.57,-23.59"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~update_v~~CalledByGraph Pages: 1 -->
+<svg id="procupdate_vCalledByGraph" width="641pt" height="102pt"
+ viewBox="0.00 0.00 641.00 102.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~update_v~~CalledByGraph" class="graph" transform="scale(0.814103 0.814103) rotate(0) translate(4 121.27)">
+<title>proc~~update_v~~CalledByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-121.27 783.37,-121.27 783.37,4 -4,4"/>
+<!-- proc~update_v -->
+<g id="proc~~update_v~~CalledByGraph_node1" class="node">
+<title>proc~update_v</title>
+<polygon fill="none" stroke="black" points="779.37,-54.27 719.1,-54.27 719.1,-30 779.37,-30 779.37,-54.27"/>
+<text xml:space="preserve" text-anchor="middle" x="749.23" y="-38.53" font-family="Helvetica,sans-Serif" font-size="10.50">update_v</text>
+</g>
+<!-- proc~retry_avi_with_reduced_rho -->
+<g id="proc~~update_v~~CalledByGraph_node2" class="node">
+<title>proc~retry_avi_with_reduced_rho</title>
+<g id="a_proc~~update_v~~CalledByGraph_node2"><a xlink:href="../proc/retry_avi_with_reduced_rho.html" xlink:title="retry_avi_with_reduced_rho">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="683.1,-33.27 526.83,-33.27 526.83,-9 683.1,-9 683.1,-33.27"/>
+<text xml:space="preserve" text-anchor="middle" x="604.96" y="-17.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">retry_avi_with_reduced_rho</text>
+</a>
+</g>
+</g>
+<!-- proc~retry_avi_with_reduced_rho&#45;&gt;proc~update_v -->
+<g id="proc~~update_v~~CalledByGraph_edge1" class="edge">
+<title>proc~retry_avi_with_reduced_rho&#45;&gt;proc~update_v</title>
+<path fill="none" stroke="#000000" d="M683.34,-32.56C691.74,-33.8 700.02,-35.02 707.71,-36.15"/>
+<polygon fill="#000000" stroke="#000000" points="706.96,-39.58 717.37,-37.58 707.99,-32.66 706.96,-39.58"/>
+</g>
+<!-- proc~update_ldp_core -->
+<g id="proc~~update_v~~CalledByGraph_node3" class="node">
+<title>proc~update_ldp_core</title>
+<g id="a_proc~~update_v~~CalledByGraph_node3"><a xlink:href="../proc/update_ldp_core.html" xlink:title="update_ldp_core">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="654.6,-79.27 555.33,-79.27 555.33,-55 654.6,-55 654.6,-79.27"/>
+<text xml:space="preserve" text-anchor="middle" x="604.96" y="-63.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">update_ldp_core</text>
+</a>
+</g>
+</g>
+<!-- proc~update_ldp_core&#45;&gt;proc~update_v -->
+<g id="proc~~update_v~~CalledByGraph_edge2" class="edge">
+<title>proc~update_ldp_core&#45;&gt;proc~update_v</title>
+<path fill="none" stroke="#000000" d="M654.93,-58.53C672.17,-55.5 691.34,-52.13 707.8,-49.24"/>
+<polygon fill="#000000" stroke="#000000" points="707.97,-52.76 717.21,-47.59 706.76,-45.87 707.97,-52.76"/>
+</g>
+<!-- proc~daqp_solve_avi -->
+<g id="proc~~update_v~~CalledByGraph_node4" class="node">
+<title>proc~daqp_solve_avi</title>
+<g id="a_proc~~update_v~~CalledByGraph_node4"><a xlink:href="../proc/daqp_solve_avi.html" xlink:title="daqp_solve_avi">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="485.58,-24.27 393.06,-24.27 393.06,0 485.58,0 485.58,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="439.32" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_solve_avi</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve_avi&#45;&gt;proc~retry_avi_with_reduced_rho -->
+<g id="proc~~update_v~~CalledByGraph_edge3" class="edge">
+<title>proc~daqp_solve_avi&#45;&gt;proc~retry_avi_with_reduced_rho</title>
+<path fill="none" stroke="#000000" d="M485.9,-14.64C495.04,-15.14 504.94,-15.69 514.98,-16.24"/>
+<polygon fill="#000000" stroke="#000000" points="514.65,-19.73 524.83,-16.78 515.04,-12.74 514.65,-19.73"/>
+</g>
+<!-- proc~daqp_solve_avi&#45;&gt;proc~daqp_solve_avi -->
+<g id="proc~~update_v~~CalledByGraph_edge6" class="edge">
+<title>proc~daqp_solve_avi&#45;&gt;proc~daqp_solve_avi</title>
+<path fill="none" stroke="#000000" d="M415.12,-24.52C407.24,-33.41 415.31,-42.27 439.32,-42.27 452.45,-42.27 460.82,-39.62 464.41,-35.76"/>
+<polygon fill="#000000" stroke="#000000" points="467.92,-35.72 463.64,-26.03 460.94,-36.27 467.92,-35.72"/>
+</g>
+<!-- proc~daqp_update_ldp -->
+<g id="proc~~update_v~~CalledByGraph_node5" class="node">
+<title>proc~daqp_update_ldp</title>
+<g id="a_proc~~update_v~~CalledByGraph_node5"><a xlink:href="../proc/daqp_update_ldp.html" xlink:title="daqp_update_ldp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="490.83,-84.27 387.81,-84.27 387.81,-60 490.83,-60 490.83,-84.27"/>
+<text xml:space="preserve" text-anchor="middle" x="439.32" y="-68.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_update_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_update_ldp&#45;&gt;proc~update_ldp_core -->
+<g id="proc~~update_v~~CalledByGraph_edge4" class="edge">
+<title>proc~daqp_update_ldp&#45;&gt;proc~update_ldp_core</title>
+<path fill="none" stroke="#000000" d="M491.2,-70.58C507.9,-70.07 526.62,-69.5 543.94,-68.97"/>
+<polygon fill="#000000" stroke="#000000" points="543.67,-72.48 553.56,-68.67 543.46,-65.48 543.67,-72.48"/>
+</g>
+<!-- proc~daqp_setup -->
+<g id="proc~~update_v~~CalledByGraph_node6" class="node">
+<title>proc~daqp_setup</title>
+<g id="a_proc~~update_v~~CalledByGraph_node6"><a xlink:href="../proc/daqp_setup.html" xlink:title="daqp_setup">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="331.18,-117.27 258.16,-117.27 258.16,-93 331.18,-93 331.18,-117.27"/>
+<text xml:space="preserve" text-anchor="middle" x="294.67" y="-101.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_setup</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_setup&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~update_v~~CalledByGraph_edge7" class="edge">
+<title>proc~daqp_setup&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M331.67,-96.81C345.29,-93.66 361.2,-89.98 376.51,-86.43"/>
+<polygon fill="#000000" stroke="#000000" points="377.09,-89.89 386.05,-84.23 375.51,-83.07 377.09,-89.89"/>
+</g>
+<!-- proc~daqp_solve -->
+<g id="proc~~update_v~~CalledByGraph_node7" class="node">
+<title>proc~daqp_solve</title>
+<g id="a_proc~~update_v~~CalledByGraph_node7"><a xlink:href="../proc/daqp_solve.html" xlink:title="daqp_solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="330.43,-33.27 258.91,-33.27 258.91,-9 330.43,-9 330.43,-33.27"/>
+<text xml:space="preserve" text-anchor="middle" x="294.67" y="-17.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_solve</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_solve_avi -->
+<g id="proc~~update_v~~CalledByGraph_edge5" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_solve_avi</title>
+<path fill="none" stroke="#000000" d="M330.57,-18.93C345.93,-17.96 364.37,-16.8 381.62,-15.71"/>
+<polygon fill="#000000" stroke="#000000" points="381.46,-19.23 391.22,-15.11 381.02,-12.24 381.46,-19.23"/>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~update_v~~CalledByGraph_edge8" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M330.57,-33.61C349.22,-40.28 372.41,-48.57 392.5,-55.75"/>
+<polygon fill="#000000" stroke="#000000" points="391.27,-59.03 401.87,-59.1 393.63,-52.44 391.27,-59.03"/>
+</g>
+<!-- proc~update -->
+<g id="proc~~update_v~~CalledByGraph_node8" class="node">
+<title>proc~update</title>
+<g id="a_proc~~update_v~~CalledByGraph_node8"><a xlink:href="../proc/update.html" xlink:title="daqp_type%update">
+<polygon fill="#d9534f" stroke="#d9534f" points="351.81,-75.27 237.54,-75.27 237.54,-51 351.81,-51 351.81,-75.27"/>
+<text xml:space="preserve" text-anchor="middle" x="294.67" y="-59.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%update</text>
+</a>
+</g>
+</g>
+<!-- proc~update&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~update_v~~CalledByGraph_edge9" class="edge">
+<title>proc~update&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M352.05,-66.69C359.99,-67.19 368.19,-67.71 376.23,-68.22"/>
+<polygon fill="#000000" stroke="#000000" points="375.73,-71.69 385.93,-68.83 376.17,-64.71 375.73,-71.69"/>
+</g>
+<!-- proc~daqp_quadprog -->
+<g id="proc~~update_v~~CalledByGraph_node9" class="node">
+<title>proc~daqp_quadprog</title>
+<g id="a_proc~~update_v~~CalledByGraph_node9"><a xlink:href="../proc/daqp_quadprog.html" xlink:title="daqp_quadprog">
+<polygon fill="#d9534f" stroke="#d9534f" points="195.91,-75.27 101.14,-75.27 101.14,-51 195.91,-51 195.91,-75.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-59.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_quadprog</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_setup -->
+<g id="proc~~update_v~~CalledByGraph_edge10" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M192.78,-75.74C209.78,-80.69 229.36,-86.39 246.71,-91.45"/>
+<polygon fill="#000000" stroke="#000000" points="245.71,-94.8 256.29,-94.24 247.66,-88.08 245.71,-94.8"/>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_solve -->
+<g id="proc~~update_v~~CalledByGraph_edge12" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M192.78,-50.53C210.14,-45.48 230.17,-39.64 247.79,-34.51"/>
+<polygon fill="#000000" stroke="#000000" points="248.61,-37.91 257.23,-31.75 246.65,-31.19 248.61,-37.91"/>
+</g>
+<!-- proc~setup -->
+<g id="proc~~update_v~~CalledByGraph_node10" class="node">
+<title>proc~setup</title>
+<g id="a_proc~~update_v~~CalledByGraph_node10"><a xlink:href="../proc/setup.html" xlink:title="daqp_type%setup">
+<polygon fill="#d9534f" stroke="#d9534f" points="201.54,-117.27 95.52,-117.27 95.52,-93 201.54,-93 201.54,-117.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-101.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%setup</text>
+</a>
+</g>
+</g>
+<!-- proc~setup&#45;&gt;proc~daqp_setup -->
+<g id="proc~~update_v~~CalledByGraph_edge11" class="edge">
+<title>proc~setup&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M201.98,-105.13C216.44,-105.13 232.05,-105.13 246.21,-105.13"/>
+<polygon fill="#000000" stroke="#000000" points="246.2,-108.64 256.2,-105.14 246.2,-101.64 246.2,-108.64"/>
+</g>
+<!-- proc~solve -->
+<g id="proc~~update_v~~CalledByGraph_node11" class="node">
+<title>proc~solve</title>
+<g id="a_proc~~update_v~~CalledByGraph_node11"><a xlink:href="../proc/solve.html" xlink:title="daqp_type%solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="200.79,-33.27 96.27,-33.27 96.27,-9 200.79,-9 200.79,-33.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-17.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%solve</text>
+</a>
+</g>
+</g>
+<!-- proc~solve&#45;&gt;proc~daqp_solve -->
+<g id="proc~~update_v~~CalledByGraph_edge13" class="edge">
+<title>proc~solve&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M201.16,-21.13C216.21,-21.13 232.54,-21.13 247.25,-21.13"/>
+<polygon fill="#000000" stroke="#000000" points="247.12,-24.64 257.12,-21.14 247.12,-17.64 247.12,-24.64"/>
+</g>
+<!-- proc~daqp_avi -->
+<g id="proc~~update_v~~CalledByGraph_node12" class="node">
+<title>proc~daqp_avi</title>
+<g id="a_proc~~update_v~~CalledByGraph_node12"><a xlink:href="../proc/daqp_avi.html" xlink:title="daqp_avi">
+<polygon fill="#d9534f" stroke="#d9534f" points="59.52,-75.27 0,-75.27 0,-51 59.52,-51 59.52,-75.27"/>
+<text xml:space="preserve" text-anchor="middle" x="29.76" y="-59.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_avi</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_avi&#45;&gt;proc~daqp_quadprog -->
+<g id="proc~~update_v~~CalledByGraph_edge14" class="edge">
+<title>proc~daqp_avi&#45;&gt;proc~daqp_quadprog</title>
+<path fill="none" stroke="#000000" d="M59.92,-63.13C69.05,-63.13 79.46,-63.13 89.85,-63.13"/>
+<polygon fill="#000000" stroke="#000000" points="89.53,-66.64 99.53,-63.14 89.53,-59.64 89.53,-66.64"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocupdate_vCalledByGraph = svgPanZoom('#procupdate_vCalledByGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">subroutine </span><span class="n">update_v</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_workspace</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">work</span><span class="w"> </span><span class="c">!! workspace</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">has_v</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">has_f</span><span class="p">)</span><span class="w"> </span><span class="k">return</span>
+<span class="k">    </span><span class="n">work</span><span class="p">%</span><span class="n">v</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">work</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">work</span><span class="p">%</span><span class="n">n</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">call </span><span class="n">transform_v</span><span class="p">(</span><span class="n">work</span><span class="p">,</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">v</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">end subroutine </span><span class="n">update_v</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

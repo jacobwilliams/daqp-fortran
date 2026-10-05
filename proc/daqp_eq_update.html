@@ -1,0 +1,1454 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>daqp_eq_update &ndash; daqp-fortran</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>daqp_eq_update
+      <small>Function</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 1.0% of total for procedures.">61 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_eq_elim.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_eq_elim.f90.html'>daqp_eq_elim.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/daqp_eq_elim.html'>daqp_eq_elim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">daqp_eq_update</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/daqp_eq_update.html#src">daqp_eq_update</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  function daqp_eq_update(work, mask, update_ldp) result(flag)  
+</h2>
+    
+
+    <p>Form or update the reduction of the problem in the workspace, and the LDP
+of the reduced problem (with <code>update_ldp</code>). Returns <code>eq_not_reduced</code> if
+nothing can be eliminated, a negative exit flag if the equality constraints
+cannot be satisfied, and the return value of <code>update_ldp</code> otherwise.</p>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-work~17"></span>
+              type(<a href='../type/daqp_workspace.html'>daqp_workspace</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>work</strong></td>
+            <td>
+                <p>workspace</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mask~3"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mask</strong></td>
+            <td>
+                <p>update mask</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-update_ldp"></span>
+              procedure(<a href='../interface/update_ldp_proc.html'>update_ldp_proc</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>update_ldp</strong></td>
+            <td>
+                <p>forms the LDP of the installed problem</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-flag~3"></span>
+          integer(kind=ip)
+        </small>
+      </h3>
+      
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~daqp_eq_update~~CallsGraph Pages: 1 -->
+<svg id="procdaqp_eq_updateCallsGraph" width="641pt" height="771pt"
+ viewBox="0.00 0.00 641.00 771.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~daqp_eq_update~~CallsGraph" class="graph" transform="scale(0.659879 0.659879) rotate(0) translate(4 1164.27)">
+<title>proc~~daqp_eq_update~~CallsGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1164.27 967.39,-1164.27 967.39,4 -4,4"/>
+<!-- proc~daqp_eq_update -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node1" class="node">
+<title>proc~daqp_eq_update</title>
+<polygon fill="none" stroke="black" points="100.02,-998.27 0,-998.27 0,-974 100.02,-974 100.02,-998.27"/>
+<text xml:space="preserve" text-anchor="middle" x="50.01" y="-982.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_eq_update</text>
+</g>
+<!-- proc~daqp_eq_deactivate -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node2" class="node">
+<title>proc~daqp_eq_deactivate</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node2"><a xlink:href="../proc/daqp_eq_deactivate.html" xlink:title="daqp_eq_deactivate">
+<polygon fill="#d9534f" stroke="#d9534f" points="257.04,-1118.27 138.27,-1118.27 138.27,-1094 257.04,-1094 257.04,-1118.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197.65" y="-1102.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_deactivate</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~daqp_eq_deactivate -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge1" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~daqp_eq_deactivate</title>
+<path fill="none" stroke="#000000" d="M59.58,-998.67C73.57,-1018.34 103.08,-1056.6 136.02,-1080.13 140.39,-1083.26 145.2,-1086.11 150.13,-1088.68"/>
+<polygon fill="#000000" stroke="#000000" points="148.44,-1091.76 158.97,-1092.92 151.47,-1085.44 148.44,-1091.76"/>
+</g>
+<!-- proc~daqp_eq_install -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node3" class="node">
+<title>proc~daqp_eq_install</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node3"><a xlink:href="../proc/daqp_eq_install.html" xlink:title="daqp_eq_install">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="414.06,-1038.27 320.04,-1038.27 320.04,-1014 414.06,-1014 414.06,-1038.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-1022.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_install</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~daqp_eq_install -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge2" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~daqp_eq_install</title>
+<path fill="none" stroke="#000000" d="M100.39,-994.7C112.06,-996.61 124.46,-998.53 136.02,-1000.13 194.55,-1008.26 261.74,-1015.63 308.32,-1020.43"/>
+<polygon fill="#000000" stroke="#000000" points="307.89,-1023.9 318.2,-1021.44 308.6,-1016.94 307.89,-1023.9"/>
+</g>
+<!-- proc~daqp_eq_restore -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node4" class="node">
+<title>proc~daqp_eq_restore</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node4"><a xlink:href="../proc/daqp_eq_restore.html" xlink:title="daqp_eq_restore">
+<polygon fill="#d9534f" stroke="#d9534f" points="585.33,-1078.27 486.06,-1078.27 486.06,-1054 585.33,-1054 585.33,-1078.27"/>
+<text xml:space="preserve" text-anchor="middle" x="535.69" y="-1062.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_restore</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~daqp_eq_restore -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge3" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~daqp_eq_restore</title>
+<path fill="none" stroke="#000000" d="M76.88,-998.6C93.45,-1006.13 115.6,-1015.35 136.02,-1021.13 252.91,-1054.26 395.59,-1063.14 474.65,-1065.43"/>
+<polygon fill="#000000" stroke="#000000" points="474.24,-1068.92 484.33,-1065.68 474.43,-1061.92 474.24,-1068.92"/>
+</g>
+<!-- proc~eq_build_reduction -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node5" class="node">
+<title>proc~eq_build_reduction</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node5"><a xlink:href="../proc/eq_build_reduction.html" xlink:title="eq_build_reduction">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="253.66,-396.27 141.64,-396.27 141.64,-372 253.66,-372 253.66,-396.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197.65" y="-380.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_build_reduction</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~eq_build_reduction -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge4" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~eq_build_reduction</title>
+<path fill="none" stroke="#000000" d="M54.05,-973.56C72.25,-898.35 166.71,-507.9 190.97,-407.63"/>
+<polygon fill="#000000" stroke="#000000" points="194.32,-408.65 193.27,-398.11 187.52,-407.01 194.32,-408.65"/>
+</g>
+<!-- proc~eq_reduce_rhs -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node6" class="node">
+<title>proc~eq_reduce_rhs</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node6"><a xlink:href="../proc/eq_reduce_rhs.html" xlink:title="eq_reduce_rhs">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="242.04,-816.27 153.27,-816.27 153.27,-792 242.04,-792 242.04,-816.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197.65" y="-800.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_reduce_rhs</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~eq_reduce_rhs -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge5" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~eq_reduce_rhs</title>
+<path fill="none" stroke="#000000" d="M61.02,-973.63C85.55,-942.97 148.88,-863.84 179.53,-825.54"/>
+<polygon fill="#000000" stroke="#000000" points="182.11,-827.91 185.63,-817.91 176.65,-823.53 182.11,-827.91"/>
+</g>
+<!-- proc~eq_same_candidates -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node7" class="node">
+<title>proc~eq_same_candidates</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node7"><a xlink:href="../proc/eq_same_candidates.html" xlink:title="eq_same_candidates">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="259.29,-958.27 136.02,-958.27 136.02,-934 259.29,-934 259.29,-958.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197.65" y="-942.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_same_candidates</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~eq_same_candidates -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge6" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~eq_same_candidates</title>
+<path fill="none" stroke="#000000" d="M96.69,-973.59C110.45,-969.81 125.72,-965.62 140.1,-961.67"/>
+<polygon fill="#000000" stroke="#000000" points="140.71,-965.13 149.42,-959.11 138.85,-958.38 140.71,-965.13"/>
+</g>
+<!-- proc~has~2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node8" class="node">
+<title>proc~has~2</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node8"><a xlink:href="../proc/has~2.html" xlink:title="has">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="562.69,-937.27 508.69,-937.27 508.69,-913 562.69,-913 562.69,-937.27"/>
+<text xml:space="preserve" text-anchor="middle" x="535.69" y="-921.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_update&#45;&gt;proc~has~2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge7" class="edge">
+<title>proc~daqp_eq_update&#45;&gt;proc~has~2</title>
+<path fill="none" stroke="#000000" d="M100.47,-989.37C174.96,-992.99 319.88,-995.1 438.81,-967.13 460.85,-961.95 484.14,-951.87 502.25,-942.89"/>
+<polygon fill="#000000" stroke="#000000" points="503.6,-946.12 510.91,-938.45 500.42,-939.89 503.6,-946.12"/>
+</g>
+<!-- proc~daqp_reset_workspace -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node9" class="node">
+<title>proc~daqp_reset_workspace</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node9"><a xlink:href="../proc/daqp_reset_workspace.html" xlink:title="daqp_reset_workspace">
+<polygon fill="#d9534f" stroke="#d9534f" points="433.18,-1118.27 300.91,-1118.27 300.91,-1094 433.18,-1094 433.18,-1118.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-1102.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_reset_workspace</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_deactivate&#45;&gt;proc~daqp_reset_workspace -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge8" class="edge">
+<title>proc~daqp_eq_deactivate&#45;&gt;proc~daqp_reset_workspace</title>
+<path fill="none" stroke="#000000" d="M257.2,-1106.13C267.63,-1106.13 278.63,-1106.13 289.47,-1106.13"/>
+<polygon fill="#000000" stroke="#000000" points="289.16,-1109.64 299.16,-1106.14 289.16,-1102.64 289.16,-1109.64"/>
+</g>
+<!-- proc~free_daqp_eq -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node32" class="node">
+<title>proc~free_daqp_eq</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node32"><a xlink:href="../proc/free_daqp_eq.html" xlink:title="free_daqp_eq">
+<polygon fill="#d9534f" stroke="#d9534f" points="408.81,-1160.27 325.29,-1160.27 325.29,-1136 408.81,-1136 408.81,-1160.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-1144.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">free_daqp_eq</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_deactivate&#45;&gt;proc~free_daqp_eq -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge9" class="edge">
+<title>proc~daqp_eq_deactivate&#45;&gt;proc~free_daqp_eq</title>
+<path fill="none" stroke="#000000" d="M248.88,-1118.74C269.36,-1123.87 293.03,-1129.81 313.72,-1135.01"/>
+<polygon fill="#000000" stroke="#000000" points="312.85,-1138.39 323.4,-1137.43 314.55,-1131.61 312.85,-1138.39"/>
+</g>
+<!-- proc~eq_swap_ldp -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node28" class="node">
+<title>proc~eq_swap_ldp</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node28"><a xlink:href="../proc/eq_swap_ldp.html" xlink:title="eq_swap_ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="727.35,-1058.27 648.33,-1058.27 648.33,-1034 727.35,-1034 727.35,-1058.27"/>
+<text xml:space="preserve" text-anchor="middle" x="687.84" y="-1042.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_swap_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_install&#45;&gt;proc~eq_swap_ldp -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge10" class="edge">
+<title>proc~daqp_eq_install&#45;&gt;proc~eq_swap_ldp</title>
+<path fill="none" stroke="#000000" d="M414.4,-1029.04C473.62,-1032.76 575.72,-1039.16 636.7,-1042.99"/>
+<polygon fill="#000000" stroke="#000000" points="636.24,-1046.47 646.44,-1043.6 636.68,-1039.48 636.24,-1046.47"/>
+</g>
+<!-- proc~resize1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node33" class="node">
+<title>proc~resize1</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node33"><a xlink:href="../proc/resize1.html" xlink:title="resize1">
+<polygon fill="#d9534f" stroke="#d9534f" points="562.69,-836.27 508.69,-836.27 508.69,-812 562.69,-812 562.69,-836.27"/>
+<text xml:space="preserve" text-anchor="middle" x="535.69" y="-820.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">resize1</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_eq_install&#45;&gt;proc~resize1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge11" class="edge">
+<title>proc~daqp_eq_install&#45;&gt;proc~resize1</title>
+<path fill="none" stroke="#000000" d="M386.47,-1013.62C401.76,-1002.62 423.4,-985.52 438.81,-967.13 459.52,-942.42 457.11,-931.09 474.81,-904.13 488.29,-883.6 505.18,-861.3 517.59,-845.48"/>
+<polygon fill="#000000" stroke="#000000" points="520.26,-847.74 523.72,-837.72 514.77,-843.39 520.26,-847.74"/>
+</g>
+<!-- proc~daqp_eq_restore&#45;&gt;proc~eq_swap_ldp -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge12" class="edge">
+<title>proc~daqp_eq_restore&#45;&gt;proc~eq_swap_ldp</title>
+<path fill="none" stroke="#000000" d="M585.44,-1059.64C602,-1057.44 620.52,-1054.97 637.15,-1052.75"/>
+<polygon fill="#000000" stroke="#000000" points="637.36,-1056.26 646.81,-1051.47 636.44,-1049.32 637.36,-1056.26"/>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~has~2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge29" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~has~2</title>
+<path fill="none" stroke="#000000" d="M199.53,-396.61C204.48,-463.3 230.97,-777.37 295.29,-845.13 340.71,-893 376.51,-861.39 438.81,-883.13 459.08,-890.21 481.07,-899.7 498.86,-907.87"/>
+<polygon fill="#000000" stroke="#000000" points="497.17,-910.94 507.71,-911.99 500.12,-904.6 497.17,-910.94"/>
+</g>
+<!-- proc~eq_accumulate_z -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node10" class="node">
+<title>proc~eq_accumulate_z</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node10"><a xlink:href="../proc/eq_accumulate_z.html" xlink:title="eq_accumulate_Z">
+<polygon fill="#d9534f" stroke="#d9534f" points="420.06,-356.27 314.04,-356.27 314.04,-332 420.06,-332 420.06,-356.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-340.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_accumulate_Z</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_accumulate_z -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge13" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_accumulate_z</title>
+<path fill="none" stroke="#000000" d="M251.16,-371.59C267.52,-367.68 285.74,-363.33 302.75,-359.26"/>
+<polygon fill="#000000" stroke="#000000" points="303.35,-362.72 312.26,-356.99 301.72,-355.91 303.35,-362.72"/>
+</g>
+<!-- proc~eq_allocate_reduced_ldp -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node11" class="node">
+<title>proc~eq_allocate_reduced_ldp</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node11"><a xlink:href="../proc/eq_allocate_reduced_ldp.html" xlink:title="eq_allocate_reduced_ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="438.81,-272.27 295.29,-272.27 295.29,-248 438.81,-248 438.81,-272.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-256.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_allocate_reduced_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_allocate_reduced_ldp -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge14" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_allocate_reduced_ldp</title>
+<path fill="none" stroke="#000000" d="M206.94,-371.66C221.97,-350.01 255.85,-305.47 295.29,-281.13 297.54,-279.74 299.9,-278.44 302.31,-277.22"/>
+<polygon fill="#000000" stroke="#000000" points="303.47,-280.54 311.17,-273.27 300.61,-274.15 303.47,-280.54"/>
+</g>
+<!-- proc~eq_allocate_reduction -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node12" class="node">
+<title>proc~eq_allocate_reduction</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node12"><a xlink:href="../proc/eq_allocate_reduction.html" xlink:title="eq_allocate_reduction">
+<polygon fill="#d9534f" stroke="#d9534f" points="431.31,-230.27 302.79,-230.27 302.79,-206 431.31,-206 431.31,-230.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-214.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_allocate_reduction</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_allocate_reduction -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge15" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_allocate_reduction</title>
+<path fill="none" stroke="#000000" d="M203.52,-371.51C215.01,-343.35 246.61,-275.06 295.29,-239.13 296.81,-238.01 298.4,-236.95 300.03,-235.94"/>
+<polygon fill="#000000" stroke="#000000" points="301.27,-239.24 308.48,-231.47 298,-233.05 301.27,-239.24"/>
+</g>
+<!-- proc~eq_apply_qt_many -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node13" class="node">
+<title>proc~eq_apply_qt_many</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node13"><a xlink:href="../proc/eq_apply_qt_many.html" xlink:title="eq_apply_QT_many">
+<polygon fill="#d9534f" stroke="#d9534f" points="593.2,-396.27 478.18,-396.27 478.18,-372 593.2,-372 593.2,-396.27"/>
+<text xml:space="preserve" text-anchor="middle" x="535.69" y="-380.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_apply_QT_many</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_apply_qt_many -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge16" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_apply_qt_many</title>
+<path fill="none" stroke="#000000" d="M254.15,-384.13C312.32,-384.13 403.81,-384.13 466.38,-384.13"/>
+<polygon fill="#000000" stroke="#000000" points="466.2,-387.64 476.2,-384.14 466.2,-380.64 466.2,-387.64"/>
+</g>
+<!-- proc~eq_build_qr -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node14" class="node">
+<title>proc~eq_build_qr</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node14"><a xlink:href="../proc/eq_build_qr.html" xlink:title="eq_build_qr">
+<polygon fill="#d9534f" stroke="#d9534f" points="403.56,-314.27 330.54,-314.27 330.54,-290 403.56,-290 403.56,-314.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-298.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_build_qr</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_build_qr -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge17" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_build_qr</title>
+<path fill="none" stroke="#000000" d="M215.3,-371.62C233.95,-358.09 265.48,-336.66 295.29,-323.13 302.83,-319.71 311.08,-316.68 319.19,-314.06"/>
+<polygon fill="#000000" stroke="#000000" points="320.09,-317.45 328.64,-311.18 318.05,-310.75 320.09,-317.45"/>
+</g>
+<!-- proc~eq_chol -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node15" class="node">
+<title>proc~eq_chol</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node15"><a xlink:href="../proc/eq_chol.html" xlink:title="eq_chol">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="394.05,-188.27 340.05,-188.27 340.05,-164 394.05,-164 394.05,-188.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-172.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_chol</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_chol -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge18" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_chol</title>
+<path fill="none" stroke="#000000" d="M201.51,-371.5C209.8,-337.86 237,-245.35 295.29,-197.13 304.79,-189.27 317.15,-184.36 328.88,-181.28"/>
+<polygon fill="#000000" stroke="#000000" points="329.32,-184.76 338.33,-179.18 327.81,-177.93 329.32,-184.76"/>
+</g>
+<!-- proc~eq_dot -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node16" class="node">
+<title>proc~eq_dot</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node16"><a xlink:href="../proc/eq_dot.html" xlink:title="eq_dot">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="714.84,-720.27 660.84,-720.27 660.84,-696 714.84,-696 714.84,-720.27"/>
+<text xml:space="preserve" text-anchor="middle" x="687.84" y="-704.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_dot</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_dot -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge19" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_dot</title>
+<path fill="none" stroke="#000000" d="M201.59,-396.67C210.07,-430.09 237.71,-522.08 295.29,-571.13 402.58,-662.55 464.56,-620.75 596.58,-670.13 614.48,-676.83 634.05,-684.97 650.39,-692"/>
+<polygon fill="#000000" stroke="#000000" points="648.65,-695.06 659.22,-695.82 651.43,-688.63 648.65,-695.06"/>
+</g>
+<!-- proc~eq_free_rhs_cache -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node17" class="node">
+<title>proc~eq_free_rhs_cache</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node17"><a xlink:href="../proc/eq_free_rhs_cache.html" xlink:title="eq_free_rhs_cache">
+<polygon fill="#d9534f" stroke="#d9534f" points="743.1,-137.27 632.58,-137.27 632.58,-113 743.1,-113 743.1,-137.27"/>
+<text xml:space="preserve" text-anchor="middle" x="687.84" y="-121.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_free_rhs_cache</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_free_rhs_cache -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge20" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_free_rhs_cache</title>
+<path fill="none" stroke="#000000" d="M198.53,-371.53C198.86,-326.89 206.7,-175.6 295.29,-113.13 346.02,-77.37 523.45,-98.7 621.12,-113.9"/>
+<polygon fill="#000000" stroke="#000000" points="620.42,-117.33 630.84,-115.43 621.51,-110.42 620.42,-117.33"/>
+</g>
+<!-- proc~eq_gemm_tn -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node18" class="node">
+<title>proc~eq_gemm_tn</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node18"><a xlink:href="../proc/eq_gemm_tn.html" xlink:title="eq_gemm_tn">
+<polygon fill="#d9534f" stroke="#d9534f" points="407.31,-146.27 326.79,-146.27 326.79,-122 407.31,-122 407.31,-146.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-130.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_gemm_tn</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_gemm_tn -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge21" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_gemm_tn</title>
+<path fill="none" stroke="#000000" d="M200.2,-371.57C205.58,-333.15 227.12,-216.14 295.29,-155.13 301.2,-149.85 308.38,-145.89 315.88,-142.93"/>
+<polygon fill="#000000" stroke="#000000" points="316.76,-146.32 325.15,-139.85 314.56,-139.68 316.76,-146.32"/>
+</g>
+<!-- proc~eq_is_candidate -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node20" class="node">
+<title>proc~eq_is_candidate</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node20"><a xlink:href="../proc/eq_is_candidate.html" xlink:title="eq_is_candidate">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="415.56,-958.27 318.54,-958.27 318.54,-934 415.56,-934 415.56,-958.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-942.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_is_candidate</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_is_candidate -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge22" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_is_candidate</title>
+<path fill="none" stroke="#000000" d="M200.52,-396.71C212.33,-476.03 276.83,-904.49 295.29,-925.13 298.89,-929.16 303.22,-932.43 307.95,-935.09"/>
+<polygon fill="#000000" stroke="#000000" points="306.17,-938.12 316.72,-939.08 309.07,-931.75 306.17,-938.12"/>
+</g>
+<!-- proc~eq_is_diagonal -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node21" class="node">
+<title>proc~eq_is_diagonal</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node21"><a xlink:href="../proc/eq_is_diagonal.html" xlink:title="eq_is_diagonal">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="412.18,-66.27 321.91,-66.27 321.91,-42 412.18,-42 412.18,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_is_diagonal</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_is_diagonal -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge23" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_is_diagonal</title>
+<path fill="none" stroke="#000000" d="M198.89,-371.8C200.44,-326.48 211.84,-167.37 295.29,-80.13 299.87,-75.35 305.4,-71.44 311.33,-68.25"/>
+<polygon fill="#000000" stroke="#000000" points="312.6,-71.52 320.22,-64.15 309.67,-65.16 312.6,-71.52"/>
+</g>
+<!-- proc~eq_is_symmetric -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node22" class="node">
+<title>proc~eq_is_symmetric</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node22"><a xlink:href="../proc/eq_is_symmetric.html" xlink:title="eq_is_symmetric">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="417.06,-24.27 317.04,-24.27 317.04,0 417.06,0 417.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_is_symmetric</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_is_symmetric -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge24" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_is_symmetric</title>
+<path fill="none" stroke="#000000" d="M198.1,-371.84C196.53,-321.99 197.5,-132.88 295.29,-33.13 298.62,-29.74 302.47,-26.88 306.63,-24.49"/>
+<polygon fill="#000000" stroke="#000000" points="307.85,-27.78 315.39,-20.34 304.86,-21.45 307.85,-27.78"/>
+</g>
+<!-- proc~eq_rows_times_w -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node26" class="node">
+<title>proc~eq_rows_times_w</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node26"><a xlink:href="../proc/eq_rows_times_w.html" xlink:title="eq_rows_times_W">
+<polygon fill="#d9534f" stroke="#d9534f" points="419.31,-562.27 314.79,-562.27 314.79,-538 419.31,-538 419.31,-562.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-546.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_rows_times_W</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_rows_times_w -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge25" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_rows_times_w</title>
+<path fill="none" stroke="#000000" d="M203.52,-396.76C215.01,-424.92 246.61,-493.21 295.29,-529.13 298.09,-531.2 301.09,-533.06 304.21,-534.74"/>
+<polygon fill="#000000" stroke="#000000" points="302.62,-537.86 313.17,-538.88 305.55,-531.51 302.62,-537.86"/>
+</g>
+<!-- proc~eq_split_flat -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node27" class="node">
+<title>proc~eq_split_flat</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node27"><a xlink:href="../proc/eq_split_flat.html" xlink:title="eq_split_flat">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="404.31,-436.27 329.79,-436.27 329.79,-412 404.31,-412 404.31,-436.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-420.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_split_flat</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_split_flat -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge26" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_split_flat</title>
+<path fill="none" stroke="#000000" d="M251.16,-396.68C272.7,-401.83 297.45,-407.74 318.45,-412.76"/>
+<polygon fill="#000000" stroke="#000000" points="317.36,-416.1 327.9,-415.02 318.99,-409.29 317.36,-416.1"/>
+</g>
+<!-- proc~eq_trsm_rows -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node29" class="node">
+<title>proc~eq_trsm_rows</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node29"><a xlink:href="../proc/eq_trsm_rows.html" xlink:title="eq_trsm_rows">
+<polygon fill="#d9534f" stroke="#d9534f" points="408.81,-520.27 325.29,-520.27 325.29,-496 408.81,-496 408.81,-520.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-504.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_trsm_rows</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_trsm_rows -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge27" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_trsm_rows</title>
+<path fill="none" stroke="#000000" d="M206.94,-396.61C221.97,-418.26 255.85,-462.8 295.29,-487.13 301.16,-490.76 307.69,-493.78 314.34,-496.31"/>
+<polygon fill="#000000" stroke="#000000" points="312.78,-499.47 323.38,-499.38 315.04,-492.85 312.78,-499.47"/>
+</g>
+<!-- proc~eq_twoside -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node30" class="node">
+<title>proc~eq_twoside</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node30"><a xlink:href="../proc/eq_twoside.html" xlink:title="eq_twoside">
+<polygon fill="#d9534f" stroke="#d9534f" points="402.43,-478.27 331.66,-478.27 331.66,-454 402.43,-454 402.43,-478.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-462.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_twoside</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~eq_twoside -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge28" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~eq_twoside</title>
+<path fill="none" stroke="#000000" d="M215.3,-396.65C233.95,-410.18 265.48,-431.61 295.29,-445.13 303.16,-448.7 311.8,-451.85 320.25,-454.55"/>
+<polygon fill="#000000" stroke="#000000" points="319.14,-457.87 329.72,-457.4 321.15,-451.17 319.14,-457.87"/>
+</g>
+<!-- proc~eq_build_reduction&#45;&gt;proc~resize1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge30" class="edge">
+<title>proc~eq_build_reduction&#45;&gt;proc~resize1</title>
+<path fill="none" stroke="#000000" d="M199.41,-396.7C202.7,-441.48 219.3,-595.57 295.29,-689.13 349.24,-755.56 445.09,-795.17 497.66,-812.94"/>
+<polygon fill="#000000" stroke="#000000" points="496.47,-816.23 507.06,-816.03 498.65,-809.58 496.47,-816.23"/>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_dot -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge31" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_dot</title>
+<path fill="none" stroke="#000000" d="M242.19,-797.91C290.41,-790.82 370.4,-778.48 438.81,-765.13 509.4,-751.36 526.49,-745.28 596.58,-729.13 613.86,-725.15 633,-720.71 649.19,-716.93"/>
+<polygon fill="#000000" stroke="#000000" points="649.97,-720.35 658.91,-714.66 648.38,-713.53 649.97,-720.35"/>
+</g>
+<!-- proc~eq_hess_times -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node19" class="node">
+<title>proc~eq_hess_times</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node19"><a xlink:href="../proc/eq_hess_times.html" xlink:title="eq_hess_times">
+<polygon fill="#d9534f" stroke="#d9534f" points="580.08,-720.27 491.31,-720.27 491.31,-696 580.08,-696 580.08,-720.27"/>
+<text xml:space="preserve" text-anchor="middle" x="535.69" y="-704.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_hess_times</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge32" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M231.97,-791.63C250.49,-784.87 274.02,-776.62 295.29,-770.13 358.16,-750.97 431.44,-732.56 480.2,-720.85"/>
+<polygon fill="#000000" stroke="#000000" points="480.75,-724.32 489.66,-718.59 479.13,-717.51 480.75,-724.32"/>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_is_candidate -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge33" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_is_candidate</title>
+<path fill="none" stroke="#000000" d="M205.09,-816.48C218.5,-840.97 251.81,-895.85 295.29,-925.13 299.18,-927.75 303.4,-930.05 307.77,-932.07"/>
+<polygon fill="#000000" stroke="#000000" points="306.21,-935.21 316.79,-935.71 308.83,-928.72 306.21,-935.21"/>
+</g>
+<!-- proc~eq_reflect -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node23" class="node">
+<title>proc~eq_reflect</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node23"><a xlink:href="../proc/eq_reflect.html" xlink:title="eq_reflect">
+<polygon fill="#d9534f" stroke="#d9534f" points="719.85,-436.27 655.83,-436.27 655.83,-412 719.85,-412 719.85,-436.27"/>
+<text xml:space="preserve" text-anchor="middle" x="687.84" y="-420.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_reflect</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_reflect -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge34" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_reflect</title>
+<path fill="none" stroke="#000000" d="M203.62,-791.6C215.55,-762.82 248.35,-691.13 295.29,-647.13 347.95,-597.78 375.85,-606.43 438.81,-571.13 518.37,-526.53 610.33,-470.95 656.73,-442.61"/>
+<polygon fill="#000000" stroke="#000000" points="658.46,-445.66 665.16,-437.46 654.81,-439.69 658.46,-445.66"/>
+</g>
+<!-- proc~eq_rhs_column -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node24" class="node">
+<title>proc~eq_rhs_column</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node24"><a xlink:href="../proc/eq_rhs_column.html" xlink:title="eq_rhs_column">
+<polygon fill="#d9534f" stroke="#d9534f" points="412.93,-680.27 321.16,-680.27 321.16,-656 412.93,-656 412.93,-680.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-664.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_rhs_column</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_column -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge35" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_column</title>
+<path fill="none" stroke="#000000" d="M206.44,-791.77C221.16,-769.31 255.25,-721.59 295.29,-694.13 300.21,-690.76 305.63,-687.76 311.21,-685.11"/>
+<polygon fill="#000000" stroke="#000000" points="312.18,-688.51 319.96,-681.32 309.39,-682.08 312.18,-688.51"/>
+</g>
+<!-- proc~eq_rhs_f -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node25" class="node">
+<title>proc~eq_rhs_f</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node25"><a xlink:href="../proc/eq_rhs_f.html" xlink:title="eq_rhs_f">
+<polygon fill="#d9534f" stroke="#d9534f" points="394.93,-836.27 339.16,-836.27 339.16,-812 394.93,-812 394.93,-836.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-820.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_rhs_f</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_f -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge36" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_rhs_f</title>
+<path fill="none" stroke="#000000" d="M242.2,-809.34C268.74,-812.51 302.35,-816.52 327.86,-819.57"/>
+<polygon fill="#000000" stroke="#000000" points="327.11,-823.01 337.45,-820.72 327.94,-816.06 327.11,-823.01"/>
+</g>
+<!-- proc~eq_value -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node31" class="node">
+<title>proc~eq_value</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node31"><a xlink:href="../proc/eq_value.html" xlink:title="eq_value">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="396.81,-916.27 337.29,-916.27 337.29,-892 396.81,-892 396.81,-916.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.05" y="-900.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_value</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_reduce_rhs&#45;&gt;proc~eq_value -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge37" class="edge">
+<title>proc~eq_reduce_rhs&#45;&gt;proc~eq_value</title>
+<path fill="none" stroke="#000000" d="M212.13,-816.59C230.01,-832.6 263.07,-860.42 295.29,-878.13 304.99,-883.47 316.01,-888.12 326.42,-891.95"/>
+<polygon fill="#000000" stroke="#000000" points="324.93,-895.14 335.53,-895.15 327.25,-888.54 324.93,-895.14"/>
+</g>
+<!-- proc~eq_same_candidates&#45;&gt;proc~eq_is_candidate -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge38" class="edge">
+<title>proc~eq_same_candidates&#45;&gt;proc~eq_is_candidate</title>
+<path fill="none" stroke="#000000" d="M259.56,-946.13C274.91,-946.13 291.36,-946.13 306.63,-946.13"/>
+<polygon fill="#000000" stroke="#000000" points="306.53,-949.64 316.53,-946.14 306.53,-942.64 306.53,-949.64"/>
+</g>
+<!-- proc~eq_free_reduced_ldp -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node34" class="node">
+<title>proc~eq_free_reduced_ldp</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node34"><a xlink:href="../proc/eq_free_reduced_ldp.html" xlink:title="eq_free_reduced_ldp">
+<polygon fill="#d9534f" stroke="#d9534f" points="596.58,-272.27 474.81,-272.27 474.81,-248 596.58,-248 596.58,-272.27"/>
+<text xml:space="preserve" text-anchor="middle" x="535.69" y="-256.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_free_reduced_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_allocate_reduced_ldp&#45;&gt;proc~eq_free_reduced_ldp -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge39" class="edge">
+<title>proc~eq_allocate_reduced_ldp&#45;&gt;proc~eq_free_reduced_ldp</title>
+<path fill="none" stroke="#000000" d="M439.21,-260.13C447.11,-260.13 455.17,-260.13 463.08,-260.13"/>
+<polygon fill="#000000" stroke="#000000" points="463.02,-263.64 473.02,-260.14 463.02,-256.64 463.02,-263.64"/>
+</g>
+<!-- proc~eq_free_reduction -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node35" class="node">
+<title>proc~eq_free_reduction</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node35"><a xlink:href="../proc/eq_free_reduction.html" xlink:title="eq_free_reduction">
+<polygon fill="#d9534f" stroke="#d9534f" points="589.08,-199.27 482.31,-199.27 482.31,-175 589.08,-175 589.08,-199.27"/>
+<text xml:space="preserve" text-anchor="middle" x="535.69" y="-183.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eq_free_reduction</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_allocate_reduction&#45;&gt;proc~eq_free_reduction -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge40" class="edge">
+<title>proc~eq_allocate_reduction&#45;&gt;proc~eq_free_reduction</title>
+<path fill="none" stroke="#000000" d="M431.53,-206.33C444.4,-203.93 457.95,-201.41 470.84,-199.01"/>
+<polygon fill="#000000" stroke="#000000" points="471.29,-202.49 480.48,-197.22 470.01,-195.61 471.29,-202.49"/>
+</g>
+<!-- proc~eq_apply_qt_many&#45;&gt;proc~eq_reflect -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge41" class="edge">
+<title>proc~eq_apply_qt_many&#45;&gt;proc~eq_reflect</title>
+<path fill="none" stroke="#000000" d="M583.79,-396.68C603.25,-401.87 625.64,-407.83 644.57,-412.87"/>
+<polygon fill="#000000" stroke="#000000" points="643.53,-416.22 654.1,-415.41 645.33,-409.46 643.53,-416.22"/>
+</g>
+<!-- proc~eq_build_qr&#45;&gt;proc~eq_apply_qt_many -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge42" class="edge">
+<title>proc~eq_build_qr&#45;&gt;proc~eq_apply_qt_many</title>
+<path fill="none" stroke="#000000" d="M404.03,-310.72C415.4,-313.98 427.85,-318.14 438.81,-323.13 463.92,-334.58 490.21,-351.72 508.9,-364.93"/>
+<polygon fill="#000000" stroke="#000000" points="506.8,-367.73 516.96,-370.72 510.89,-362.04 506.8,-367.73"/>
+</g>
+<!-- proc~eq_build_qr&#45;&gt;proc~eq_reflect -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge43" class="edge">
+<title>proc~eq_build_qr&#45;&gt;proc~eq_reflect</title>
+<path fill="none" stroke="#000000" d="M403.76,-307.85C449.82,-316.07 531.75,-333.59 596.58,-363.13 620.69,-374.12 645.43,-391.34 662.9,-404.69"/>
+<polygon fill="#000000" stroke="#000000" points="660.58,-407.32 670.62,-410.71 664.89,-401.8 660.58,-407.32"/>
+</g>
+<!-- proc~eq_hess_times&#45;&gt;proc~eq_dot -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge44" class="edge">
+<title>proc~eq_hess_times&#45;&gt;proc~eq_dot</title>
+<path fill="none" stroke="#000000" d="M580.53,-708.13C602.34,-708.13 628.42,-708.13 649.3,-708.13"/>
+<polygon fill="#000000" stroke="#000000" points="649.1,-711.64 659.1,-708.14 649.1,-704.64 649.1,-711.64"/>
+</g>
+<!-- proc~eq_is_candidate&#45;&gt;proc~has~2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge45" class="edge">
+<title>proc~eq_is_candidate&#45;&gt;proc~has~2</title>
+<path fill="none" stroke="#000000" d="M415.8,-940.12C441.76,-936.85 473.38,-932.86 497.48,-929.82"/>
+<polygon fill="#000000" stroke="#000000" points="497.67,-933.33 507.15,-928.61 496.79,-926.38 497.67,-933.33"/>
+</g>
+<!-- proc~eq_rhs_column&#45;&gt;proc~eq_dot -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge46" class="edge">
+<title>proc~eq_rhs_column&#45;&gt;proc~eq_dot</title>
+<path fill="none" stroke="#000000" d="M413.38,-669.96C459.65,-672.27 533.46,-677.22 596.58,-687.13 614.1,-689.89 633.27,-694.16 649.42,-698.14"/>
+<polygon fill="#000000" stroke="#000000" points="648.56,-701.53 659.11,-700.59 650.27,-694.75 648.56,-701.53"/>
+</g>
+<!-- proc~eq_rhs_column&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge47" class="edge">
+<title>proc~eq_rhs_column&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M413.15,-678.96C433.75,-683.9 458.33,-689.81 479.98,-695"/>
+<polygon fill="#000000" stroke="#000000" points="478.99,-698.36 489.53,-697.29 480.62,-691.56 478.99,-698.36"/>
+</g>
+<!-- proc~eq_rhs_column&#45;&gt;proc~eq_reflect -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge48" class="edge">
+<title>proc~eq_rhs_column&#45;&gt;proc~eq_reflect</title>
+<path fill="none" stroke="#000000" d="M413.16,-656.78C462.64,-642.51 542.23,-614.04 596.58,-567.13 635.97,-533.14 664.08,-477.68 677.65,-446.76"/>
+<polygon fill="#000000" stroke="#000000" points="680.7,-448.53 681.39,-437.96 674.26,-445.79 680.7,-448.53"/>
+</g>
+<!-- proc~eq_rhs_f&#45;&gt;proc~eq_dot -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge49" class="edge">
+<title>proc~eq_rhs_f&#45;&gt;proc~eq_dot</title>
+<path fill="none" stroke="#000000" d="M395.37,-830.37C448.27,-841.84 562.47,-863.51 596.58,-845.13 641.47,-820.95 667.71,-763.6 679.44,-731.29"/>
+<polygon fill="#000000" stroke="#000000" points="682.67,-732.65 682.62,-722.06 676.05,-730.38 682.67,-732.65"/>
+</g>
+<!-- proc~eq_rhs_f&#45;&gt;proc~eq_hess_times -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge50" class="edge">
+<title>proc~eq_rhs_f&#45;&gt;proc~eq_hess_times</title>
+<path fill="none" stroke="#000000" d="M386.2,-811.5C415.38,-791.19 472.89,-751.15 507.15,-727.31"/>
+<polygon fill="#000000" stroke="#000000" points="509.12,-730.2 515.32,-721.62 505.12,-724.46 509.12,-730.2"/>
+</g>
+<!-- proc~eq_rhs_f&#45;&gt;proc~resize1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge51" class="edge">
+<title>proc~eq_rhs_f&#45;&gt;proc~resize1</title>
+<path fill="none" stroke="#000000" d="M395.2,-824.13C422.92,-824.13 466.17,-824.13 497.17,-824.13"/>
+<polygon fill="#000000" stroke="#000000" points="496.87,-827.64 506.87,-824.14 496.87,-820.64 496.87,-827.64"/>
+</g>
+<!-- proc~eq_split_flat&#45;&gt;proc~eq_apply_qt_many -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge52" class="edge">
+<title>proc~eq_split_flat&#45;&gt;proc~eq_apply_qt_many</title>
+<path fill="none" stroke="#000000" d="M404.62,-415.36C424.05,-410.69 448.48,-404.83 470.92,-399.44"/>
+<polygon fill="#000000" stroke="#000000" points="471.7,-402.85 480.61,-397.12 470.07,-396.05 471.7,-402.85"/>
+</g>
+<!-- proc~eq_split_flat&#45;&gt;proc~eq_reflect -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge53" class="edge">
+<title>proc~eq_split_flat&#45;&gt;proc~eq_reflect</title>
+<path fill="none" stroke="#000000" d="M404.62,-424.13C463.93,-424.13 580.79,-424.13 643.94,-424.13"/>
+<polygon fill="#000000" stroke="#000000" points="643.93,-427.64 653.93,-424.14 643.93,-420.64 643.93,-427.64"/>
+</g>
+<!-- proc~swap_i1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node36" class="node">
+<title>proc~swap_i1</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node36"><a xlink:href="../proc/swap_i1.html" xlink:title="swap_i1">
+<polygon fill="#d9534f" stroke="#d9534f" points="960.25,-1153.27 906.25,-1153.27 906.25,-1129 960.25,-1129 960.25,-1153.27"/>
+<text xml:space="preserve" text-anchor="middle" x="933.25" y="-1137.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">swap_i1</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_swap_ldp&#45;&gt;proc~swap_i1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge54" class="edge">
+<title>proc~eq_swap_ldp&#45;&gt;proc~swap_i1</title>
+<path fill="none" stroke="#000000" d="M713.01,-1058.6C730.99,-1067.64 756.27,-1079.86 779.1,-1089.13 818.02,-1104.95 863.77,-1120.04 895.06,-1129.85"/>
+<polygon fill="#000000" stroke="#000000" points="893.86,-1133.15 904.45,-1132.77 895.94,-1126.46 893.86,-1133.15"/>
+</g>
+<!-- proc~swap_int -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node37" class="node">
+<title>proc~swap_int</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node37"><a xlink:href="../proc/swap_int.html" xlink:title="swap_int">
+<polygon fill="#d9534f" stroke="#d9534f" points="961.89,-1110.27 904.62,-1110.27 904.62,-1086 961.89,-1086 961.89,-1110.27"/>
+<text xml:space="preserve" text-anchor="middle" x="933.25" y="-1094.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">swap_int</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_swap_ldp&#45;&gt;proc~swap_int -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge55" class="edge">
+<title>proc~eq_swap_ldp&#45;&gt;proc~swap_int</title>
+<path fill="none" stroke="#000000" d="M727.68,-1054.43C772.99,-1064.11 847.5,-1080.03 892.99,-1089.75"/>
+<polygon fill="#000000" stroke="#000000" points="892.19,-1093.15 902.7,-1091.82 893.65,-1086.31 892.19,-1093.15"/>
+</g>
+<!-- proc~swap_log -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node38" class="node">
+<title>proc~swap_log</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node38"><a xlink:href="../proc/swap_log.html" xlink:title="swap_log">
+<polygon fill="#d9534f" stroke="#d9534f" points="963.39,-1066.27 903.12,-1066.27 903.12,-1042 963.39,-1042 963.39,-1066.27"/>
+<text xml:space="preserve" text-anchor="middle" x="933.25" y="-1050.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">swap_log</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_swap_ldp&#45;&gt;proc~swap_log -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge56" class="edge">
+<title>proc~eq_swap_ldp&#45;&gt;proc~swap_log</title>
+<path fill="none" stroke="#000000" d="M727.68,-1047.41C772.5,-1048.88 845.88,-1051.3 891.5,-1052.8"/>
+<polygon fill="#000000" stroke="#000000" points="891.12,-1056.28 901.23,-1053.12 891.35,-1049.29 891.12,-1056.28"/>
+</g>
+<!-- proc~swap_problem -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node39" class="node">
+<title>proc~swap_problem</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node39"><a xlink:href="../proc/swap_problem.html" xlink:title="swap_problem">
+<polygon fill="#d9534f" stroke="#d9534f" points="867.12,-1038.27 779.1,-1038.27 779.1,-1014 867.12,-1014 867.12,-1038.27"/>
+<text xml:space="preserve" text-anchor="middle" x="823.11" y="-1022.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">swap_problem</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_swap_ldp&#45;&gt;proc~swap_problem -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge57" class="edge">
+<title>proc~eq_swap_ldp&#45;&gt;proc~swap_problem</title>
+<path fill="none" stroke="#000000" d="M727.75,-1040.3C740.23,-1038.42 754.3,-1036.31 767.68,-1034.3"/>
+<polygon fill="#000000" stroke="#000000" points="767.85,-1037.82 777.22,-1032.87 766.81,-1030.89 767.85,-1037.82"/>
+</g>
+<!-- proc~swap_r1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node40" class="node">
+<title>proc~swap_r1</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node40"><a xlink:href="../proc/swap_r1.html" xlink:title="swap_r1">
+<polygon fill="#d9534f" stroke="#d9534f" points="960.76,-1021.27 905.74,-1021.27 905.74,-997 960.76,-997 960.76,-1021.27"/>
+<text xml:space="preserve" text-anchor="middle" x="933.25" y="-1005.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">swap_r1</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_swap_ldp&#45;&gt;proc~swap_r1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge58" class="edge">
+<title>proc~eq_swap_ldp&#45;&gt;proc~swap_r1</title>
+<path fill="none" stroke="#000000" d="M709.47,-1033.68C727.22,-1023.73 753.87,-1010.6 779.1,-1005.13 817.6,-996.8 862.8,-999.45 894.07,-1003.16"/>
+<polygon fill="#000000" stroke="#000000" points="893.47,-1006.61 903.83,-1004.42 894.36,-999.67 893.47,-1006.61"/>
+</g>
+<!-- proc~swap_r2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_node41" class="node">
+<title>proc~swap_r2</title>
+<g id="a_proc~~daqp_eq_update~~CallsGraph_node41"><a xlink:href="../proc/swap_r2.html" xlink:title="swap_r2">
+<polygon fill="#d9534f" stroke="#d9534f" points="960.76,-973.27 905.74,-973.27 905.74,-949 960.76,-949 960.76,-973.27"/>
+<text xml:space="preserve" text-anchor="middle" x="933.25" y="-957.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">swap_r2</text>
+</a>
+</g>
+</g>
+<!-- proc~eq_swap_ldp&#45;&gt;proc~swap_r2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge59" class="edge">
+<title>proc~eq_swap_ldp&#45;&gt;proc~swap_r2</title>
+<path fill="none" stroke="#000000" d="M707.06,-1033.69C724.75,-1022.15 752.72,-1005.26 779.1,-995.13 816.87,-980.64 862.37,-971.52 893.91,-966.42"/>
+<polygon fill="#000000" stroke="#000000" points="894.43,-969.88 903.77,-964.89 893.36,-962.96 894.43,-969.88"/>
+</g>
+<!-- proc~eq_value&#45;&gt;proc~has~2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge60" class="edge">
+<title>proc~eq_value&#45;&gt;proc~has~2</title>
+<path fill="none" stroke="#000000" d="M397.08,-907.79C424.74,-911.28 466.54,-916.55 496.81,-920.36"/>
+<polygon fill="#000000" stroke="#000000" points="496.34,-923.83 506.7,-921.61 497.21,-916.88 496.34,-923.83"/>
+</g>
+<!-- proc~free_daqp_eq&#45;&gt;proc~daqp_eq_restore -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge61" class="edge">
+<title>proc~free_daqp_eq&#45;&gt;proc~daqp_eq_restore</title>
+<path fill="none" stroke="#000000" d="M409.17,-1138.03C419.07,-1135.03 429.48,-1131.39 438.81,-1127.13 463.92,-1115.69 490.21,-1098.55 508.9,-1085.34"/>
+<polygon fill="#000000" stroke="#000000" points="510.89,-1088.23 516.96,-1079.55 506.8,-1082.54 510.89,-1088.23"/>
+</g>
+<!-- proc~eq_free_reduction&#45;&gt;proc~eq_free_rhs_cache -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge62" class="edge">
+<title>proc~eq_free_reduction&#45;&gt;proc~eq_free_rhs_cache</title>
+<path fill="none" stroke="#000000" d="M567.08,-174.59C589.7,-165.25 620.82,-152.4 645.67,-142.13"/>
+<polygon fill="#000000" stroke="#000000" points="646.94,-145.4 654.84,-138.35 644.27,-138.93 646.94,-145.4"/>
+</g>
+<!-- proc~swap_problem&#45;&gt;proc~swap_i1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge63" class="edge">
+<title>proc~swap_problem&#45;&gt;proc~swap_i1</title>
+<path fill="none" stroke="#000000" d="M833.3,-1038.63C847.29,-1057.22 875.24,-1092.81 903.12,-1119.13 904,-1119.96 904.9,-1120.79 905.83,-1121.61"/>
+<polygon fill="#000000" stroke="#000000" points="903.37,-1124.12 913.32,-1127.75 907.81,-1118.7 903.37,-1124.12"/>
+</g>
+<!-- proc~swap_problem&#45;&gt;proc~swap_int -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge64" class="edge">
+<title>proc~swap_problem&#45;&gt;proc~swap_int</title>
+<path fill="none" stroke="#000000" d="M842.95,-1038.68C859.85,-1049.93 884.89,-1066.6 904.16,-1079.43"/>
+<polygon fill="#000000" stroke="#000000" points="902.11,-1082.27 912.37,-1084.9 905.99,-1076.44 902.11,-1082.27"/>
+</g>
+<!-- proc~swap_problem&#45;&gt;proc~swap_log -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge65" class="edge">
+<title>proc~swap_problem&#45;&gt;proc~swap_log</title>
+<path fill="none" stroke="#000000" d="M867.47,-1037.36C875.54,-1039.45 883.94,-1041.63 891.91,-1043.69"/>
+<polygon fill="#000000" stroke="#000000" points="890.8,-1047.02 901.36,-1046.14 892.55,-1040.24 890.8,-1047.02"/>
+</g>
+<!-- proc~swap_problem&#45;&gt;proc~swap_r1 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge66" class="edge">
+<title>proc~swap_problem&#45;&gt;proc~swap_r1</title>
+<path fill="none" stroke="#000000" d="M867.47,-1019.32C876.28,-1017.93 885.48,-1016.49 894.09,-1015.13"/>
+<polygon fill="#000000" stroke="#000000" points="894.55,-1018.61 903.88,-1013.6 893.46,-1011.69 894.55,-1018.61"/>
+</g>
+<!-- proc~swap_problem&#45;&gt;proc~swap_r2 -->
+<g id="proc~~daqp_eq_update~~CallsGraph_edge67" class="edge">
+<title>proc~swap_problem&#45;&gt;proc~swap_r2</title>
+<path fill="none" stroke="#000000" d="M844.96,-1013.6C861.04,-1003.94 883.53,-990.42 901.65,-979.53"/>
+<polygon fill="#000000" stroke="#000000" points="903.4,-982.56 910.17,-974.41 899.8,-976.56 903.4,-982.56"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocdaqp_eq_updateCallsGraph = svgPanZoom('#procdaqp_eq_updateCallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Called by</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: proc~~daqp_eq_update~~CalledByGraph Pages: 1 -->
+<svg id="procdaqp_eq_updateCalledByGraph" width="635pt" height="137pt"
+ viewBox="0.00 0.00 635.00 137.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~daqp_eq_update~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 133.27)">
+<title>proc~~daqp_eq_update~~CalledByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-133.27 630.85,-133.27 630.85,4 -4,4"/>
+<!-- proc~daqp_eq_update -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node1" class="node">
+<title>proc~daqp_eq_update</title>
+<polygon fill="none" stroke="black" points="626.85,-66.27 526.83,-66.27 526.83,-42 626.85,-42 626.85,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="576.84" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_eq_update</text>
+</g>
+<!-- proc~daqp_update_ldp -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node2" class="node">
+<title>proc~daqp_update_ldp</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node2"><a xlink:href="../proc/daqp_update_ldp.html" xlink:title="daqp_update_ldp">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="490.83,-66.27 387.81,-66.27 387.81,-42 490.83,-42 490.83,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="439.32" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_update_ldp</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_update_ldp&#45;&gt;proc~daqp_eq_update -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge1" class="edge">
+<title>proc~daqp_update_ldp&#45;&gt;proc~daqp_eq_update</title>
+<path fill="none" stroke="#000000" d="M491.17,-54.13C499.03,-54.13 507.22,-54.13 515.26,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="514.99,-57.64 524.99,-54.14 514.99,-50.64 514.99,-57.64"/>
+</g>
+<!-- proc~daqp_setup -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node3" class="node">
+<title>proc~daqp_setup</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node3"><a xlink:href="../proc/daqp_setup.html" xlink:title="daqp_setup">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="331.18,-66.27 258.16,-66.27 258.16,-42 331.18,-42 331.18,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="294.67" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_setup</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_setup&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge2" class="edge">
+<title>proc~daqp_setup&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M331.67,-54.13C345.15,-54.13 360.89,-54.13 376.07,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="376.01,-57.64 386.01,-54.14 376.01,-50.64 376.01,-57.64"/>
+</g>
+<!-- proc~daqp_solve -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node4" class="node">
+<title>proc~daqp_solve</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node4"><a xlink:href="../proc/daqp_solve.html" xlink:title="daqp_solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="330.43,-108.27 258.91,-108.27 258.91,-84 330.43,-84 330.43,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="294.67" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_solve</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_solve&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge3" class="edge">
+<title>proc~daqp_solve&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M330.57,-85.86C346.83,-81.07 366.53,-75.27 384.63,-69.94"/>
+<polygon fill="#000000" stroke="#000000" points="385.58,-73.31 394.19,-67.13 383.6,-66.6 385.58,-73.31"/>
+</g>
+<!-- proc~update -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node5" class="node">
+<title>proc~update</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node5"><a xlink:href="../proc/update.html" xlink:title="daqp_type%update">
+<polygon fill="#d9534f" stroke="#d9534f" points="351.81,-24.27 237.54,-24.27 237.54,0 351.81,0 351.81,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="294.67" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%update</text>
+</a>
+</g>
+</g>
+<!-- proc~update&#45;&gt;proc~daqp_update_ldp -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge4" class="edge">
+<title>proc~update&#45;&gt;proc~daqp_update_ldp</title>
+<path fill="none" stroke="#000000" d="M338.47,-24.74C353,-29.01 369.42,-33.85 384.68,-38.34"/>
+<polygon fill="#000000" stroke="#000000" points="383.52,-41.65 394.1,-41.12 385.5,-34.93 383.52,-41.65"/>
+</g>
+<!-- proc~daqp_quadprog -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node6" class="node">
+<title>proc~daqp_quadprog</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node6"><a xlink:href="../proc/daqp_quadprog.html" xlink:title="daqp_quadprog">
+<polygon fill="#d9534f" stroke="#d9534f" points="195.91,-87.27 101.14,-87.27 101.14,-63 195.91,-63 195.91,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_quadprog</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_setup -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge5" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M196.33,-68.32C212.47,-65.97 230.55,-63.33 246.7,-60.98"/>
+<polygon fill="#000000" stroke="#000000" points="247.18,-64.45 256.57,-59.54 246.17,-57.52 247.18,-64.45"/>
+</g>
+<!-- proc~daqp_quadprog&#45;&gt;proc~daqp_solve -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge7" class="edge">
+<title>proc~daqp_quadprog&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M196.33,-81.95C212.76,-84.35 231.2,-87.03 247.57,-89.42"/>
+<polygon fill="#000000" stroke="#000000" points="246.63,-92.82 257.03,-90.8 247.64,-85.89 246.63,-92.82"/>
+</g>
+<!-- proc~setup -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node7" class="node">
+<title>proc~setup</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node7"><a xlink:href="../proc/setup.html" xlink:title="daqp_type%setup">
+<polygon fill="#d9534f" stroke="#d9534f" points="201.54,-45.27 95.52,-45.27 95.52,-21 201.54,-21 201.54,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%setup</text>
+</a>
+</g>
+</g>
+<!-- proc~setup&#45;&gt;proc~daqp_setup -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge6" class="edge">
+<title>proc~setup&#45;&gt;proc~daqp_setup</title>
+<path fill="none" stroke="#000000" d="M201.98,-40.78C216.59,-42.9 232.36,-45.2 246.64,-47.28"/>
+<polygon fill="#000000" stroke="#000000" points="245.82,-50.7 256.22,-48.68 246.83,-43.77 245.82,-50.7"/>
+</g>
+<!-- proc~solve -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node8" class="node">
+<title>proc~solve</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node8"><a xlink:href="../proc/solve.html" xlink:title="daqp_type%solve">
+<polygon fill="#d9534f" stroke="#d9534f" points="200.79,-129.27 96.27,-129.27 96.27,-105 200.79,-105 200.79,-129.27"/>
+<text xml:space="preserve" text-anchor="middle" x="148.53" y="-113.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type%solve</text>
+</a>
+</g>
+</g>
+<!-- proc~solve&#45;&gt;proc~daqp_solve -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge8" class="edge">
+<title>proc~solve&#45;&gt;proc~daqp_solve</title>
+<path fill="none" stroke="#000000" d="M201.16,-109.61C216.21,-107.42 232.54,-105.04 247.25,-102.9"/>
+<polygon fill="#000000" stroke="#000000" points="247.74,-106.36 257.13,-101.46 246.73,-99.44 247.74,-106.36"/>
+</g>
+<!-- proc~daqp_avi -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_node9" class="node">
+<title>proc~daqp_avi</title>
+<g id="a_proc~~daqp_eq_update~~CalledByGraph_node9"><a xlink:href="../proc/daqp_avi.html" xlink:title="daqp_avi">
+<polygon fill="#d9534f" stroke="#d9534f" points="59.52,-87.27 0,-87.27 0,-63 59.52,-63 59.52,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="29.76" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_avi</text>
+</a>
+</g>
+</g>
+<!-- proc~daqp_avi&#45;&gt;proc~daqp_quadprog -->
+<g id="proc~~daqp_eq_update~~CalledByGraph_edge9" class="edge">
+<title>proc~daqp_avi&#45;&gt;proc~daqp_quadprog</title>
+<path fill="none" stroke="#000000" d="M59.92,-75.14C69.05,-75.14 79.46,-75.14 89.85,-75.14"/>
+<polygon fill="#000000" stroke="#000000" points="89.53,-78.64 99.53,-75.14 89.53,-71.64 89.53,-78.64"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CalledByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CalledByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">daqp_eq_update</span><span class="p">(</span><span class="n">work</span><span class="p">,</span><span class="w"> </span><span class="n">mask</span><span class="p">,</span><span class="w"> </span><span class="n">update_ldp</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_workspace</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">work</span><span class="w"> </span><span class="c">!! workspace</span>
+<span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mask</span><span class="w">             </span><span class="c">!! update mask</span>
+<span class="w">    </span><span class="k">procedure</span><span class="p">(</span><span class="n">update_ldp_proc</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">update_ldp</span><span class="w">    </span><span class="c">!! forms the LDP of the installed problem</span>
+
+<span class="w">    </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mask_r</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">nb</span><span class="p">,</span><span class="w"> </span><span class="n">keep_mask</span><span class="w"></span>
+<span class="w">    </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rebuild</span><span class="p">,</span><span class="w"> </span><span class="n">installed</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">keep_mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">iand</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="w"> </span><span class="n">daqp_update_unconstrained</span><span class="o">+</span><span class="n">daqp_update_eliminate</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">call </span><span class="n">daqp_eq_restore</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="nb">allocated</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">))</span><span class="w"> </span><span class="k">allocate</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">rebuild</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">active</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">rebuild</span><span class="p">)</span><span class="w"> </span><span class="n">rebuild</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">iand</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="w"> </span><span class="n">daqp_update_rinv</span><span class="o">+</span><span class="n">daqp_update_m</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="p">&amp;</span><span class="w"></span>
+<span class="w">        </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">n</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">n</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">m</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">m</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">ms</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">ms</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">rebuild</span><span class="p">)</span><span class="w"> </span><span class="n">rebuild</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">eq_same_candidates</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rebuild</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eq_build_reduction</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">flag</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            call </span><span class="n">daqp_eq_deactivate</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">flag</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eq_not_reduced</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span>
+<span class="k">        end if</span>
+<span class="k">        </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"></span>
+<span class="w">        </span><span class="c">! (Rinv also for an LP, for which it marks the proximal directions)</span>
+<span class="w">        </span><span class="n">mask_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_update_rinv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">daqp_update_m</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">daqp_update_d</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">daqp_update_sense</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">other</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">has_f</span><span class="p">)</span><span class="w"> </span><span class="n">mask_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">ior</span><span class="p">(</span><span class="n">mask_r</span><span class="p">,</span><span class="w"> </span><span class="n">daqp_update_v</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">else</span>
+<span class="k">        </span><span class="n">mask_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_update_d</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">other</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">has_f</span><span class="p">)</span><span class="w"> </span><span class="n">mask_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">ior</span><span class="p">(</span><span class="n">mask_r</span><span class="p">,</span><span class="w"> </span><span class="n">daqp_update_v</span><span class="p">)</span><span class="w"> </span><span class="c">! depends on xp</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">daqp_update_sense</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            do </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">mr</span><span class="w"></span>
+<span class="w">                </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">other</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">sense</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">sense</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">keep</span><span class="p">(</span><span class="n">c</span><span class="p">))</span><span class="w"></span>
+<span class="w">            </span><span class="k">end do</span>
+<span class="k">            </span><span class="n">mask_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">ior</span><span class="p">(</span><span class="n">mask_r</span><span class="p">,</span><span class="w"> </span><span class="n">daqp_update_sense</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">end if</span>
+<span class="k">    end if</span>
+<span class="k">    </span><span class="n">mask_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">ior</span><span class="p">(</span><span class="n">mask_r</span><span class="p">,</span><span class="w"> </span><span class="n">keep_mask</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">daqp_update_v</span><span class="p">))</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">f_valid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w"> </span><span class="c">! f has changed</span>
+<span class="w">    </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eq_reduce_rhs</span><span class="p">(</span><span class="n">work</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">rebuild</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">flag</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"></span>
+<span class="w">        </span><span class="c">! formed by the next update; reported by a solve before that</span>
+<span class="w">        </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">other</span><span class="p">%</span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">ior</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">other</span><span class="p">%</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="nb">iand</span><span class="p">(</span><span class="n">mask_r</span><span class="p">,</span><span class="w"> </span><span class="n">state_pending</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flag</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span>
+<span class="k">    end if</span>
+<span class="k">    </span><span class="n">work</span><span class="p">%</span><span class="n">eq</span><span class="p">%</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">installed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">daqp_eq_install</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">update_ldp</span><span class="p">(</span><span class="n">mask_r</span><span class="p">,</span><span class="w"> </span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="c">! a singular reduced Hessian needs v for the proximal linear term</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">flag</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">n_prox</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">has_v</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">qp</span><span class="p">%</span><span class="n">has_H</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">work</span><span class="p">%</span><span class="n">has_v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">allocated</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">v</span><span class="p">))</span><span class="w"> </span><span class="k">deallocate</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">v</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">allocate</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">v</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">n</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="n">work</span><span class="p">%</span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w"></span>
+<span class="w">    </span><span class="k">end if</span>
+<span class="k">    if</span><span class="w"> </span><span class="p">(</span><span class="nb">allocated</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">bnb</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">        </span><span class="n">nb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">        </span><span class="k">do </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">work</span><span class="p">%</span><span class="n">m</span><span class="w"></span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has</span><span class="p">(</span><span class="n">work</span><span class="p">%</span><span class="n">sense</span><span class="p">(</span><span class="n">c</span><span class="p">),</span><span class="n">daqp_binary</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                </span><span class="n">nb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nb</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">                </span><span class="n">work</span><span class="p">%</span><span class="n">bnb</span><span class="p">%</span><span class="n">bin_ids</span><span class="p">(</span><span class="n">nb</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="w"></span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="k">        end do</span>
+<span class="k">        </span><span class="n">work</span><span class="p">%</span><span class="n">bnb</span><span class="p">%</span><span class="n">nb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nb</span><span class="w"></span>
+<span class="w">    </span><span class="k">end if</span>
+<span class="k">    call </span><span class="n">daqp_eq_restore</span><span class="p">(</span><span class="n">work</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">end function </span><span class="n">daqp_eq_update</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

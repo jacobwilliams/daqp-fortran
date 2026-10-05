@@ -1,0 +1,1447 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>daqp_workspace &ndash; daqp-fortran </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>daqp_workspace
+      <small>Derived Type</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a></li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="<p>22.2% of total for derived types.</p>Including implementation: 47 statements,  7.1% of total for derived types.">47 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/daqp_types.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/daqp_types.f90.html'>daqp_types.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/daqp_types.html'>daqp_types</a></li>
+            <li class="breadcrumb-item active" aria-current="page">daqp_workspace</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-settings~5">settings</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-qp~8">qp</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-has_qp">has_qp</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-n~68">n</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-m~19">m</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-ms~20">ms</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-rmode~2">rmode</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-r~4">R</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-mr~2">Mr</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-dupper~2">dupper</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-dlower~2">dlower</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-scaling~2">scaling</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-mu~4">Mu</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-has_v~2">has_v</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-v~5">v</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-sense~8">sense</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-x~20">x</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-xold">xold</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-lam~18">lam</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-lam_star">lam_star</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-fval~8">fval</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-l~3">L</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-d">D</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-xldl">xldl</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-zldl">zldl</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-reuse_ind">reuse_ind</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-ws">WS</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-n_active~2">n_active</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-iterations~2">iterations</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-sing_ind">sing_ind</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-prox_mask">prox_mask</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-n_prox~2">n_prox</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-soft_slack~5">soft_slack</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-bnb">bnb</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-nh~2">nh</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-has_bp">has_bp</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-break_points~5">break_points</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-avi~3">avi</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-eq~6">eq</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-timer_on">timer_on</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-timer_start">timer_start</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-has_weights~2">has_weights</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-rho_ls~2">rho_ls</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-rho_us~2">rho_us</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-w_ls~2">w_ls</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-w_us~2">w_us</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-state~2">state</a>
+            <a class="list-group-item" href="../type/daqp_workspace.html#variable-is_setup">is_setup</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../type/daqp_workspace.html#src">daqp_workspace</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+      <h2 id="type-def-statement">
+        type, public :: daqp_workspace</h2>
+    <p>The workspace of the solver (upstream's <code>DAQPWorkspace</code>).
+All arrays are allocated in <code>daqp_setup</code>, so a solve allocates nothing
+(except the lazily formed caches of the equality elimination).</p>
+<br>      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Inherits</h3>
+        </div>
+        <div class="card-body">
+          <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: type~~daqp_workspace~~InheritsGraph Pages: 1 -->
+<svg id="typedaqp_workspaceInheritsGraph" width="564pt" height="196pt"
+ viewBox="0.00 0.00 564.00 196.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~daqp_workspace~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 192.27)">
+<title>type~~daqp_workspace~~InheritsGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-192.27 560.08,-192.27 560.08,4 -4,4"/>
+<!-- type~daqp_workspace -->
+<g id="type~~daqp_workspace~~InheritsGraph_node1" class="node">
+<title>type~daqp_workspace</title>
+<polygon fill="none" stroke="black" points="556.08,-104.27 455.31,-104.27 455.31,-80 556.08,-80 556.08,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="505.69" y="-88.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_workspace</text>
+</g>
+<!-- type~daqp_avi_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_node2" class="node">
+<title>type~daqp_avi_data</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node2"><a xlink:href="../type/daqp_avi_data.html" xlink:title="daqp_avi_data">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="378.06,-188.27 289.29,-188.27 289.29,-164 378.06,-164 378.06,-188.27"/>
+<text xml:space="preserve" text-anchor="middle" x="333.67" y="-172.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_avi_data</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_workspace&#45;&gt;type~daqp_avi_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge4" class="edge">
+<title>type~daqp_workspace&#45;&gt;type~daqp_avi_data</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M485.67,-104.76C472.41,-113.3 454.14,-124.55 437.31,-133.13 418.46,-142.75 396.96,-152 378.52,-159.45"/>
+<polygon fill="#000000" stroke="#000000" points="377.47,-156.1 369.47,-163.06 380.06,-162.61 377.47,-156.1"/>
+<text xml:space="preserve" text-anchor="middle" x="417.81" y="-153.37" font-family="Helvetica,sans-Serif" font-size="9.50">avi</text>
+</g>
+<!-- type~daqp_bnb_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_node3" class="node">
+<title>type~daqp_bnb_data</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node3"><a xlink:href="../type/daqp_bnb_data.html" xlink:title="daqp_bnb_data">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="380.31,-146.27 287.04,-146.27 287.04,-122 380.31,-122 380.31,-146.27"/>
+<text xml:space="preserve" text-anchor="middle" x="333.67" y="-130.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_bnb_data</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_workspace&#45;&gt;type~daqp_bnb_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge3" class="edge">
+<title>type~daqp_workspace&#45;&gt;type~daqp_bnb_data</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M455.06,-104.4C435.21,-109.3 412.23,-114.98 391.7,-120.05"/>
+<polygon fill="#000000" stroke="#000000" points="390.92,-116.63 382.06,-122.43 392.6,-123.43 390.92,-116.63"/>
+<text xml:space="preserve" text-anchor="middle" x="417.81" y="-120.36" font-family="Helvetica,sans-Serif" font-size="9.50">bnb</text>
+</g>
+<!-- type~daqp_eq_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_node4" class="node">
+<title>type~daqp_eq_data</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node4"><a xlink:href="../type/daqp_eq_data.html" xlink:title="daqp_eq_data">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="376.93,-104.27 290.41,-104.27 290.41,-80 376.93,-80 376.93,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="333.67" y="-88.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_data</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_workspace&#45;&gt;type~daqp_eq_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge5" class="edge">
+<title>type~daqp_workspace&#45;&gt;type~daqp_eq_data</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M455.06,-92.13C434.22,-92.13 409.93,-92.13 388.64,-92.13"/>
+<polygon fill="#000000" stroke="#000000" points="388.68,-88.64 378.68,-92.14 388.68,-95.64 388.68,-88.64"/>
+<text xml:space="preserve" text-anchor="middle" x="417.81" y="-94.36" font-family="Helvetica,sans-Serif" font-size="9.50">eq</text>
+</g>
+<!-- type~daqp_problem -->
+<g id="type~~daqp_workspace~~InheritsGraph_node5" class="node">
+<title>type~daqp_problem</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node5"><a xlink:href="../type/daqp_problem.html" xlink:title="daqp_problem">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="88.02,-80.27 0,-80.27 0,-56 88.02,-56 88.02,-80.27"/>
+<text xml:space="preserve" text-anchor="middle" x="44.01" y="-64.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_problem</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_workspace&#45;&gt;type~daqp_problem -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge2" class="edge">
+<title>type~daqp_workspace&#45;&gt;type~daqp_problem</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M455,-81.89C432.33,-77.7 405.07,-73.32 380.31,-71.13 281.71,-62.43 166.16,-63.96 99.68,-65.98"/>
+<polygon fill="#000000" stroke="#000000" points="99.65,-62.48 89.77,-66.29 99.87,-69.47 99.65,-62.48"/>
+<text xml:space="preserve" text-anchor="middle" x="256.29" y="-67.4" font-family="Helvetica,sans-Serif" font-size="9.50">qp</text>
+</g>
+<!-- type~daqp_settings -->
+<g id="type~~daqp_workspace~~InheritsGraph_node6" class="node">
+<title>type~daqp_settings</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node6"><a xlink:href="../type/daqp_settings.html" xlink:title="daqp_settings">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="376.18,-24.27 291.16,-24.27 291.16,0 376.18,0 376.18,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="333.67" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_settings</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_workspace&#45;&gt;type~daqp_settings -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge1" class="edge">
+<title>type~daqp_workspace&#45;&gt;type~daqp_settings</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M495.81,-79.65C484.23,-64.43 462.46,-39.22 437.31,-26.88 422.14,-19.45 404.3,-15.48 387.79,-13.44"/>
+<polygon fill="#000000" stroke="#000000" points="388.42,-9.98 378.12,-12.46 387.72,-16.95 388.42,-9.98"/>
+<text xml:space="preserve" text-anchor="middle" x="417.81" y="-29.11" font-family="Helvetica,sans-Serif" font-size="9.50">settings</text>
+</g>
+<!-- type~daqp_node -->
+<g id="type~~daqp_workspace~~InheritsGraph_node8" class="node">
+<title>type~daqp_node</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node8"><a xlink:href="../type/daqp_node.html" xlink:title="daqp_node">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="216.16,-188.27 145.39,-188.27 145.39,-164 216.16,-164 216.16,-188.27"/>
+<text xml:space="preserve" text-anchor="middle" x="180.78" y="-172.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_node</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_bnb_data&#45;&gt;type~daqp_node -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge6" class="edge">
+<title>type~daqp_bnb_data&#45;&gt;type~daqp_node</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M287.4,-146.74C268.48,-152 246.52,-158.12 227.55,-163.4"/>
+<polygon fill="#000000" stroke="#000000" points="226.62,-160.02 217.92,-166.07 228.5,-166.76 226.62,-160.02"/>
+<text xml:space="preserve" text-anchor="middle" x="256.29" y="-161.12" font-family="Helvetica,sans-Serif" font-size="9.50">tree</text>
+</g>
+<!-- type~daqp_ldp_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_node7" class="node">
+<title>type~daqp_ldp_data</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node7"><a xlink:href="../type/daqp_ldp_data.html" xlink:title="daqp_ldp_data">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="225.54,-146.27 136.02,-146.27 136.02,-122 225.54,-122 225.54,-146.27"/>
+<text xml:space="preserve" text-anchor="middle" x="180.78" y="-130.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_ldp_data</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_eq_data&#45;&gt;type~daqp_ldp_data -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge8" class="edge">
+<title>type~daqp_eq_data&#45;&gt;type~daqp_ldp_data</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M290.24,-103.95C273.64,-108.57 254.38,-113.93 236.74,-118.84"/>
+<polygon fill="#000000" stroke="#000000" points="236.15,-115.37 227.46,-121.42 238.03,-122.11 236.15,-115.37"/>
+<text xml:space="preserve" text-anchor="middle" x="256.29" y="-119.12" font-family="Helvetica,sans-Serif" font-size="9.50">other</text>
+</g>
+<!-- type~daqp_vec -->
+<g id="type~~daqp_workspace~~InheritsGraph_node9" class="node">
+<title>type~daqp_vec</title>
+<g id="a_type~~daqp_workspace~~InheritsGraph_node9"><a xlink:href="../type/daqp_vec.html" xlink:title="daqp_vec">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="212.04,-104.27 149.52,-104.27 149.52,-80 212.04,-80 212.04,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="180.78" y="-88.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_vec</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_eq_data&#45;&gt;type~daqp_vec -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge7" class="edge">
+<title>type~daqp_eq_data&#45;&gt;type~daqp_vec</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M290.24,-92.13C269.45,-92.13 244.49,-92.13 223.76,-92.13"/>
+<polygon fill="#000000" stroke="#000000" points="223.93,-88.64 213.93,-92.14 223.93,-95.64 223.93,-88.64"/>
+<text xml:space="preserve" text-anchor="middle" x="256.29" y="-94.36" font-family="Helvetica,sans-Serif" font-size="9.50">cols</text>
+</g>
+<!-- type~daqp_ldp_data&#45;&gt;type~daqp_problem -->
+<g id="type~~daqp_workspace~~InheritsGraph_edge9" class="edge">
+<title>type~daqp_ldp_data&#45;&gt;type~daqp_problem</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M153.38,-121.53C147.65,-118.77 141.63,-115.87 136.02,-113.13 117.52,-104.12 96.96,-93.97 80.07,-85.59"/>
+<polygon fill="#000000" stroke="#000000" points="81.95,-82.62 71.44,-81.3 78.84,-88.89 81.95,-82.62"/>
+<text xml:space="preserve" text-anchor="middle" x="112.02" y="-105.58" font-family="Helvetica,sans-Serif" font-size="9.50">qp</text>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#InheritsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="InheritsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
+<!-- Type -->
+<g id="node1" class="node">
+<title>Type</title>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a derived type to the parent type which it
+extends. Dashed arrows point from a derived type to the other
+types it contains as a components, with a label listing the name(s) of
+said component(s).
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Inherited by</h3>
+        </div>
+        <div class="card-body">
+          <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: type~~daqp_workspace~~InheritedByGraph Pages: 1 -->
+<svg id="typedaqp_workspaceInheritedByGraph" width="234pt" height="32pt"
+ viewBox="0.00 0.00 234.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~daqp_workspace~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>type~~daqp_workspace~~InheritedByGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 230.29,-28.27 230.29,4 -4,4"/>
+<!-- type~daqp_workspace -->
+<g id="type~~daqp_workspace~~InheritedByGraph_node1" class="node">
+<title>type~daqp_workspace</title>
+<polygon fill="none" stroke="black" points="100.77,-24.27 0,-24.27 0,0 100.77,0 100.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="50.38" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">daqp_workspace</text>
+</g>
+<!-- type~daqp_type -->
+<g id="type~~daqp_workspace~~InheritedByGraph_node2" class="node">
+<title>type~daqp_type</title>
+<g id="a_type~~daqp_workspace~~InheritedByGraph_node2"><a xlink:href="../type/daqp_type.html" xlink:title="daqp_type">
+<polygon fill="#5cb85c" stroke="#5cb85c" points="226.29,-24.27 159.27,-24.27 159.27,0 226.29,0 226.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="192.78" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_type</text>
+</a>
+</g>
+</g>
+<!-- type~daqp_type&#45;&gt;type~daqp_workspace -->
+<g id="type~~daqp_workspace~~InheritedByGraph_edge1" class="edge">
+<title>type~daqp_type&#45;&gt;type~daqp_workspace</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M158.86,-12.13C145.04,-12.13 128.49,-12.13 112.58,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="112.66,-8.64 102.66,-12.14 112.66,-15.64 112.66,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="130.02" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">work</text>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#InheritedByGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="InheritedByGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
+<!-- Type -->
+<g id="node1" class="node">
+<title>Type</title>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node2" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a derived type to the parent type which it
+extends. Dashed arrows point from a derived type to the other
+types it contains as a components, with a label listing the name(s) of
+said component(s).
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    <br>
+
+    <section>
+    <h2>Components</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-settings~5"></span>
+              type(<a href='daqp_settings.html'>daqp_settings</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>settings</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>the settings</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-qp~8"></span>
+              type(<a href='daqp_problem.html'>daqp_problem</a>),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>qp</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>the problem (the reduced one while an elimination is installed)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_qp"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_qp</strong></td>
+<td> =</td>
+                <td>.true.</td>
+            <td>
+                <p>(false for <code>daqp_minrep</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n~68"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>number of variables</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-m~19"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>m</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>number of constraints (including the simple bounds)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ms~20"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ms</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>number of simple bounds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rmode~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>rmode</strong></td>
+<td> =</td>
+                <td>rinv_none</td>
+            <td>
+                <p>what <code>R</code> holds</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-r~4"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>R</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>packed upper triangular <code>R^{-1}</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mr~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Mr</strong>(:,:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p><code>Mr(:,k)</code>: the k-th general constraint of the LDP</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dupper~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dupper</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>upper bounds of the LDP</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dlower~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>dlower</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>lower bounds of the LDP</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-scaling~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>scaling</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>normalization of the constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mu~4"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>Mu</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p><code>M'u</code> of the latest feasibility scan</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_v~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_v</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+                <p><code>v</code> is used</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>v</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p><code>v = R'\f</code></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sense~8"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>sense</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>constraint flags</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x~20"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>the primal iterate (also <code>u</code> of the LDP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xold"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xold</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>the previous primal iterate</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lam~18"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>lam</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>dual iterate</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-lam_star"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>lam_star</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>constrained stationary point</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-fval~8"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>fval</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+                <p><code>||u||^2</code> (plus soft penalties)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~3"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>L</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>packed unit lower triangle</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-d"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>D</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>pivots</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-xldl"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>xldl</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>work array of the forward substitution</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zldl"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>zldl</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>work array (<code>xldl/D</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-reuse_ind"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>reuse_ind</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>number of rows of the forward substitution that can be reused</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ws"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>WS</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>the working set (constraint indices)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_active~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_active</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>number of active constraints</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iterations~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iterations</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>number of iterations of the latest solve</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-sing_ind"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>sing_ind</strong></td>
+<td> =</td>
+                <td>empty_ind</td>
+            <td>
+                <p>position of the constraint that made the working set singular</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-prox_mask"></span>
+              logical,
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>prox_mask</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>directions with a proximal regularization</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-n_prox~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>n_prox</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>number of regularized directions</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-soft_slack~5"></span>
+              real(kind=wp),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>soft_slack</strong></td>
+<td> =</td>
+                <td>0.0_wp</td>
+            <td>
+                <p>largest violation of a soft constraint</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-bnb"></span>
+              type(<a href='daqp_bnb_data.html'>daqp_bnb_data</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>bnb</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>branch and bound (allocated if there are binary constraints)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nh~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nh</strong></td>
+<td> =</td>
+                <td>1</td>
+            <td>
+                <p>levels (hierarchical QP), or a counter of outer iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_bp"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_bp</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+                <p>break points are given (hierarchical QP)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-break_points~5"></span>
+              integer(kind=ip),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>break_points</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-avi~3"></span>
+              type(<a href='daqp_avi_data.html'>daqp_avi_data</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>avi</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>AVI (allocated for <code>daqp_problem_avi</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-eq~6"></span>
+              type(<a href='daqp_eq_data.html'>daqp_eq_data</a>),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>eq</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>equality elimination (allocated while used)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-timer_on"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>timer_on</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+                <p>the time limit is checked</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-timer_start"></span>
+              integer(kind=int64),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>timer_start</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>start of the solve (<code>system_clock</code> count)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-has_weights~2"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>has_weights</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_ls~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>rho_ls</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-rho_us~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>rho_us</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_ls~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>w_ls</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_us~2"></span>
+              real(kind=wp),
+            </td>
+              <td>public,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>w_us</strong>(:)</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-state~2"></span>
+              integer(kind=ip),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>state</strong></td>
+<td> =</td>
+                <td>0</td>
+            <td>
+                <p>state mask</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-is_setup"></span>
+              logical,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>is_setup</strong></td>
+<td> =</td>
+                <td>.false.</td>
+            <td>
+                <p>set up successfully</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+
+
+
+    <section>
+    <h3><span class="anchor" id="src"></span>Source Code</h3>
+    <div class="hl codehilite"><pre><span></span><span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">daqp_workspace</span><span class="w"></span>
+<span class="w">        </span><span class="c">!! The workspace of the solver (upstream&#39;s `DAQPWorkspace`).</span>
+<span class="w">        </span><span class="c">!! All arrays are allocated in `daqp_setup`, so a solve allocates nothing</span>
+<span class="w">        </span><span class="c">!! (except the lazily formed caches of the equality elimination).</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_settings</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">settings</span><span class="w"> </span><span class="c">!! the settings</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_problem</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">qp</span><span class="w">        </span><span class="c">!! the problem (the reduced one while an elimination is installed)</span>
+<span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">has_qp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="w">      </span><span class="c">!! (false for `daqp_minrep`)</span>
+<span class="w">        </span><span class="c">! the LDP</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="c">!! number of variables</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="c">!! number of constraints (including the simple bounds)</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="c">!! number of simple bounds</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rmode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rinv_none</span><span class="w">      </span><span class="c">!! what `R` holds</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">R</span><span class="p">(:)</span><span class="w">         </span><span class="c">!! packed upper triangular `R^{-1}`</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Mr</span><span class="p">(:,:)</span><span class="w">      </span><span class="c">!! `Mr(:,k)`: the k-th general constraint of the LDP</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dupper</span><span class="p">(:)</span><span class="w">    </span><span class="c">!! upper bounds of the LDP</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dlower</span><span class="p">(:)</span><span class="w">    </span><span class="c">!! lower bounds of the LDP</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">scaling</span><span class="p">(:)</span><span class="w">   </span><span class="c">!! normalization of the constraints</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Mu</span><span class="p">(:)</span><span class="w">        </span><span class="c">!! `M&#39;u` of the latest feasibility scan</span>
+<span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">has_v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">            </span><span class="c">!! `v` is used</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="p">(:)</span><span class="w">         </span><span class="c">!! `v = R&#39;\f`</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sense</span><span class="p">(:)</span><span class="w">  </span><span class="c">!! constraint flags</span>
+<span class="w">        </span><span class="c">! iterates</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(:)</span><span class="w">         </span><span class="c">!! the primal iterate (also `u` of the LDP)</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xold</span><span class="p">(:)</span><span class="w">      </span><span class="c">!! the previous primal iterate</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lam</span><span class="p">(:)</span><span class="w">       </span><span class="c">!! dual iterate</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lam_star</span><span class="p">(:)</span><span class="w">  </span><span class="c">!! constrained stationary point</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">fval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w">             </span><span class="c">!! `||u||^2` (plus soft penalties)</span>
+<span class="w">        </span><span class="c">! LDL&#39; factors of the working set</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">L</span><span class="p">(:)</span><span class="w">         </span><span class="c">!! packed unit lower triangle</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">D</span><span class="p">(:)</span><span class="w">         </span><span class="c">!! pivots</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">xldl</span><span class="p">(:)</span><span class="w">      </span><span class="c">!! work array of the forward substitution</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zldl</span><span class="p">(:)</span><span class="w">      </span><span class="c">!! work array (`xldl/D`)</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">reuse_ind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">          </span><span class="c">!! number of rows of the forward substitution that can be reused</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">WS</span><span class="p">(:)</span><span class="w">     </span><span class="c">!! the working set (constraint indices)</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n_active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">           </span><span class="c">!! number of active constraints</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">         </span><span class="c">!! number of iterations of the latest solve</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sing_ind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">empty_ind</span><span class="w">   </span><span class="c">!! position of the constraint that made the working set singular</span>
+<span class="w">        </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">prox_mask</span><span class="p">(:)</span><span class="w">  </span><span class="c">!! directions with a proximal regularization</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n_prox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">             </span><span class="c">!! number of regularized directions</span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">soft_slack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w">       </span><span class="c">!! largest violation of a soft constraint</span>
+<span class="w">        </span><span class="c">! extensions</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_bnb_data</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bnb</span><span class="w">  </span><span class="c">!! branch and bound (allocated if there are binary constraints)</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w">                     </span><span class="c">!! levels (hierarchical QP), or a counter of outer iterations</span>
+<span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">has_bp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">               </span><span class="c">!! break points are given (hierarchical QP)</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">break_points</span><span class="p">(:)</span><span class="w"></span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_avi_data</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">avi</span><span class="w">   </span><span class="c">!! AVI (allocated for `daqp_problem_avi`)</span>
+<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">daqp_eq_data</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eq</span><span class="w">     </span><span class="c">!! equality elimination (allocated while used)</span>
+<span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">timer_on</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">             </span><span class="c">!! the time limit is checked</span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">int64</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">timer_start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">         </span><span class="c">!! start of the solve (`system_clock` count)</span>
+<span class="w">        </span><span class="c">! individual weights of the soft constraints (zero selects the settings)</span>
+<span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">has_weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w"></span>
+<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rho_ls</span><span class="p">(:),</span><span class="w"> </span><span class="n">rho_us</span><span class="p">(:),</span><span class="w"> </span><span class="n">w_ls</span><span class="p">(:),</span><span class="w"> </span><span class="n">w_us</span><span class="p">(:)</span><span class="w"></span>
+<span class="w">        </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">              </span><span class="c">!! state mask</span>
+<span class="w">        </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">is_setup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span><span class="w">         </span><span class="c">!! set up successfully</span>
+<span class="w">    </span><span class="k">end type </span><span class="n">daqp_workspace</span><span class="w"></span>
+</pre></div>
+
+    </section>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

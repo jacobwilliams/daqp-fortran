@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="./favicon.png">
+
+    <title> daqp-fortran </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="./css/fontawesome.min.css" rel="stylesheet">
+    <link href="./css/brands.min.css" rel="stylesheet">
+    <link href="./css/regular.min.css" rel="stylesheet">
+    <link href="./css/solid.min.css" rel="stylesheet">
+    <link href="./css/v4-font-face.min.css" rel="stylesheet">
+    <link href="./css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="./css/local.css" rel="stylesheet">
+    <link href="./css/pygments.css" rel="stylesheet">
+    <script src="./js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="./index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="./lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="./search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <!-- Main component for a primary marketing message or call to action -->
+    <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
+      <p>Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs</p>
+        <p> Find us on&hellip;</p>
+      <p>
+        <a class="btn btn-lg btn-primary" href="https://github.com/jacobwilliams/daqp-fortran" role="button">GitHub</a>
+        
+        
+        
+        
+      </p>
+    </div>
+
+      <div class="row" id='text'>
+        <div class=col-md-8>
+          <h1>daqp-fortran</h1>
+          <h1>daqp-fortran</h1>
+<p>A modern Fortran port of <a href="https://github.com/darnstrom/daqp">DAQP</a>, the dual active-set
+solver for dense convex quadratic programs by Daniel Arnström, with an object-oriented
+interface. It is built with <a href="https://fpm.fortran-lang.org">fpm</a> and needs no C compiler.</p>
+<p>It solves</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">min</span><span class="w">  </span><span class="mf">0.5</span><span class="w"> </span><span class="n">x</span><span class="s1">&#39;Hx + f&#39;</span><span class="n">x</span><span class="w"></span>
+<span class="n">s</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="w"> </span><span class="n">blower</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">ms</span><span class="p">)</span><span class="w">  </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">bupper</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">ms</span><span class="p">)</span><span class="w">      </span><span class="p">(</span><span class="n">simple</span><span class="w"> </span><span class="n">bounds</span><span class="p">)</span><span class="w"></span>
+<span class="w">     </span><span class="n">blower</span><span class="p">(</span><span class="n">ms</span><span class="o">+</span><span class="mi">1</span><span class="p">:)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">x</span><span class="w">     </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">bupper</span><span class="p">(</span><span class="n">ms</span><span class="o">+</span><span class="mi">1</span><span class="p">:)</span><span class="w">     </span><span class="p">(</span><span class="n">general</span><span class="w"> </span><span class="n">constraints</span><span class="p">)</span><span class="w"></span>
+</code></pre></div>
+
+<p>with every row two-sided (<code>daqp_inf</code> for no bound), and optional per-row flags for
+equality, immutable, soft, and binary constraints. All of DAQP's solvers are ported:</p>
+<ul>
+<li>the dual active-set method for strictly convex QPs, with warm and hot starts;</li>
+<li>a proximal-point outer loop for semidefinite QPs and LPs;</li>
+<li>branch and bound for <strong>binary constraints</strong> (mixed-integer QPs);</li>
+<li><strong>hierarchical</strong> (lexicographic) QPs: levels of constraints, each softened and then
+  fixed at its best slack;</li>
+<li><strong>affine variational inequalities</strong> (a nonsymmetric <code>H</code>);</li>
+<li>the <strong>elimination of equality constraints</strong> (a null-space reduction, when there are
+  many equalities);</li>
+<li>soft constraints with uniform or <strong>individual weights</strong>, a <strong>prefactorized</strong> Hessian,
+  primal and dual starts, a time limit, and the removal of redundant constraints
+  (<code>daqp_minrep</code>).</li>
+</ul>
+<h2>When to use it</h2>
+<ul>
+<li><strong>Small and medium dense QPs</strong> (up to a few hundred variables): the Hessian is factored
+  once per QP, and the working set's factorization is updated, not recomputed, at each
+  iteration.</li>
+<li><strong>Sequences of similar QPs</strong> (model predictive control, SQP): new data can be given
+  without refactoring, and each solve starts from the previous working set.</li>
+<li><strong>Convex problems only.</strong> <code>H</code> must be symmetric positive definite. A positive
+  semidefinite <code>H</code> (including <code>H = 0</code>, or no <code>H</code>: an LP) is handled by a proximal-point
+  outer loop. An indefinite <code>H</code> is reported as <code>daqp_nonconvex</code>. Large sparse problems
+  are better served by a sparse solver.</li>
+</ul>
+<h2>Usage</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">daqp_module</span><span class="w"></span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">daqp_type</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">qp</span><span class="w"></span>
+<span class="kt">real</span><span class="p">(</span><span class="n">daqp_wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">lam</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"></span>
+<span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">istat</span><span class="w"></span>
+
+<span class="k">call </span><span class="n">qp</span><span class="p">%</span><span class="n">setup</span><span class="p">(</span><span class="n">H</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">bupper</span><span class="p">,</span><span class="w"> </span><span class="n">blower</span><span class="p">,</span><span class="w"> </span><span class="n">istat</span><span class="p">)</span><span class="w">   </span><span class="c">! factor H, form the problem</span>
+<span class="k">call </span><span class="n">qp</span><span class="p">%</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">lam</span><span class="p">,</span><span class="w"> </span><span class="n">istat</span><span class="p">)</span><span class="w">                    </span><span class="c">! istat &gt; 0: solved</span>
+
+<span class="k">call </span><span class="n">qp</span><span class="p">%</span><span class="n">update</span><span class="p">(</span><span class="n">istat</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span><span class="w"> </span><span class="n">bupper</span><span class="o">=</span><span class="n">bu2</span><span class="p">)</span><span class="w">         </span><span class="c">! new data, same sizes</span>
+<span class="k">call </span><span class="n">qp</span><span class="p">%</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">lam</span><span class="p">,</span><span class="w"> </span><span class="n">istat</span><span class="p">)</span><span class="w">                    </span><span class="c">! hot start from the previous working set</span>
+</code></pre></div>
+
+<ul>
+<li><code>H(n,n)</code>, <code>f(n)</code>, <code>A(m-ms,n)</code> in the usual Fortran (column-major) layout, and bounds
+  <code>bupper(m)</code>, <code>blower(m)</code>. The number of simple bounds is <code>ms = m - size(A,1)</code>: the first
+  <code>ms</code> entries of the bounds apply to <code>x(1:ms)</code>. <code>H</code>, <code>f</code>, and <code>A</code> are optional (use
+  keyword arguments after an omitted one): no <code>H</code> is an LP, no <code>A</code> means only simple bounds.</li>
+<li>Options are components of <code>daqp_type</code> (upstream's settings, with its defaults):
+  <code>primal_tol</code>, <code>dual_tol</code>, <code>zero_tol</code>, <code>pivot_tol</code>, <code>progress_tol</code>, <code>cycle_tol</code>,
+  <code>iter_limit</code>, <code>fval_bound</code>, <code>eps_prox</code>, <code>eta_prox</code>, <code>rho_soft</code>, <code>w_soft</code>, <code>rel_subopt</code>,
+  <code>abs_subopt</code>, <code>sing_tol</code>, <code>refactor_tol</code>, <code>time_limit</code>, <code>eq_reduction</code>. <code>set_defaults</code>
+  restores them.</li>
+<li>Results of the latest solve: <code>qp%status</code>, <code>qp%iter</code>, <code>qp%fval</code>, <code>qp%soft_slack</code>,
+  <code>qp%outer_iter</code> (nodes of the branch and bound, or outer iterations), <code>qp%solve_time</code>,
+  <code>qp%setup_time</code> (or <code>qp%info(...)</code>).</li>
+<li>Constraint flags: <code>sense(m)</code> in <code>setup</code>, with <code>daqp_equality</code> (or simply equal bounds),
+  <code>daqp_immutable</code>, <code>daqp_soft</code>, <code>daqp_binary</code>.</li>
+<li>Other arguments of <code>setup</code>: <code>break_points</code> (a hierarchical QP: the last constraint of
+  each level), <code>is_avi</code> (an AVI), <code>R</code> (the Cholesky factor of <code>H</code>, packed by rows, instead
+  of <code>H</code>), <code>primal_start</code>, <code>dual_start</code>.</li>
+<li><code>qp%set_soft_weights(istat, rho_l, rho_u, w_l, w_u)</code> sets individual weights of the soft
+  constraints; <code>qp%set_primal_start(x, istat)</code> a starting point (for binary constraints,
+  an incumbent).</li>
+<li><code>daqp_type</code> is copyable (allocatable components only), and allocates nothing during
+  <code>solve</code>.</li>
+</ul>
+<p>See <a href="example/example_simple.f90"><code>example/example_simple.f90</code></a> and
+<a href="example/example_mpc.f90"><code>example/example_mpc.f90</code></a>.</p>
+<h3>Multipliers</h3>
+<p><code>lam</code> satisfies <script type="math/tex"> Hx + f + A_{all}^T\lambda = 0 </script> with <script type="math/tex"> A_{all} = [I_{ms}\;0;\,A] </script>:
+<code>lam(i) &gt; 0</code> when the upper bound of row <code>i</code> is active, <code>lam(i) &lt; 0</code> when its lower bound
+is active, 0 when inactive. <code>daqp_lower_positive(lam)</code> converts to the convention
+<script type="math/tex"> \lambda \ge 0 </script> at a lower bound (<script type="math/tex"> Hx + f = A_{all}^T\lambda </script>).</p>
+<h3>Warm and hot starts</h3>
+<ul>
+<li>By default, <code>solve</code> starts from the working set of the previous solve (a <em>hot start</em>);
+  after <code>setup</code>, from the equality constraints only.</li>
+<li><code>qp%get_working_set(active, at_lower)</code> returns the working set of a solution;
+  <code>qp%solve(x, lam, istat, active=active, at_lower=at_lower)</code> (or <code>set_working_set</code>)
+  starts from a given one (a <em>warm start</em>). Rows that are linearly dependent on the others
+  are dropped.</li>
+<li><code>qp%solve(..., cold=.true.)</code> starts from the empty working set.</li>
+<li><code>update</code> with new <code>f</code> or bounds keeps the factorization of <code>H</code> and the working set; with
+  a new <code>A</code>, the problem is formed again but <code>H</code> is not refactored; with a new <code>H</code>,
+  everything is recomputed.</li>
+</ul>
+<h3>Soft constraints</h3>
+<p>A row flagged <code>daqp_soft</code> may be violated: a violation <code>s</code> (of the normalized row) adds
+<code>w_soft*s + s**2/(2*rho_soft)</code> to the objective (<code>w_soft = 0</code> by default: a quadratic
+penalty; a large enough <code>w_soft</code> gives an exact penalty). Individual weights per row and
+side (<code>set_soft_weights</code>) are in the units of the problem. The exit status is then
+<code>daqp_soft_optimal</code> and <code>qp%soft_slack</code> is the largest violation.</p>
+<h3>Binary constraints, hierarchies, AVIs</h3>
+<ul>
+<li>A row flagged <code>daqp_binary</code> must be active at one of its bounds (for a binary variable,
+  bounds 0 and 1 on a simple bound). The problem is solved by branch and bound, which
+  needs a strictly convex objective; <code>rel_subopt</code> and <code>abs_subopt</code> allow a suboptimal
+  solution, and <code>set_primal_start</code> gives an incumbent.</li>
+<li>With <code>break_points</code>, the constraints form levels (the first is hard). Each next level
+  is minimized as soft constraints and then fixed at its slacks; <code>lam</code> returns the slacks.</li>
+<li>With <code>is_avi = .true.</code>, the solver finds <code>x</code> in the feasible set with
+  <code>(Hx + f)'(y - x) &gt;= 0</code> for every feasible <code>y</code>, for a nonsymmetric <code>H</code> (Douglas-Rachford
+  splitting with Newton steps). <code>daqp_avi</code> solves one in a single call.</li>
+</ul>
+<h3>Elimination of equalities</h3>
+<p>With many equality constraints, they can be eliminated before the solve (a QR null-space
+reduction; the solution and all the multipliers are those of the original problem).
+<code>eq_reduction = daqp_eq_reduction_auto</code> (the default) does so in <code>daqp_quadprog</code> when it
+pays off, <code>daqp_eq_reduction_on</code> always (also for <code>setup</code> + <code>solve</code>), and
+<code>daqp_eq_reduction_off</code> never.</p>
+<h3>Statuses</h3>
+<table>
+<thead>
+<tr>
+<th>status</th>
+<th>value</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>daqp_success</code></td>
+<td>0</td>
+<td><code>setup</code>/<code>update</code> succeeded</td>
+</tr>
+<tr>
+<td><code>daqp_optimal</code></td>
+<td>1</td>
+<td>solved</td>
+</tr>
+<tr>
+<td><code>daqp_soft_optimal</code></td>
+<td>2</td>
+<td>solved, a soft constraint is violated</td>
+</tr>
+<tr>
+<td><code>daqp_no_freedom</code></td>
+<td>3</td>
+<td>hierarchical QP: a level failed; the solution of the levels before</td>
+</tr>
+<tr>
+<td><code>daqp_optimal_inexact</code></td>
+<td>4</td>
+<td>solved after persistent cycling; violates a constraint by more than <code>primal_tol</code></td>
+</tr>
+<tr>
+<td><code>daqp_infeasible</code></td>
+<td>-1</td>
+<td>infeasible</td>
+</tr>
+<tr>
+<td><code>daqp_cycling</code></td>
+<td>-2</td>
+<td>cycling</td>
+</tr>
+<tr>
+<td><code>daqp_unbounded</code></td>
+<td>-3</td>
+<td>unbounded (LP)</td>
+</tr>
+<tr>
+<td><code>daqp_iteration_limit</code></td>
+<td>-4</td>
+<td>iteration limit</td>
+</tr>
+<tr>
+<td><code>daqp_nonconvex</code></td>
+<td>-5</td>
+<td><code>H</code> is not positive (semi)definite</td>
+</tr>
+<tr>
+<td><code>daqp_overdetermined</code></td>
+<td>-6</td>
+<td>inconsistent equalities in the initial working set</td>
+</tr>
+<tr>
+<td><code>daqp_time_limit</code></td>
+<td>-7</td>
+<td>the time limit was reached</td>
+</tr>
+<tr>
+<td><code>daqp_unsupported</code></td>
+<td>-8</td>
+<td>unsupported combination (a hierarchy with a singular <code>H</code>, or a re-solve of a hierarchy without an update)</td>
+</tr>
+<tr>
+<td><code>daqp_invalid_input</code></td>
+<td>-101</td>
+<td>invalid sizes or indices</td>
+</tr>
+<tr>
+<td><code>daqp_out_of_memory</code></td>
+<td>-102</td>
+<td>an allocation failed (or the problem is too large)</td>
+</tr>
+<tr>
+<td><code>daqp_not_setup</code></td>
+<td>-103</td>
+<td><code>setup</code> was not called, or failed</td>
+</tr>
+</tbody>
+</table>
+<h3>Low-level interface</h3>
+<p><code>daqp_core</code> holds the one-to-one port (a workspace type and plain procedures:
+<code>daqp_setup</code>, <code>daqp_solve</code>, <code>daqp_update_ldp</code>, <code>daqp_quadprog</code>, <code>daqp_avi</code>, <code>daqp_minrep</code>,
+<code>daqp_ldp</code>, <code>daqp_bnb</code>, <code>daqp_hiqp</code>, ...), with the same algorithm, order of operations,
+and tolerances as the C code; <code>daqp_eq_elim</code> the elimination of equalities, and
+<code>daqp_types</code> the types and constants. <code>daqp_setup</code> also accepts <code>A</code> in its internal layout
+(<code>At(n,m-ms)</code>, a row of <code>A</code> per column), which saves a transposed copy.</p>
+<h2>Real kinds</h2>
+<p>The real kind is chosen by a preprocessor flag: <code>-DREAL32</code>, <code>-DREAL64</code> (the default), or
+<code>-DREAL128</code>, e.g. <code>fpm test --flag "-DREAL128"</code>. In double and quadruple precision the
+default tolerances and constants are upstream's; in single precision, those below a few
+<code>epsilon</code> (the tolerances, <code>rho_soft</code>, <code>eps_prox</code>, and the tolerances of the primal and
+dual starts) are raised to a multiple of <code>epsilon</code>. In single precision, LPs (solved by
+the proximal-point loop) are less reliable: about 2% of random LPs end with
+<code>daqp_cycling</code>, whose rounding errors swamp the progress test of the cycle guard.</p>
+<h2>Install</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span><span class="w"></span>
+<span class="n">daqp-fortran</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://github.com/jacobwilliams/daqp-fortran&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>To build and test: <code>fpm test</code>. To build the documentation: <code>ford ford.md</code>.</p>
+<h2>Comparison with the C code</h2>
+<p>The upstream C repository is a git submodule in <code>upstream/daqp</code>, pinned to the release the
+port follows (v0.10.3). It is only needed for the comparison, not to use the package
+(<code>git clone --recursive</code>, or <code>git submodule update --init</code>).</p>
+<div class="codehilite"><pre><span></span><code><span class="n">tools</span><span class="o">/</span><span class="n">run_compare</span><span class="o">.</span><span class="n">sh</span><span class="w">          </span><span class="c1"># writes compare/RESULTS.md</span><span class="w"></span>
+<span class="n">tools</span><span class="o">/</span><span class="n">run_compare</span><span class="o">.</span><span class="n">sh</span><span class="w"> </span><span class="n">quick</span><span class="w">    </span><span class="c1"># a short check (CI)</span><span class="w"></span>
+</code></pre></div>
+
+<p><code>tools/build_upstream.sh</code> builds the C library into <code>build/upstream/libdaqp.a</code>;
+<code>compare/</code> is a separate fpm project that solves the same problems with both (upstream's
+test problems, random QPs of sizes 2 to 500 and condition numbers up to 1e10, degenerate,
+infeasible, semidefinite, soft, LP, warm-start sequences, the elimination of equalities,
+branch and bound, hierarchical QPs, AVIs, prefactorized Hessians, primal and dual starts,
+individual soft weights, and redundant constraints: over a thousand problems) and compares
+exit flags, iteration counts, working sets, solutions, multipliers, objectives, KKT
+residuals, and speed. <strong>With fused multiply-adds disabled in both builds, the port gives bit-for-bit the
+same results as the C code on every problem; the optimized builds agree to round-off, and
+run at the same speed</strong> (see <a href="compare/RESULTS.md"><code>compare/RESULTS.md</code></a>).</p>
+<h3>Not ported</h3>
+<p>Upstream's code generation (<code>codegen/</code>, which writes C source files of a workspace for
+embedded targets), and its interfaces to other languages (Julia, Python, MATLAB, C++,
+Simulink).</p>
+<h2>Licence</h2>
+<p>MIT (see <a href="LICENSE">LICENSE</a>). DAQP is MIT-licensed, Copyright (c) 2022 Daniel Arnström;
+this package is a derivative work (see <a href="NOTICE">NOTICE</a>).</p>
+<h2>Reference</h2>
+<p>D. Arnström, A. Bemporad, D. Axehill, <em>A dual active-set solver for embedded quadratic
+programming using recursive LDLᵀ updates</em>, IEEE Transactions on Automatic Control 67(8),
+4362–4369, 2022.</p>
+        </div>
+          <div class="col-md-4">
+            <div class="card card-body bg-light">
+              <h2 class="card-title">Developer Info</h2>
+              <h4 class="card-text">Jacob Williams</h4>
+              <p class="card-text"></p>
+                <div class="text-center"><div class="btn-group" role="group">
+                    
+                    <a class="btn btn-lg btn-primary" href="https://github.com/jacobwilliams"><i class="fa fa-github fa-lg"></i></a>
+                    
+                    
+                    
+                    
+                    
+                    
+                </div></div>
+            </div>
+          </div>
+      </div>
+        <div class="row">
+          <hr>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Source Files</h3>
+              <ul><li><a href='sourcefile/daqp_core.f90.html'>daqp_core.f90</a></li><li><a href='sourcefile/daqp_eq_elim.f90.html'>daqp_eq_elim.f90</a></li><li><a href='sourcefile/daqp_kinds.f90.html'>daqp_kinds.F90</a></li><li><a href='sourcefile/daqp_module.f90.html'>daqp_module.f90</a></li><li><a href='sourcefile/daqp_types.f90.html'>daqp_types.f90</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Modules</h3>
+              <ul><li><a href='module/daqp_core.html'>daqp_core</a></li><li><a href='module/daqp_eq_elim.html'>daqp_eq_elim</a></li><li><a href='module/daqp_kinds.html'>daqp_kinds</a></li><li><a href='module/daqp_module.html'>daqp_module</a></li><li><a href='module/daqp_types.html'>daqp_types</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Procedures</h3>
+              <ul><li><a href='proc/activate_constraint.html'>activate_constraint</a></li><li><a href='proc/active_residual.html'>active_residual</a></li><li><a href='proc/add_constraint.html'>add_constraint</a></li><li><a href='proc/add_constraint_keep_slack.html'>add_constraint_keep_slack</a></li><li><a href='proc/add_infeasible.html'>add_infeasible</a></li><li><a href='proc/add_lower_flag.html'>add_lower_flag</a></li><li><a href='proc/add_upper_lower.html'>add_upper_lower</a></li><li><a href='proc/allocate_avi.html'>allocate_avi</a></li><li><a href='proc/apply_rinv.html'>apply_Rinv</a></li><li><a href='proc/binary_diff.html'>binary_diff</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Derived Types</h3>
+              <ul><li><a href='type/daqp_avi_data.html'>daqp_avi_data</a></li><li><a href='type/daqp_bnb_data.html'>daqp_bnb_data</a></li><li><a href='type/daqp_eq_data.html'>daqp_eq_data</a></li><li><a href='type/daqp_ldp_data.html'>daqp_ldp_data</a></li><li><a href='type/daqp_node.html'>daqp_node</a></li><li><a href='type/daqp_problem.html'>daqp_problem</a></li><li><a href='type/daqp_result.html'>daqp_result</a></li><li><a href='type/daqp_settings.html'>daqp_settings</a></li><li><a href='type/daqp_type.html'>daqp_type</a></li><li><a href='type/daqp_vec.html'>daqp_vec</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
