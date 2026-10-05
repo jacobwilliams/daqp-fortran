@@ -8,11 +8,10 @@
 
     program example_mpc
 
-    use daqp_module
+    use daqp_module, wp => daqp_wp
 
     implicit none
 
-    integer, parameter :: wp = daqp_wp
     integer, parameter :: nh = 20              !! horizon (number of inputs)
     real(wp), parameter :: dt = 0.1_wp         !! time step
     real(wp), parameter :: umax = 1.0_wp       !! input bound

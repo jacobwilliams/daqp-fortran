@@ -10,11 +10,10 @@
 
     program example_simple
 
-    use daqp_module
+    use daqp_module, wp => daqp_wp
 
     implicit none
 
-    integer, parameter :: wp = daqp_wp
     real(wp), parameter :: H(2,2) = reshape([1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp], [2,2])
     real(wp), parameter :: f(2) = [-1.0_wp, -2.0_wp]
     real(wp), parameter :: A(1,2) = reshape([1.0_wp, 1.0_wp], [1,2])

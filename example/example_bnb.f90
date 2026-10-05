@@ -9,11 +9,10 @@
 
     program example_bnb
 
-    use daqp_module
+    use daqp_module, wp => daqp_wp
 
     implicit none
 
-    integer, parameter :: wp = daqp_wp
     real(wp), parameter :: t(4) = [0.9_wp, 0.2_wp, 0.8_wp, 0.6_wp]
 
     type(daqp_type) :: qp
