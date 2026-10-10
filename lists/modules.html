@@ -1,0 +1,375 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Modern Fortran port of DAQP, a dual active-set solver for dense convex quadratic programs">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>All Modules &ndash; daqp-fortran
+</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">daqp-fortran </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12" id='text'>
+			 <h1>Modules</h1>
+			 <table class="table">
+			 <thead><tr><th>Module</th><th>Source File</th><th>Description</th></tr></thead>
+			 <tbody>
+			   <tr class="active">
+                 <td><a href='../module/daqp_core.html'>daqp_core</a></td>
+                 <td><a href='../sourcefile/daqp_core.f90.html'>daqp_core.f90</a></td>
+                 <td><p>The Fortran port of the DAQP solver (dual active-set method for dense
+convex quadratic programs, with branch and bound for binary constraints,
+hierarchical QPs, affine variational inequalities, and a proximal-point
+outer loop for semidefinite problems and LPs).</p><a href="../module/daqp_core.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+<!--active-->			   <tr class="">
+                 <td><a href='../module/daqp_eq_elim.html'>daqp_eq_elim</a></td>
+                 <td><a href='../sourcefile/daqp_eq_elim.f90.html'>daqp_eq_elim.f90</a></td>
+                 <td><p>Elimination of equality constraints, before the QP is turned into an LDP:
+a translation of <code>eq_elim.c</code> of <a href="https://github.com/darnstrom/daqp">DAQP</a>
+v0.10.3 (Copyright (c) 2022 Daniel Arnström, MIT licence). Changed from the
+original: translated to Fortran, 1-based indexing.</p><a href="../module/daqp_eq_elim.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+<!---->			   <tr class="active">
+                 <td><a href='../module/daqp_kinds.html'>daqp_kinds</a></td>
+                 <td><a href='../sourcefile/daqp_kinds.f90.html'>daqp_kinds.F90</a></td>
+                 <td><p>Real and integer kinds used by the DAQP package.</p><a href="../module/daqp_kinds.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+<!--active-->			   <tr class="">
+                 <td><a href='../module/daqp_module.html'>daqp_module</a></td>
+                 <td><a href='../sourcefile/daqp_module.f90.html'>daqp_module.f90</a></td>
+                 <td><p>Object-oriented interface to the Fortran port of
+  <a href="https://github.com/darnstrom/daqp">DAQP</a>, a dual active-set solver for
+  dense convex quadratic programs:</p><a href="../module/daqp_module.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+<!---->			   <tr class="active">
+                 <td><a href='../module/daqp_types.html'>daqp_types</a></td>
+                 <td><a href='../sourcefile/daqp_types.f90.html'>daqp_types.f90</a></td>
+                 <td><p>Constants, derived types, and small helpers of the Fortran port of
+  <a href="https://github.com/darnstrom/daqp">DAQP</a> v0.10.3
+  (Copyright (c) 2022 Daniel Arnström, MIT licence): upstream's
+  <code>constants.h</code> and <code>types.h</code>, translated to Fortran (changed from the
+  original: 1-based indexing, allocatable components instead of pointers).</p><a href="../module/daqp_types.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+<!--active-->			 </tbody></table>
+             <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: module~~graph~~ModuleGraph Pages: 1 -->
+<svg id="modulegraphModuleGraph" width="671pt" height="189pt"
+ viewBox="0.00 0.00 671.00 189.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~graph~~ModuleGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 184.71)">
+<title>module~~graph~~ModuleGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-184.71 667.12,-184.71 667.12,4 -4,4"/>
+<!-- module~daqp_core -->
+<g id="module~~graph~~ModuleGraph_node1" class="node">
+<title>module~daqp_core</title>
+<g id="a_module~~graph~~ModuleGraph_node1"><a xlink:href="../module/daqp_core.html" xlink:title="daqp_core">
+<polygon fill="#337ab7" stroke="#337ab7" points="542.85,-60.51 475.83,-60.51 475.83,-36.24 542.85,-36.24 542.85,-60.51"/>
+<text xml:space="preserve" text-anchor="middle" x="509.34" y="-44.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_core</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_eq_elim -->
+<g id="module~~graph~~ModuleGraph_node2" class="node">
+<title>module~daqp_eq_elim</title>
+<g id="a_module~~graph~~ModuleGraph_node2"><a xlink:href="../module/daqp_eq_elim.html" xlink:title="daqp_eq_elim">
+<polygon fill="#337ab7" stroke="#337ab7" points="435.33,-60.51 349.56,-60.51 349.56,-36.24 435.33,-36.24 435.33,-60.51"/>
+<text xml:space="preserve" text-anchor="middle" x="392.44" y="-44.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_eq_elim</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;module~daqp_eq_elim -->
+<g id="module~~graph~~ModuleGraph_edge3" class="edge">
+<title>module~daqp_core&#45;&gt;module~daqp_eq_elim</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M475.42,-48.38C466.55,-48.38 456.73,-48.38 447.05,-48.38"/>
+<polygon fill="#000000" stroke="#000000" points="447.33,-44.88 437.33,-48.38 447.33,-51.88 447.33,-44.88"/>
+</g>
+<!-- module~daqp_kinds -->
+<g id="module~~graph~~ModuleGraph_node3" class="node">
+<title>module~daqp_kinds</title>
+<g id="a_module~~graph~~ModuleGraph_node3"><a xlink:href="../module/daqp_kinds.html" xlink:title="daqp_kinds">
+<polygon fill="#337ab7" stroke="#337ab7" points="200.79,-120.51 129.27,-120.51 129.27,-96.24 200.79,-96.24 200.79,-120.51"/>
+<text xml:space="preserve" text-anchor="middle" x="165.03" y="-104.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_kinds</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;module~daqp_kinds -->
+<g id="module~~graph~~ModuleGraph_edge4" class="edge">
+<title>module~daqp_core&#45;&gt;module~daqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M484.03,-35.91C461.3,-25.23 426.07,-11.15 393.44,-8.38"/>
+</g>
+<!-- module~daqp_types -->
+<g id="module~~graph~~ModuleGraph_node5" class="node">
+<title>module~daqp_types</title>
+<g id="a_module~~graph~~ModuleGraph_node5"><a xlink:href="../module/daqp_types.html" xlink:title="daqp_types">
+<polygon fill="#337ab7" stroke="#337ab7" points="309.06,-120.51 236.79,-120.51 236.79,-96.24 309.06,-96.24 309.06,-120.51"/>
+<text xml:space="preserve" text-anchor="middle" x="272.93" y="-104.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_types</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;module~daqp_types -->
+<g id="module~~graph~~ModuleGraph_edge5" class="edge">
+<title>module~daqp_core&#45;&gt;module~daqp_types</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M475.36,-58.97C464.14,-62.45 451.48,-66.23 439.83,-69.38 399.67,-80.24 353.58,-90.94 320.18,-98.37"/>
+<polygon fill="#000000" stroke="#000000" points="319.86,-94.86 310.85,-100.44 321.37,-101.69 319.86,-94.86"/>
+</g>
+<!-- ieee_arithmetic -->
+<g id="module~~graph~~ModuleGraph_node6" class="node">
+<title>ieee_arithmetic</title>
+<g id="a_module~~graph~~ModuleGraph_node6"><a xlink:href="http://fortranwiki.org/fortran/show/ieee_arithmetic" xlink:title="ieee_arithmetic">
+<polygon fill="#337ab7" stroke="#337ab7" points="439.83,-140.51 345.06,-140.51 345.06,-116.24 439.83,-116.24 439.83,-140.51"/>
+<text xml:space="preserve" text-anchor="middle" x="392.44" y="-124.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ieee_arithmetic</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;ieee_arithmetic -->
+<g id="module~~graph~~ModuleGraph_edge1" class="edge">
+<title>module~daqp_core&#45;&gt;ieee_arithmetic</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M493.88,-60.87C480.34,-72.29 459.35,-89.33 439.83,-102.38 435.86,-105.03 431.6,-107.68 427.32,-110.21"/>
+<polygon fill="#000000" stroke="#000000" points="425.72,-107.09 418.78,-115.1 429.2,-113.17 425.72,-107.09"/>
+</g>
+<!-- iso_fortran_env -->
+<g id="module~~graph~~ModuleGraph_node7" class="node">
+<title>iso_fortran_env</title>
+<g id="a_module~~graph~~ModuleGraph_node7"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-160.51 0,-160.51 0,-136.24 93.27,-136.24 93.27,-160.51"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-144.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_core&#45;&gt;iso_fortran_env -->
+<g id="module~~graph~~ModuleGraph_edge2" class="edge">
+<title>module~daqp_core&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M504.12,-60.7C495.78,-82.91 474.91,-129.2 439.83,-149.38 334.1,-210.2 287.85,-162.05 166.03,-168.38"/>
+</g>
+<!-- module~daqp_eq_elim&#45;&gt;module~daqp_kinds -->
+<g id="module~~graph~~ModuleGraph_edge6" class="edge">
+<title>module~daqp_eq_elim&#45;&gt;module~daqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M366,-35.85C337,-22.26 291.37,-3.16 273.93,-8.38"/>
+</g>
+<!-- module~daqp_eq_elim&#45;&gt;module~daqp_types -->
+<g id="module~~graph~~ModuleGraph_edge7" class="edge">
+<title>module~daqp_eq_elim&#45;&gt;module~daqp_types</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M366.81,-60.96C349.96,-69.56 327.39,-81.08 308.72,-90.61"/>
+<polygon fill="#000000" stroke="#000000" points="307.19,-87.46 299.88,-95.13 310.37,-93.7 307.19,-87.46"/>
+</g>
+<!-- module~daqp_kinds&#45;&gt;iso_fortran_env -->
+<g id="module~~graph~~ModuleGraph_edge8" class="edge">
+<title>module~daqp_kinds&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M128.79,-120.49C118.14,-124.15 106.27,-128.23 94.97,-132.11"/>
+<polygon fill="#000000" stroke="#000000" points="94.12,-128.7 85.8,-135.26 96.39,-135.32 94.12,-128.7"/>
+</g>
+<!-- module~daqp_module -->
+<g id="module~~graph~~ModuleGraph_node4" class="node">
+<title>module~daqp_module</title>
+<g id="a_module~~graph~~ModuleGraph_node4"><a xlink:href="../module/daqp_module.html" xlink:title="daqp_module">
+<polygon fill="#337ab7" stroke="#337ab7" points="663.12,-60.51 578.85,-60.51 578.85,-36.24 663.12,-36.24 663.12,-60.51"/>
+<text xml:space="preserve" text-anchor="middle" x="620.99" y="-44.78" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">daqp_module</text>
+</a>
+</g>
+</g>
+<!-- module~daqp_module&#45;&gt;module~daqp_core -->
+<g id="module~~graph~~ModuleGraph_edge9" class="edge">
+<title>module~daqp_module&#45;&gt;module~daqp_core</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M578.53,-48.38C570.71,-48.38 562.5,-48.38 554.59,-48.38"/>
+<polygon fill="#000000" stroke="#000000" points="554.83,-44.88 544.82,-48.38 554.82,-51.88 554.83,-44.88"/>
+</g>
+<!-- module~daqp_module&#45;&gt;module~daqp_kinds -->
+<g id="module~~graph~~ModuleGraph_edge10" class="edge">
+<title>module~daqp_module&#45;&gt;module~daqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M578.6,-35.97C567.1,-32.84 554.56,-29.7 542.85,-27.38 477.2,-14.33 460.14,-14.04 393.44,-8.38"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M391.44,-8.38C339.54,-2.53 323.96,6.6 273.93,-8.38"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.93,-8.38C230.62,-20.74 197.36,-61 179.75,-86.51"/>
+<polygon fill="#000000" stroke="#000000" points="176.84,-84.57 174.22,-94.84 182.67,-88.44 176.84,-84.57"/>
+</g>
+<!-- module~daqp_module&#45;&gt;module~daqp_types -->
+<g id="module~~graph~~ModuleGraph_edge11" class="edge">
+<title>module~daqp_module&#45;&gt;module~daqp_types</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M604.33,-60.9C574.47,-83.87 506.44,-131.98 439.83,-149.38 399.08,-160.02 385.75,-160.26 345.06,-149.38 328.71,-145 312.22,-135.87 299.25,-127.33"/>
+<polygon fill="#000000" stroke="#000000" points="301.53,-124.65 291.31,-121.86 297.56,-130.42 301.53,-124.65"/>
+</g>
+<!-- module~daqp_types&#45;&gt;module~daqp_kinds -->
+<g id="module~~graph~~ModuleGraph_edge13" class="edge">
+<title>module~daqp_types&#45;&gt;module~daqp_kinds</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M236.37,-108.38C228.7,-108.38 220.48,-108.38 212.46,-108.38"/>
+<polygon fill="#000000" stroke="#000000" points="212.47,-104.88 202.47,-108.38 212.47,-111.88 212.47,-104.88"/>
+</g>
+<!-- module~daqp_types&#45;&gt;iso_fortran_env -->
+<g id="module~~graph~~ModuleGraph_edge12" class="edge">
+<title>module~daqp_types&#45;&gt;iso_fortran_env</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M259.2,-120.86C240.53,-137.86 203.8,-166.42 166.03,-168.38"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M164.03,-168.38C144.44,-169.4 123.23,-166.86 104.35,-163.28"/>
+<polygon fill="#000000" stroke="#000000" points="105.22,-159.89 94.72,-161.31 103.82,-166.75 105.22,-159.89"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#ModuleGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="ModuleGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (20260126.1125)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
+<!-- Module -->
+<g id="node1" class="node">
+<title>Module</title>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+</g>
+<!-- Submodule -->
+<g id="node2" class="node">
+<title>Submodule</title>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+</g>
+<!-- Subroutine -->
+<g id="node3" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node4" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Program -->
+<g id="node5" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node6" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a submodule to the (sub)module which it is
+descended from. Dashed arrows point from a module or program unit to 
+modules which it uses.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              daqp-fortran
+ was developed by Jacob Williams<br>              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
