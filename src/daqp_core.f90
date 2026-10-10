@@ -3650,9 +3650,14 @@
     type(daqp_settings) :: settings
 
     settings = work%settings
-    work = daqp_workspace()  ! deallocates every component
+    call destroy(work)  ! deallocates every component
     work%settings = settings
 
+    contains
+        subroutine destroy(me)
+            !! Deallocate all components of the workspace
+            type(daqp_workspace), intent(out) :: me
+        end subroutine destroy
     end subroutine daqp_destroy
 !*****************************************************************************************
 
